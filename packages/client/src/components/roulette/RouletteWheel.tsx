@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { getNumberColor } from "@butecogames/shared";
 import { cn } from "@/lib/utils.js";
 
@@ -12,6 +13,22 @@ interface RouletteWheelProps {
 }
 
 export function RouletteWheel({ result, spinning }: RouletteWheelProps) {
+  const [displayNumber, setDisplayNumber] = useState<number | null>(null);
+
+  // Cycle through random numbers when spinning
+  useEffect(() => {
+    if (!spinning) {
+      setDisplayNumber(result);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * WHEEL_ORDER.length);
+      setDisplayNumber(WHEEL_ORDER[randomIndex]);
+    }, 100); // Change number every 100ms
+
+    return () => clearInterval(interval);
+  }, [spinning, result]);
   const colorMap = {
     red: "bg-roulette-red",
     black: "bg-roulette-black",
@@ -20,34 +37,36 @@ export function RouletteWheel({ result, spinning }: RouletteWheelProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div
-        className={cn(
-          "flex h-32 w-32 items-center justify-center rounded-full border-4 border-accent text-4xl font-bold transition-all duration-500",
-          result !== null
-            ? colorMap[getNumberColor(result)]
-            : "bg-card",
-          spinning && "animate-pulse border-primary",
-        )}
-      >
-        {spinning ? "?" : result !== null ? result : "-"}
-      </div>
+      <div className="relative h-40 w-40">
+        {/* Spinning wheel background */}
+        <div
+          className={cn(
+            "absolute inset-0 rounded-full transition-all duration-300",
+            spinning
+              ? "animate-spin"
+              : result !== null
+                ? `${colorMap[getNumberColor(result)]}`
+                : "bg-card border-border"
+          )}
+          style={{
+            background: spinning
+              ? "conic-gradient(from 0deg, #dc2626 0deg 60deg, #1a1a2e 60deg 120deg, #dc2626 120deg 180deg, #1a1a2e 180deg 240deg, #dc2626 240deg 300deg, #1a1a2e 300deg 360deg)"
+              : undefined
+          }}
+        />
 
-      {/* Recent results strip */}
-      <div className="flex gap-1">
-        {WHEEL_ORDER.slice(0, 15).map((n) => {
-          const color = getNumberColor(n);
-          return (
-            <div
-              key={n}
-              className={cn(
-                "flex h-6 w-6 items-center justify-center rounded text-[10px] font-medium text-white",
-                colorMap[color],
-              )}
-            >
-              {n}
-            </div>
-          );
-        })}
+        {/* Center display */}
+        <div
+          className={cn(
+            "absolute inset-4 flex items-center justify-center rounded-full text-4xl font-bold shadow-lg transition-all duration-100",
+            displayNumber !== null
+              ? colorMap[getNumberColor(displayNumber)]
+              : "bg-card",
+            spinning ? "" : "",
+          )}
+        >
+          {displayNumber !== null ? displayNumber : ""}
+        </div>
       </div>
     </div>
   );

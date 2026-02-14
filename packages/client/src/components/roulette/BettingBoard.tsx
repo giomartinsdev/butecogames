@@ -14,8 +14,6 @@ const colorMap = {
 };
 
 export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
-  const numbers = Array.from({ length: 36 }, (_, i) => i + 1);
-
   return (
     <div className="space-y-3">
       {/* Zero */}
@@ -33,9 +31,10 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
       </div>
 
       {/* Number grid: 3 rows x 12 columns */}
-      <div className="grid grid-cols-12 gap-1">
-        {[3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36].map((col) =>
-          [col, col - 1, col - 2].map((n) => {
+      <div className="space-y-1">
+        {/* Row 1: 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36 */}
+        <div className="grid grid-cols-12 gap-1">
+          {[3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36].map((n) => {
             const color = getNumberColor(n);
             return (
               <button
@@ -50,8 +49,46 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                 {n}
               </button>
             );
-          }),
-        )}
+          })}
+        </div>
+        {/* Row 2: 2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35 */}
+        <div className="grid grid-cols-12 gap-1">
+          {[2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35].map((n) => {
+            const color = getNumberColor(n);
+            return (
+              <button
+                key={n}
+                onClick={() => onBet(`number:${n}` as RouletteBetType)}
+                disabled={disabled}
+                className={cn(
+                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40",
+                  colorMap[color],
+                )}
+              >
+                {n}
+              </button>
+            );
+          })}
+        </div>
+        {/* Row 3: 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34 */}
+        <div className="grid grid-cols-12 gap-1">
+          {[1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34].map((n) => {
+            const color = getNumberColor(n);
+            return (
+              <button
+                key={n}
+                onClick={() => onBet(`number:${n}` as RouletteBetType)}
+                disabled={disabled}
+                className={cn(
+                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40",
+                  colorMap[color],
+                )}
+              >
+                {n}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Outside bets */}
