@@ -6,7 +6,7 @@ import { BettingBoard } from "./BettingBoard.js";
 import { BetControls } from "./BetControls.js";
 import { RoundHistory } from "./RoundHistory.js";
 import { ChatBox } from "@/components/chat/ChatBox.js";
-import { cn } from "@/lib/utils.js";
+import { cn, translateBetType } from "@/lib/utils.js";
 
 export function RouletteGame() {
   const roulette = useRoulette();
@@ -62,6 +62,19 @@ export function RouletteGame() {
           />
         </div>
 
+        {/* Betting board */}
+        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen} />
+
+        {/* Error display */}
+        {roulette.error && (
+          <div className="rounded-lg bg-destructive/20 px-4 py-2 text-sm text-destructive">
+            {roulette.error}
+          </div>
+        )}
+
+        {/* Round history */}
+        <RoundHistory results={roulette.recentResults} />
+
         {/* Winners display */}
         {roulette.lastResult && roulette.lastResult.winners.length > 0 && (
           <div className="rounded-xl border border-accent/50 bg-accent/10 p-4">
@@ -76,19 +89,6 @@ export function RouletteGame() {
             </div>
           </div>
         )}
-
-        {/* Betting board */}
-        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen} />
-
-        {/* Error display */}
-        {roulette.error && (
-          <div className="rounded-lg bg-destructive/20 px-4 py-2 text-sm text-destructive">
-            {roulette.error}
-          </div>
-        )}
-
-        {/* Round history */}
-        <RoundHistory results={roulette.recentResults} />
       </div>
 
       {/* Sidebar */}
@@ -109,7 +109,7 @@ export function RouletteGame() {
               <div key={i} className="flex justify-between text-sm">
                 <span className="text-card-foreground">{bet.displayName}</span>
                 <span className="text-muted-foreground">
-                  {bet.amount} em {bet.betType}
+                  {bet.amount} em {translateBetType(bet.betType)}
                 </span>
               </div>
             ))}

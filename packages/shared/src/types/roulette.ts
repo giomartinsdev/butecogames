@@ -8,8 +8,7 @@ export type RouletteBetType =
   | "low"
   | "high"
   | `number:${number}`
-  | `dozen:${1 | 2 | 3}`
-  | `column:${1 | 2 | 3}`;
+  | `dozen:${1 | 2 | 3}`;
 
 export interface RouletteRound {
   _id: string;

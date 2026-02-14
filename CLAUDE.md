@@ -113,7 +113,7 @@ App models:
 ### Roulette (Active)
 
 - European roulette: numbers 0-36
-- Bet types: Red/Black (2x), Odd/Even (2x), Low/High (2x), Dozens (3x), Columns (3x), Single number (36x)
+- Bet types: Red/Black (2x), Odd/Even (2x), Low/High (2x), Dozens (3x), Single number (36x)
 - Round cycle: 30s betting → 5s spinning → 5s result display → repeat
 - Provably fair: seed hash committed before betting, seed revealed after spin
 - Min bet: 10 coins, Max bet: 10,000 coins, Max 5 bets per round

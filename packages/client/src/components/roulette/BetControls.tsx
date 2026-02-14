@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { RouletteBetType } from "@butecogames/shared";
 import { MIN_BET, MAX_BET } from "@butecogames/shared";
-import { formatCoins } from "@/lib/utils.js";
+import { formatCoins, translateBetType } from "@/lib/utils.js";
 
 interface BetControlsProps {
   onPlaceBet: (betType: RouletteBetType, amount: number) => void;
@@ -57,7 +57,7 @@ export function BetControls({ onPlaceBet, selectedBet, disabled }: BetControlsPr
 
       {selectedBet && (
         <p className="text-center text-xs text-muted-foreground">
-          Aposta selecionada: <span className="font-medium text-card-foreground">{selectedBet}</span>
+          Aposta selecionada: <span className="font-medium text-card-foreground">{translateBetType(selectedBet)}</span>
         </p>
       )}
     </div>

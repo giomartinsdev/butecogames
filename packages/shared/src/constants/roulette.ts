@@ -26,14 +26,11 @@ export const ROULETTE_PAYOUTS: Record<string, number> = {
   "dozen:1": 3, // 1-12
   "dozen:2": 3, // 13-24
   "dozen:3": 3, // 25-36
-  "column:1": 3,
-  "column:2": 3,
-  "column:3": 3,
   number: 36, // Single number
 };
 
 // Timing (milliseconds)
-export const BETTING_PHASE_DURATION = 30_000;
+export const BETTING_PHASE_DURATION = 10_000;
 export const SPINNING_PHASE_DURATION = 5_000;
 export const RESULT_DISPLAY_DURATION = 5_000;
 

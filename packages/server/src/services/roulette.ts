@@ -73,10 +73,6 @@ function isBetWin(betType: RouletteBetType, result: number): boolean {
     if (d === 2) return result >= 13 && result <= 24;
     if (d === 3) return result >= 25 && result <= 36;
   }
-  if (betType.startsWith("column:")) {
-    const c = parseInt(betType.split(":")[1], 10);
-    return result !== 0 && result % 3 === (c === 3 ? 0 : c);
-  }
 
   return false;
 }
