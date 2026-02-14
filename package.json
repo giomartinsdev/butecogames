@@ -1,0 +1,26 @@
+{
+  "name": "butecogames",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Buteco Games Unleashed - Gaming platform for Discord communities",
+  "scripts": {
+    "dev": "pnpm --parallel -r run dev",
+    "dev:server": "pnpm --filter @butecogames/server run dev",
+    "dev:client": "pnpm --filter @butecogames/client run dev",
+    "build": "pnpm -r run build",
+    "build:shared": "pnpm --filter @butecogames/shared run build",
+    "build:server": "pnpm --filter @butecogames/server run build",
+    "build:client": "pnpm --filter @butecogames/client run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

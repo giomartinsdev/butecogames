@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/bruno/projects/funnietech/buteco/butecogames status)",
+      "Bash(node --version:*)",
+      "Bash(pnpm --version:*)",
+      "Bash(docker:*)",
+      "Bash(git init:*)"
+    ]
+  }
+}
