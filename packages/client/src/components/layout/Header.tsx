@@ -10,8 +10,12 @@ export function Header() {
   return (
     <header className="border-b border-border bg-card px-6 py-3">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
-        <Link to="/" className="text-xl font-bold text-primary">
-          Buteco Games
+        <Link to="/" className="flex items-center">
+          <img
+            src="/logo-buteco.png"
+            alt="Buteco Games"
+            className="h-10"
+          />
         </Link>
 
         <nav className="flex items-center gap-6">
