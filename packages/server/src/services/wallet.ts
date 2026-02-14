@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { Wallet, type IWallet } from "../models/Wallet.js";
 import { Transaction } from "../models/Transaction.js";
 import { INITIAL_BALANCE, DAILY_REWARD_AMOUNT, DAILY_REWARD_COOLDOWN_MS } from "@butecogames/shared";
@@ -8,31 +7,20 @@ export async function getOrCreateWallet(userId: string): Promise<IWallet> {
   const existing = await Wallet.findOne({ userId });
   if (existing) return existing;
 
-  const session = await mongoose.startSession();
   try {
-    session.startTransaction();
-    const [created] = await Wallet.create([{ userId, balance: INITIAL_BALANCE }], { session });
-    await Transaction.create(
-      [
-        {
-          userId,
-          type: "initial_balance" as TransactionType,
-          amount: INITIAL_BALANCE,
-          balanceAfter: INITIAL_BALANCE,
-        },
-      ],
-      { session },
-    );
-    await session.commitTransaction();
+    const created = await Wallet.create({ userId, balance: INITIAL_BALANCE });
+    await Transaction.create({
+      userId,
+      type: "initial_balance" as TransactionType,
+      amount: INITIAL_BALANCE,
+      balanceAfter: INITIAL_BALANCE,
+    });
     return created;
   } catch (err) {
-    await session.abortTransaction();
     // Might have been created concurrently
     const fallback = await Wallet.findOne({ userId });
     if (fallback) return fallback;
     throw err;
-  } finally {
-    session.endSession();
   }
 }
 
