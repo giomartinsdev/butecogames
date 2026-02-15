@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type {
   EventBettingEvent,
@@ -14,6 +14,8 @@ export function useEventBetting() {
     Array<EventBettingEvent & { odds: EventOdds }>
   >([]);
   const queryClient = useQueryClient();
+  const eventsRef = useRef(events);
+  eventsRef.current = events;
 
   useEffect(() => {
     if (!socket) return;
@@ -40,8 +42,15 @@ export function useEventBetting() {
     });
 
     socket.on("event:event_result", ({ eventId, result, winners }) => {
-      // Show event result
-      toast.info(`Evento encerrado: ${result}`, {
+      // Show event result with resolved label
+      const ev = eventsRef.current.find((e) => e._id === eventId);
+      const resultLabel =
+        result === "option1"
+          ? ev?.option1 ?? "Opção 1"
+          : result === "option2"
+          ? ev?.option2 ?? "Opção 2"
+          : "Empate";
+      toast.info(`Evento encerrado: ${resultLabel}`, {
         description: winners.length > 0 ? `${winners.length} vencedor(es)` : undefined,
       });
 

@@ -505,7 +505,13 @@ export function AdminEventBettingPage() {
 
                   {event.status === "completed" && (
                     <span className="text-xs text-muted-foreground">
-                      Evento finalizado - {event.result && `Vencedor: ${event.result}`}
+                      Evento finalizado{event.result && ` - Vencedor: ${
+                        event.result === "option1"
+                          ? event.option1
+                          : event.result === "option2"
+                          ? event.option2
+                          : "Empate"
+                      }`}
                     </span>
                   )}
                 </div>
