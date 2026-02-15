@@ -22,7 +22,8 @@ router.put("/", requireAuth, async (req, res) => {
   try {
     const { cursorSetId } = req.body;
     const settings = await updateUserSettings(req.user!.id, { cursorSetId });
-    res.json({ settings });
+    const { general } = getSettings();
+    res.json({ settings, cursorSize: general.cursorSize });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "Cursor inválido") {
       res.status(400).json({ error: err.message });
