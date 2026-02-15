@@ -33,10 +33,10 @@ export function RouletteGame() {
       <div className="lg:col-span-2 space-y-6">
         {/* Status bar */}
         <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
-          <div>
+          {/* <div>
             <span className="text-sm text-muted-foreground">Rodada </span>
             <span className="font-bold text-card-foreground">#{roulette.roundNumber}</span>
-          </div>
+          </div> */}
           <div
             className={cn(
               "rounded-full px-4 py-1 text-sm font-medium",
@@ -62,7 +62,7 @@ export function RouletteGame() {
         )}
 
         {/* Wheel */}
-        <div className="flex justify-center py-6">
+        <div className="flex justify-center py-2">
           <RouletteWheel
             result={roulette.lastResult?.result ?? null}
             spinning={isSpinning}
