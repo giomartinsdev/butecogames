@@ -52,6 +52,11 @@ export function useRoulette() {
 
     socket.emit("roulette:join");
 
+    // Re-join room on reconnection (socket ref stays the same, effect won't re-run)
+    socket.on("connect", () => {
+      socket.emit("roulette:join");
+    });
+
     socket.on("roulette:state", (data) => {
       setState((prev) => ({
         ...prev,
@@ -112,6 +117,7 @@ export function useRoulette() {
 
     return () => {
       socket.emit("roulette:leave");
+      socket.off("connect");
       socket.off("roulette:state");
       socket.off("roulette:betting_open");
       socket.off("roulette:bet_placed");
