@@ -24,6 +24,7 @@ export interface Transaction {
   metadata?: {
     gameId?: string;
     roundId?: string;
+    eventId?: string;
     achievementId?: string;
   };
   createdAt: string;

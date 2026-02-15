@@ -1,4 +1,5 @@
 import type { RouletteBetDisplay, RouletteBetType, RouletteWinner } from "./roulette.js";
+import type { BetOption, SportsBettingEvent, EventOdds } from "./sports-betting.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
@@ -6,6 +7,13 @@ export interface ClientToServerEvents {
   "roulette:leave": () => void;
   "roulette:place_bet": (data: { betType: RouletteBetType; amount: number }) => void;
   "chat:message": (data: { message: string }) => void;
+  "sports:join": () => void;
+  "sports:leave": () => void;
+  "sports:place_bet": (data: {
+    eventId: string;
+    option: BetOption;
+    amount: number;
+  }) => void;
 }
 
 // Server → Client events
@@ -39,4 +47,17 @@ export interface ServerToClientEvents {
   }) => void;
   "user:level_up": (data: { level: number; xp: number }) => void;
   "user:achievement": (data: { achievementId: string; name: string; reward: number }) => void;
+  "sports:events_update": (data: { events: SportsBettingEvent[] }) => void;
+  "sports:odds_update": (data: { eventId: string; odds: EventOdds }) => void;
+  "sports:bet_placed": (data: {
+    eventId: string;
+    option: BetOption;
+    amount: number;
+  }) => void;
+  "sports:event_result": (data: {
+    eventId: string;
+    result: BetOption;
+    winners: Array<{ userId: string; displayName: string; payout: number }>;
+  }) => void;
+  "sports:error": (data: { message: string }) => void;
 }

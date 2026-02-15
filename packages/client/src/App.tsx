@@ -1,11 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import { useAuth } from "@/hooks/useAuth.js";
 import { Layout } from "@/components/layout/Layout.js";
 import { LoginPage } from "@/pages/LoginPage.js";
 import { DashboardPage } from "@/pages/DashboardPage.js";
 import { GamesPage } from "@/pages/GamesPage.js";
 import { RoulettePage } from "@/pages/RoulettePage.js";
+import { SportsBettingPage } from "@/pages/SportsBettingPage.js";
+import { AdminPage } from "@/pages/AdminPage.js";
+import { AdminSportsBettingPage } from "@/pages/AdminSportsBettingPage.js";
 import { ProfilePage } from "@/pages/ProfilePage.js";
 import { LeaderboardPage } from "@/pages/LeaderboardPage.js";
 
@@ -75,6 +79,9 @@ function AppRoutes() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/games" element={<GamesPage />} />
         <Route path="/games/roulette" element={<RoulettePage />} />
+        <Route path="/games/sports-betting" element={<SportsBettingPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/sports-betting" element={<AdminSportsBettingPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
       </Route>
@@ -88,6 +95,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AppRoutes />
+        <Toaster position="top-right" richColors />
       </BrowserRouter>
     </QueryClientProvider>
   );

@@ -16,11 +16,11 @@ export const GAMES: GameInfo[] = [
     id: "sports-betting",
     name: "Apostas Esportivas",
     description:
-      "Aposte em eventos esportivos e eSports. Escolha o vencedor, placar e mais!",
+      "Aposte em eventos esportivos e eSports com odds dinâmicas!",
     minPlayers: 1,
-    maxPlayers: 50,
-    available: false,
-    requiresRoom: true,
+    maxPlayers: 100,
+    available: true,
+    requiresRoom: false,
     thumbnail: "/images/sports-betting.png",
   },
 ];

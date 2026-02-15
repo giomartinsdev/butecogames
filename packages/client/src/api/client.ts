@@ -17,3 +17,22 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
 
   return res.json();
 }
+
+// Simple apiClient wrapper for fetch-like API
+export const apiClient = {
+  get: (path: string) => fetch(`${API_URL}${path}`, { credentials: "include" }),
+  post: (path: string, options?: { body: string }) =>
+    fetch(`${API_URL}${path}`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: options?.body,
+    }),
+  put: (path: string, options?: { body: string }) =>
+    fetch(`${API_URL}${path}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: options?.body,
+    }),
+};

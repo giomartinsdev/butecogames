@@ -28,7 +28,7 @@ export async function creditWallet(
   userId: string,
   amount: number,
   type: TransactionType,
-  metadata?: { gameId?: string; roundId?: string; achievementId?: string },
+  metadata?: { gameId?: string; roundId?: string; eventId?: string; achievementId?: string },
 ): Promise<IWallet> {
   const wallet = await Wallet.findOneAndUpdate(
     { userId },
@@ -58,7 +58,7 @@ export async function debitWallet(
   userId: string,
   amount: number,
   type: TransactionType,
-  metadata?: { gameId?: string; roundId?: string; achievementId?: string },
+  metadata?: { gameId?: string; roundId?: string; eventId?: string; achievementId?: string },
 ): Promise<IWallet> {
   const wallet = await Wallet.findOneAndUpdate(
     { userId, balance: { $gte: amount } },

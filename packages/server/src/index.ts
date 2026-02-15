@@ -4,6 +4,7 @@ import { connectDatabase } from "./db/connection.js";
 import { createAuth } from "./lib/auth.js";
 import { createApp } from "./app.js";
 import { setupSocket } from "./socket/index.js";
+import { autoCloseEvents } from "./services/sports-betting.js";
 
 async function main() {
   console.log("[Server] Starting Buteco Games server...");
@@ -28,6 +29,15 @@ async function main() {
     console.log(`[Server] Running on http://localhost:${env.PORT}`);
     console.log(`[Server] Environment: ${env.NODE_ENV}`);
   });
+
+  // 7. Start sports betting auto-close scheduler (every minute)
+  setInterval(async () => {
+    try {
+      await autoCloseEvents();
+    } catch (error) {
+      console.error("[Sports Betting] Auto-close error:", error);
+    }
+  }, 60000); // 1 minute
 }
 
 main().catch((err) => {

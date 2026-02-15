@@ -1,11 +1,13 @@
 import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet } from "@/hooks/useWallet.js";
+import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { formatCoins } from "@/lib/utils.js";
 import { Link } from "react-router-dom";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const { data: wallet } = useWallet();
+  const { isAdmin } = useUserProfile();
 
   return (
     <header className="border-b border-border bg-card px-6 py-3">
@@ -28,6 +30,11 @@ export function Header() {
           <Link to="/profile" className="text-sm text-muted-foreground hover:text-card-foreground transition-colors">
             Perfil
           </Link>
+          {isAdmin && (
+            <Link to="/admin" className="text-sm text-accent hover:text-accent/80 transition-colors font-medium">
+              ⚙️ Admin
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-4">

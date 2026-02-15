@@ -15,6 +15,14 @@ export type {
   ClientToServerEvents,
   ServerToClientEvents,
 } from "./types/socket.js";
+export type {
+  BetOption,
+  EventStatus,
+  SportCategory,
+  SportsBettingEvent,
+  SportsBettingBet,
+  EventOdds,
+} from "./types/sports-betting.js";
 
 // Constants
 export {
@@ -36,3 +44,10 @@ export {
   MAX_BET,
   MAX_BETS_PER_ROUND,
 } from "./constants/roulette.js";
+export {
+  SPORTS_BETTING_HOUSE_EDGE,
+  SPORTS_BETTING_MIN_BET,
+  SPORTS_BETTING_MAX_BET,
+  SPORTS_BETTING_MAX_BETS_PER_EVENT,
+  SPORT_CATEGORIES,
+} from "./constants/sports-betting.js";

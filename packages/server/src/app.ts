@@ -7,6 +7,7 @@ import usersRouter from "./routes/users.js";
 import walletRouter from "./routes/wallet.js";
 import gamesRouter from "./routes/games.js";
 import leaderboardRouter from "./routes/leaderboard.js";
+import sportsBettingRouter from "./routes/sports-betting.js";
 import { env } from "./config/env.js";
 
 export function createApp() {
@@ -31,6 +32,7 @@ export function createApp() {
   app.use("/api/wallet", walletRouter);
   app.use("/api/games", gamesRouter);
   app.use("/api/leaderboard", leaderboardRouter);
+  app.use("/api/sports-betting", sportsBettingRouter);
 
   // Health check
   app.get("/api/health", (_req, res) => {
