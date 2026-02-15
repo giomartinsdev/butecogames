@@ -1,4 +1,9 @@
 import type { AppSettings } from "@butecogames/shared";
+import {
+  DEFAULT_MIN_BET,
+  DEFAULT_MAX_BET,
+  DEFAULT_MAX_BETS_PER_ROUND,
+} from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
 let cache: AppSettings | null = null;
@@ -52,6 +57,9 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       bettingDuration: doc.roulette.bettingDuration,
       spinningDuration: doc.roulette.spinningDuration,
       resultDuration: doc.roulette.resultDuration,
+      minBet: doc.roulette.minBet ?? DEFAULT_MIN_BET,
+      maxBet: doc.roulette.maxBet ?? DEFAULT_MAX_BET,
+      maxBetsPerRound: doc.roulette.maxBetsPerRound ?? DEFAULT_MAX_BETS_PER_ROUND,
     },
   };
 }

@@ -13,6 +13,9 @@ export function AdminSettingsPage() {
     bettingDuration: 10,
     spinningDuration: 5,
     resultDuration: 5,
+    minBet: 10,
+    maxBet: 10000,
+    maxBetsPerRound: 5,
   });
 
   useEffect(() => {
@@ -62,9 +65,10 @@ export function AdminSettingsPage() {
           Roleta
         </h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Configure os tempos de cada fase da roleta. As alterações serão aplicadas na próxima rodada.
+          Configure os tempos e limites da roleta. As alterações serão aplicadas na próxima rodada.
         </p>
 
+        <h3 className="text-sm font-semibold text-card-foreground mb-2">Tempos</h3>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="block text-sm font-medium text-card-foreground mb-1">
@@ -117,6 +121,64 @@ export function AdminSettingsPage() {
                 setRoulette((prev) => ({
                   ...prev,
                   resultDuration: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+
+        <h3 className="text-sm font-semibold text-card-foreground mt-6 mb-2">Limites de apostas</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta mínima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={roulette.minBet}
+              onChange={(e) =>
+                setRoulette((prev) => ({
+                  ...prev,
+                  minBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta máxima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={roulette.maxBet}
+              onChange={(e) =>
+                setRoulette((prev) => ({
+                  ...prev,
+                  maxBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Max apostas por rodada
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={roulette.maxBetsPerRound}
+              onChange={(e) =>
+                setRoulette((prev) => ({
+                  ...prev,
+                  maxBetsPerRound: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

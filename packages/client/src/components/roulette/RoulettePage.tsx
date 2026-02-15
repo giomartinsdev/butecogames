@@ -97,6 +97,8 @@ export function RouletteGame() {
           onPlaceBet={handlePlaceBet}
           selectedBet={selectedBet}
           disabled={!isBettingOpen}
+          minBet={roulette.minBet}
+          maxBet={roulette.maxBet}
         />
 
         {/* Current bets */}

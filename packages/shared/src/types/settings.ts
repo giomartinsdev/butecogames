@@ -2,6 +2,9 @@ export interface RouletteSettings {
   bettingDuration: number;
   spinningDuration: number;
   resultDuration: number;
+  minBet: number;
+  maxBet: number;
+  maxBetsPerRound: number;
 }
 
 export interface AppSettings {

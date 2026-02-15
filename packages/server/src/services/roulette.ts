@@ -3,9 +3,6 @@ import type { Server } from "socket.io";
 import {
   RED_NUMBERS,
   ROULETTE_PAYOUTS,
-  MIN_BET,
-  MAX_BET,
-  MAX_BETS_PER_ROUND,
 } from "@butecogames/shared";
 import type { RouletteBetType, RouletteBetDisplay, RouletteWinner, ClientToServerEvents, ServerToClientEvents } from "@butecogames/shared";
 import { RouletteRound, type IRouletteRound } from "../models/RouletteRound.js";
@@ -265,8 +262,10 @@ export async function placeBet(
     throw new Error("Betting is not open");
   }
 
-  if (amount < MIN_BET || amount > MAX_BET) {
-    throw new Error(`Bet amount must be between ${MIN_BET} and ${MAX_BET}`);
+  const { minBet, maxBet, maxBetsPerRound } = getSettings().roulette;
+
+  if (amount < minBet || amount > maxBet) {
+    throw new Error(`Bet amount must be between ${minBet} and ${maxBet}`);
   }
 
   // Check max bets per round
@@ -274,8 +273,8 @@ export async function placeBet(
     roundId: state.currentRound._id,
     userId,
   });
-  if (userBetsCount >= MAX_BETS_PER_ROUND) {
-    throw new Error(`Maximum ${MAX_BETS_PER_ROUND} bets per round`);
+  if (userBetsCount >= maxBetsPerRound) {
+    throw new Error(`Maximum ${maxBetsPerRound} bets per round`);
   }
 
   // Debit wallet
@@ -304,6 +303,8 @@ export async function placeBet(
 }
 
 export function getRouletteState() {
+  const { minBet, maxBet, maxBetsPerRound } = getSettings().roulette;
+
   return {
     roundNumber: state.currentRound?.roundNumber ?? 0,
     status: state.currentRound?.status ?? "completed",
@@ -311,6 +312,9 @@ export function getRouletteState() {
     seedHash: state.currentRound?.seedHash ?? "",
     recentResults: state.recentResults,
     currentBets: state.currentBets,
+    minBet,
+    maxBet,
+    maxBetsPerRound,
   };
 }
 

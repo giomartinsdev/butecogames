@@ -6,6 +6,11 @@ import type {
   RouletteBetDisplay,
   RouletteWinner,
 } from "@butecogames/shared";
+import {
+  DEFAULT_MIN_BET,
+  DEFAULT_MAX_BET,
+  DEFAULT_MAX_BETS_PER_ROUND,
+} from "@butecogames/shared";
 
 interface RouletteState {
   roundNumber: number;
@@ -16,6 +21,9 @@ interface RouletteState {
   currentBets: RouletteBetDisplay[];
   lastResult: { result: number; seed: string; winners: RouletteWinner[] } | null;
   error: string | null;
+  minBet: number;
+  maxBet: number;
+  maxBetsPerRound: number;
 }
 
 export function useRoulette() {
@@ -31,6 +39,9 @@ export function useRoulette() {
     currentBets: [],
     lastResult: null,
     error: null,
+    minBet: DEFAULT_MIN_BET,
+    maxBet: DEFAULT_MAX_BET,
+    maxBetsPerRound: DEFAULT_MAX_BETS_PER_ROUND,
   });
 
   // Countdown timer
@@ -67,6 +78,9 @@ export function useRoulette() {
         seedHash: data.seedHash,
         recentResults: data.recentResults,
         currentBets: data.currentBets,
+        minBet: data.minBet,
+        maxBet: data.maxBet,
+        maxBetsPerRound: data.maxBetsPerRound,
         error: null,
       }));
     });

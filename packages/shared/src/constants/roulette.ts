@@ -34,7 +34,7 @@ export const BETTING_PHASE_DURATION = 10_000;
 export const SPINNING_PHASE_DURATION = 5_000;
 export const RESULT_DISPLAY_DURATION = 5_000;
 
-// Limits
-export const MIN_BET = 10;
-export const MAX_BET = 10_000;
-export const MAX_BETS_PER_ROUND = 5;
+// Limits (defaults — actual values come from admin settings)
+export const DEFAULT_MIN_BET = 10;
+export const DEFAULT_MAX_BET = 10_000;
+export const DEFAULT_MAX_BETS_PER_ROUND = 5;

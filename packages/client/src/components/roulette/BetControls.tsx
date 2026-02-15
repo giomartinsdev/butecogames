@@ -1,21 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { RouletteBetType } from "@butecogames/shared";
-import { MIN_BET, MAX_BET } from "@butecogames/shared";
 import { formatCoins, translateBetType } from "@/lib/utils.js";
 
 interface BetControlsProps {
   onPlaceBet: (betType: RouletteBetType, amount: number) => void;
   selectedBet: RouletteBetType | null;
   disabled: boolean;
+  minBet: number;
+  maxBet: number;
 }
 
 const QUICK_AMOUNTS = [10, 50, 100, 500, 1000];
 
-export function BetControls({ onPlaceBet, selectedBet, disabled }: BetControlsProps) {
-  const [amount, setAmount] = useState(MIN_BET);
+export function BetControls({ onPlaceBet, selectedBet, disabled, minBet, maxBet }: BetControlsProps) {
+  const [amount, setAmount] = useState<number | "">(minBet);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setAmount(minBet);
+    setError("");
+  }, [minBet]);
 
   const handlePlaceBet = () => {
-    if (!selectedBet || amount < MIN_BET || amount > MAX_BET) return;
+    if (!selectedBet) return;
+    if (amount === "" || amount <= 0) {
+      setError("Digite um valor para apostar");
+      return;
+    }
+    if (amount < minBet) {
+      setError(`Aposta mínima: ${formatCoins(minBet)} coins`);
+      return;
+    }
+    if (amount > maxBet) {
+      setError(`Aposta máxima: ${formatCoins(maxBet)} coins`);
+      return;
+    }
+    setError("");
     onPlaceBet(selectedBet, amount);
   };
 
@@ -25,12 +45,15 @@ export function BetControls({ onPlaceBet, selectedBet, disabled }: BetControlsPr
         <label className="text-sm text-muted-foreground">Valor da aposta</label>
         <input
           type="number"
-          min={MIN_BET}
-          max={MAX_BET}
           value={amount}
-          onChange={(e) => setAmount(Math.max(MIN_BET, Math.min(MAX_BET, Number(e.target.value))))}
+          onChange={(e) => {
+            setError("");
+            const val = e.target.value;
+            setAmount(val === "" ? "" : Math.floor(Number(val)));
+          }}
           className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
         />
+        {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -52,7 +75,7 @@ export function BetControls({ onPlaceBet, selectedBet, disabled }: BetControlsPr
       >
         {!selectedBet
           ? "Selecione uma aposta"
-          : `Apostar ${formatCoins(amount)} coins`}
+          : `Apostar ${formatCoins(amount || 0)} coins`}
       </button>
 
       {selectedBet && (

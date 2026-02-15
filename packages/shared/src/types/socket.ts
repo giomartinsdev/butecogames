@@ -25,6 +25,9 @@ export interface ServerToClientEvents {
     seedHash: string;
     recentResults: number[];
     currentBets: RouletteBetDisplay[];
+    minBet: number;
+    maxBet: number;
+    maxBetsPerRound: number;
   }) => void;
   "roulette:betting_open": (data: {
     roundNumber: number;
