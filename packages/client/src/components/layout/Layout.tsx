@@ -6,7 +6,7 @@ export function Layout() {
   useSocket();
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-7xl px-6 py-8">
         <Outlet />

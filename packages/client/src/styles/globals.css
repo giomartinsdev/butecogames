@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+body {
+  position: relative;
+  background-color: #030712;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("/bg.png") center / cover no-repeat;
+  opacity: 0.1;
+  z-index: -1;
+  pointer-events: none;
+}
+
 @theme {
   --color-primary: #7c3aed;
   --color-primary-foreground: #ffffff;
