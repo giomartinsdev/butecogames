@@ -2,7 +2,7 @@
   "name": "butecogames",
   "version": "0.1.0",
   "private": true,
-  "description": "Buteco Games Unleashed - Gaming platform for Discord communities",
+  "description": "Buteco Games Unleashed - A plataforma de jogos do Buteco dos Devs",
   "scripts": {
     "dev": "pnpm --parallel -r run dev",
     "dev:server": "pnpm --filter @butecogames/server run dev",
@@ -12,7 +12,13 @@
     "build:server": "pnpm --filter @butecogames/server run build",
     "build:client": "pnpm --filter @butecogames/client run build",
     "lint": "pnpm -r run lint",
-    "typecheck": "pnpm -r run typecheck"
+    "typecheck": "pnpm -r run typecheck",
+    "docker:build": "docker build -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile . && docker build -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile .",
+    "docker:build:server": "docker build -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile .",
+    "docker:build:client": "docker build -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile .",
+    "docker:push": "docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile --push . && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push .",
+    "docker:push:server": "docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile --push .",
+    "docker:push:client": "docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push ."
   },
   "engines": {
     "node": ">=20.0.0",

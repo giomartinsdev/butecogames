@@ -11,7 +11,9 @@
       "Bash(xargs sed:*)",
       "Bash(grep:*)",
       "Bash(/Users/bruno/projects/funnietech/buteco/butecogames/wipe-db.js:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(pnpm run docker:push:server:*)",
+      "Bash(pnpm run docker:push:client:*)"
     ]
   }
 }

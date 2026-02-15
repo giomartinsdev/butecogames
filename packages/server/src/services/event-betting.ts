@@ -284,8 +284,9 @@ export async function getEventsWithOdds(
     const eventWithStringId = {
       ...eventObj,
       _id: eventObj._id.toString(),
+      description: eventObj.description ?? null,
       result: eventObj.result as any,
-    };
+    } as IEventBettingEvent;
     return {
       ...eventWithStringId,
       odds: calculateOdds(eventWithStringId),

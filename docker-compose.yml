@@ -8,7 +8,7 @@ services:
       - mongodb_data:/data/db
     restart: unless-stopped
 
-  server:
+  butecogames-server:
     build:
       context: .
       dockerfile: packages/server/Dockerfile
@@ -23,15 +23,18 @@ services:
       - mongodb
     restart: unless-stopped
 
-  client:
+  butecogames-client:
     build:
       context: .
       dockerfile: packages/client/Dockerfile
     container_name: butecogames-client
     ports:
-      - "5173:5173"
+      - "80:80"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3001}
+      - VITE_WS_URL=${VITE_WS_URL:-http://localhost:3001}
     depends_on:
-      - server
+      - butecogames-server
     restart: unless-stopped
 
 volumes:
