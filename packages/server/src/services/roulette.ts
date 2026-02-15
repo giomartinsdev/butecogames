@@ -22,6 +22,8 @@ interface RouletteEngineState {
   seed: string;
   timer: ReturnType<typeof setTimeout> | null;
   bettingEndTime: number;
+  running: boolean;
+  stopRequested: boolean;
 }
 
 const state: RouletteEngineState = {
@@ -31,6 +33,8 @@ const state: RouletteEngineState = {
   seed: "",
   timer: null,
   bettingEndTime: 0,
+  running: false,
+  stopRequested: false,
 };
 
 let io: TypedIO;
@@ -192,6 +196,15 @@ async function resolveRound() {
     `[Roulette] Round ${state.currentRound.roundNumber} - Result: ${result}, Winners: ${winners.length}`,
   );
 
+  // Check if we should stop after this round (room is empty)
+  if (state.stopRequested) {
+    state.running = false;
+    state.stopRequested = false;
+    state.currentRound = null;
+    console.log("[Roulette] Engine stopped (room empty)");
+    return;
+  }
+
   // Wait before starting next round
   state.timer = setTimeout(() => {
     startBettingPhase();
@@ -268,9 +281,29 @@ export async function initRouletteEngine(socketIo: TypedIO) {
     .filter((r) => r.result !== null)
     .map((r) => r.result as number);
 
-  // Start first round
+  console.log("[Roulette] Engine initialized (waiting for players)");
+}
+
+export async function startRouletteEngine() {
+  if (state.running) return;
+  state.running = true;
+  state.stopRequested = false;
+  console.log("[Roulette] Engine started (player joined)");
   await startBettingPhase();
-  console.log("[Roulette] Engine initialized");
+}
+
+export function requestRouletteStop() {
+  if (!state.running) return;
+  state.stopRequested = true;
+  console.log("[Roulette] Stop requested (room empty, will stop after current round)");
+}
+
+export function cancelRouletteStop() {
+  state.stopRequested = false;
+}
+
+export function isRouletteRunning() {
+  return state.running;
 }
 
 export function stopRouletteEngine() {
@@ -278,4 +311,6 @@ export function stopRouletteEngine() {
     clearTimeout(state.timer);
     state.timer = null;
   }
+  state.running = false;
+  state.stopRequested = false;
 }
