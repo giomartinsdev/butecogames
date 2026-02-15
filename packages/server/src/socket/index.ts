@@ -4,9 +4,9 @@ import type { ClientToServerEvents, ServerToClientEvents } from "@butecogames/sh
 import { socketAuthMiddleware } from "./middleware.js";
 import { registerRouletteHandlers } from "./roulette.js";
 import { registerChatHandlers } from "./chat.js";
-import { setupSportsBettingHandlers } from "./event-betting.js";
+import { setupEventBettingHandlers } from "./event-betting.js";
 import { initRouletteEngine } from "../services/roulette.js";
-import { setSportsBettingIO } from "../services/event-betting.js";
+import { setEventBettingIO } from "../services/event-betting.js";
 import { env } from "../config/env.js";
 
 export async function setupSocket(httpServer: http.Server) {
@@ -19,9 +19,9 @@ export async function setupSocket(httpServer: http.Server) {
 
   io.use(socketAuthMiddleware);
 
-  // Setup sports betting handlers and service
-  setupSportsBettingHandlers(io);
-  setSportsBettingIO(io);
+  // Setup event betting handlers and service
+  setupEventBettingHandlers(io);
+  setEventBettingIO(io);
 
   io.on("connection", (socket) => {
     console.log(`[Socket] Connected: ${socket.data.displayName} (${socket.data.userId})`);

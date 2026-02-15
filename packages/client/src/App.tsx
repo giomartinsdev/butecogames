@@ -79,9 +79,9 @@ function AppRoutes() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/games" element={<GamesPage />} />
         <Route path="/games/roulette" element={<RoulettePage />} />
-        <Route path="/games/sports-betting" element={<EventBettingPage />} />
+        <Route path="/games/event-betting" element={<EventBettingPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/sports-betting" element={<AdminEventBettingPage />} />
+        <Route path="/admin/event-betting" element={<AdminEventBettingPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
       </Route>

@@ -13,7 +13,7 @@ export const GAMES: GameInfo[] = [
     thumbnail: "/images/roulette.png",
   },
   {
-    id: "sports-betting",
+    id: "event-betting",
     name: "Apostas Esportivas",
     description:
       "Aposte em eventos esportivos e eSports com odds dinâmicas!",
@@ -21,7 +21,7 @@ export const GAMES: GameInfo[] = [
     maxPlayers: 100,
     available: true,
     requiresRoom: false,
-    thumbnail: "/images/sports-betting.png",
+    thumbnail: "/images/event-betting.png",
   },
 ];
 

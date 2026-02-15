@@ -120,9 +120,9 @@ App models:
 - All players share one global room (no room creation needed)
 - Engine: `packages/server/src/services/roulette.ts`
 
-### Sports Betting (Planned)
+### Events Betting (Active)
 
-- Bet on sporting events and eSports
+- Bet on any category of events
 - Rooms created by admins only
 - Status: Not yet implemented
 

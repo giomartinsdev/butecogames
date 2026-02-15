@@ -1,10 +1,10 @@
 import { Schema, model } from "mongoose";
 
-const sportsBettingBetSchema = new Schema(
+const eventBettingBetSchema = new Schema(
   {
     eventId: {
       type: Schema.Types.ObjectId,
-      ref: "SportsBettingEvent",
+      ref: "EventBettingEvent",
       required: true,
       index: true,
     },
@@ -23,6 +23,6 @@ const sportsBettingBetSchema = new Schema(
 );
 
 export const EventBettingBet = model(
-  "SportsBettingBet",  // Keep collection name for backward compatibility
-  sportsBettingBetSchema
+  "EventBettingBet",
+  eventBettingBetSchema
 );

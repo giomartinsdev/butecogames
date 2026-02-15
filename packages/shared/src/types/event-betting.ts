@@ -9,7 +9,7 @@ export type EventCategory =
   | "entertainment"
   | "other";
 
-export interface SportsBettingEvent {
+export interface EventBettingEvent {
   _id: string;
   title: string;
   description: string;
@@ -28,9 +28,9 @@ export interface SportsBettingEvent {
   updatedAt: Date;
 }
 
-export interface SportsBettingBet {
+export interface EventBettingBet {
   _id: string;
-  eventId: string;
+  eventId: string | EventBettingEvent; // Can be populated
   userId: string;
   option: BetOption;
   amount: number;

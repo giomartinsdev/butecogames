@@ -7,7 +7,11 @@
       "Bash(docker:*)",
       "Bash(git init:*)",
       "Bash(git mv:*)",
-      "Bash(pnpm run build:shared:*)"
+      "Bash(pnpm run build:shared:*)",
+      "Bash(xargs sed:*)",
+      "Bash(grep:*)",
+      "Bash(/Users/bruno/projects/funnietech/buteco/butecogames/wipe-db.js:*)",
+      "Bash(chmod:*)"
     ]
   }
 }

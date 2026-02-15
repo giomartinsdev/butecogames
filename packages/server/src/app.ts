@@ -32,7 +32,7 @@ export function createApp() {
   app.use("/api/wallet", walletRouter);
   app.use("/api/games", gamesRouter);
   app.use("/api/leaderboard", leaderboardRouter);
-  app.use("/api/sports-betting", eventBettingRouter);
+  app.use("/api/event-betting", eventBettingRouter);
 
   // Health check
   app.get("/api/health", (_req, res) => {

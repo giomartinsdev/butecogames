@@ -35,7 +35,7 @@ async function main() {
     try {
       await autoCloseEvents();
     } catch (error) {
-      console.error("[Sports Betting] Auto-close error:", error);
+      console.error("[Event Betting] Auto-close error:", error);
     }
   }, 60000); // 1 minute
 }

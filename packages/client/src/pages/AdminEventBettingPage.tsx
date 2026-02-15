@@ -36,9 +36,9 @@ export function AdminEventBettingPage() {
 
   // Fetch all events
   const { data: eventsData } = useQuery({
-    queryKey: ["admin-sports-betting-events"],
+    queryKey: ["admin-event-betting-events"],
     queryFn: async () => {
-      const res = await apiClient.get("/api/sports-betting/events");
+      const res = await apiClient.get("/api/event-betting/events");
       return res.json();
     },
     refetchInterval: 5000, // Refresh every 5 seconds
@@ -47,7 +47,7 @@ export function AdminEventBettingPage() {
   // Create event mutation
   const createEventMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const res = await apiClient.post("/api/sports-betting/events", {
+      const res = await apiClient.post("/api/event-betting/events", {
         body: JSON.stringify(data),
       });
       if (!res.ok) {
@@ -68,7 +68,7 @@ export function AdminEventBettingPage() {
         startTime: "",
         allowDraw: true,
       });
-      queryClient.invalidateQueries({ queryKey: ["admin-sports-betting-events"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-event-betting-events"] });
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -86,7 +86,7 @@ export function AdminEventBettingPage() {
       status: string;
       startTime?: string;
     }) => {
-      const res = await apiClient.put(`/api/sports-betting/events/${eventId}/status`, {
+      const res = await apiClient.put(`/api/event-betting/events/${eventId}/status`, {
         body: JSON.stringify({ status, startTime }),
       });
       if (!res.ok) {
@@ -99,7 +99,7 @@ export function AdminEventBettingPage() {
       toast.success("Status atualizado!");
       setEditingStartTime(null);
       setNewStartTime("");
-      queryClient.invalidateQueries({ queryKey: ["admin-sports-betting-events"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-event-betting-events"] });
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -109,7 +109,7 @@ export function AdminEventBettingPage() {
   // Resolve event mutation
   const resolveEventMutation = useMutation({
     mutationFn: async ({ eventId, result }: { eventId: string; result: BetOption }) => {
-      const res = await apiClient.post(`/api/sports-betting/events/${eventId}/resolve`, {
+      const res = await apiClient.post(`/api/event-betting/events/${eventId}/resolve`, {
         body: JSON.stringify({ result }),
       });
       if (!res.ok) {
@@ -119,8 +119,8 @@ export function AdminEventBettingPage() {
       return res.json();
     },
     onSuccess: () => {
-      toast.success("Evento resolvido e vencedores pagos!");
-      queryClient.invalidateQueries({ queryKey: ["admin-sports-betting-events"] });
+      toast.success("Evento encerrado e vencedores pagos!");
+      queryClient.invalidateQueries({ queryKey: ["admin-event-betting-events"] });
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
     },
     onError: (error: Error) => {

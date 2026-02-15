@@ -12,7 +12,7 @@ const adminActions: AdminAction[] = [
   {
     title: "Apostas Esportivas",
     description: "Criar e gerenciar eventos de apostas esportivas",
-    path: "/admin/sports-betting",
+    path: "/admin/event-betting",
     icon: "⚽",
   },
   // Add more admin actions here as needed

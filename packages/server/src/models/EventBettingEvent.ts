@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const sportsBettingEventSchema = new Schema(
+const eventBettingEventSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -33,6 +33,6 @@ const sportsBettingEventSchema = new Schema(
 );
 
 export const EventBettingEvent = model(
-  "SportsBettingEvent",  // Keep collection name for backward compatibility
-  sportsBettingEventSchema
+  "EventBettingEvent",
+  eventBettingEventSchema
 );

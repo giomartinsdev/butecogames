@@ -1,8 +1,8 @@
-import type { SportsBettingBet } from "@butecogames/shared";
+import type { EventBettingBet } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 
 interface ActiveBetsProps {
-  bets: SportsBettingBet[];
+  bets: EventBettingBet[];
 }
 
 export function ActiveBets({ bets }: ActiveBetsProps) {
@@ -14,10 +14,21 @@ export function ActiveBets({ bets }: ActiveBetsProps) {
     );
   }
 
-  const getOptionLabel = (option: string) => {
-    if (option === "team1") return "Time 1";
-    if (option === "team2") return "Time 2";
-    return "Empate";
+  const getOptionLabel = (option: string, bet: EventBettingBet) => {
+    // Get event info if populated
+    const event = typeof bet.eventId === "object" ? bet.eventId : null;
+    const eventName = event?.title || "Evento";
+
+    let choice = "";
+    if (option === "team1") {
+      choice = event?.team1 || "Time 1";
+    } else if (option === "team2") {
+      choice = event?.team2 || "Time 2";
+    } else {
+      choice = "Empate";
+    }
+
+    return `${eventName} - ${choice}`;
   };
 
   return (
@@ -31,7 +42,7 @@ export function ActiveBets({ bets }: ActiveBetsProps) {
           >
             <div className="flex justify-between items-start">
               <div className="text-sm font-medium text-card-foreground">
-                {getOptionLabel(bet.option)}
+                {getOptionLabel(bet.option, bet)}
               </div>
               <div className="text-xs text-muted-foreground">
                 {formatCoins(bet.amount)} coins

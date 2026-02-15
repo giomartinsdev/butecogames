@@ -2,13 +2,13 @@ import type { Server as SocketIOServer } from "socket.io";
 import type {
   BetOption,
   EventOdds,
-  SportsBettingEvent as IEventBettingEvent,
+  EventBettingEvent as IEventBettingEvent,
 } from "@butecogames/shared";
 import {
-  SPORTS_BETTING_HOUSE_EDGE,
-  SPORTS_BETTING_MIN_BET,
-  SPORTS_BETTING_MAX_BET,
-  SPORTS_BETTING_MAX_BETS_PER_EVENT,
+  EVENT_BETTING_HOUSE_EDGE,
+  EVENT_BETTING_MIN_BET,
+  EVENT_BETTING_MAX_BET,
+  EVENT_BETTING_MAX_BETS_PER_EVENT,
 } from "@butecogames/shared";
 import { EventBettingEvent } from "../models/EventBettingEvent.js";
 import { EventBettingBet } from "../models/EventBettingBet.js";
@@ -17,21 +17,21 @@ import { UserProfile } from "../models/UserProfile.js";
 
 let io: SocketIOServer | null = null;
 
-export function setSportsBettingIO(socketIO: SocketIOServer) {
+export function setEventBettingIO(socketIO: SocketIOServer) {
   io = socketIO;
 }
 
 /**
- * Broadcast updated events to all users in sports-betting room
+ * Broadcast updated events to all users in event-betting room
  */
 export async function broadcastEventsUpdate(): Promise<void> {
   if (!io) return;
 
   try {
     const events = await getEventsWithOdds();
-    io.to("sports-betting").emit("sports:events_update", { events: events as any });
+    io.to("event-betting").emit("event:events_update", { events: events as any });
   } catch (error) {
-    console.error("[Sports Betting] Error broadcasting events:", error);
+    console.error("[Event Betting] Error broadcasting events:", error);
   }
 }
 
@@ -43,7 +43,7 @@ export async function broadcastEventsUpdate(): Promise<void> {
 export function calculateOdds(
   event: IEventBettingEvent | (IEventBettingEvent & { _id: any })
 ): EventOdds {
-  const payoutPool = event.totalPool * (1 - SPORTS_BETTING_HOUSE_EDGE);
+  const payoutPool = event.totalPool * (1 - EVENT_BETTING_HOUSE_EDGE);
 
   const team1Odds =
     event.team1Pool > 0 ? payoutPool / event.team1Pool : 1.01;
@@ -65,18 +65,18 @@ export function calculateOdds(
 }
 
 /**
- * Place a sports bet
+ * Place an event bet
  */
-export async function placeSportsBet(
+export async function placeEventBet(
   userId: string,
   eventId: string,
   option: BetOption,
   amount: number
 ): Promise<void> {
   // Validate amount
-  if (amount < SPORTS_BETTING_MIN_BET || amount > SPORTS_BETTING_MAX_BET) {
+  if (amount < EVENT_BETTING_MIN_BET || amount > EVENT_BETTING_MAX_BET) {
     throw new Error(
-      `Valor da aposta deve estar entre ${SPORTS_BETTING_MIN_BET} e ${SPORTS_BETTING_MAX_BET} coins`
+      `Valor da aposta deve estar entre ${EVENT_BETTING_MIN_BET} e ${EVENT_BETTING_MAX_BET} coins`
     );
   }
 
@@ -106,15 +106,15 @@ export async function placeSportsBet(
     eventId,
     userId,
   });
-  if (userBetCount >= SPORTS_BETTING_MAX_BETS_PER_EVENT) {
+  if (userBetCount >= EVENT_BETTING_MAX_BETS_PER_EVENT) {
     throw new Error(
-      `Você atingiu o limite de ${SPORTS_BETTING_MAX_BETS_PER_EVENT} apostas por evento`
+      `Você atingiu o limite de ${EVENT_BETTING_MAX_BETS_PER_EVENT} apostas por evento`
     );
   }
 
   // Debit wallet atomically
   await debitWallet(userId, amount, "bet_placed", {
-    gameId: "sports-betting",
+    gameId: "event-betting",
     eventId: eventId,
   });
 
@@ -158,7 +158,7 @@ export async function placeSportsBet(
 
   // Broadcast odds update
   if (io) {
-    io.to("sports-betting").emit("sports:odds_update", {
+    io.to("event-betting").emit("event:odds_update", {
       eventId: eventId,
       odds,
     });
@@ -217,7 +217,7 @@ export async function resolveEvent(
 
     // Credit wallet
     await creditWallet(bet.userId, actualPayout, "bet_won", {
-      gameId: "sports-betting",
+      gameId: "event-betting",
       eventId: eventId,
     });
 
@@ -244,7 +244,7 @@ export async function resolveEvent(
 
   // Broadcast result
   if (io) {
-    io.to("sports-betting").emit("sports:event_result", {
+    io.to("event-betting").emit("event:event_result", {
       eventId: eventId,
       result,
       winners,

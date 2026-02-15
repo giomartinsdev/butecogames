@@ -1,9 +1,9 @@
-import type { SportsBettingEvent, EventOdds } from "@butecogames/shared";
+import type { EventBettingEvent, EventOdds } from "@butecogames/shared";
 import { EVENT_CATEGORIES } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 
 interface EventHistoryProps {
-  events: Array<SportsBettingEvent & { odds: EventOdds }>;
+  events: Array<EventBettingEvent & { odds: EventOdds }>;
 }
 
 export function EventHistory({ events }: EventHistoryProps) {

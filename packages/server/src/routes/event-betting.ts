@@ -15,7 +15,7 @@ const router = Router();
 // Public routes (require auth)
 
 /**
- * GET /api/sports-betting/events
+ * GET /api/event-betting/events
  * List all events with odds
  */
 router.get("/events", requireAuth, async (req, res) => {
@@ -29,7 +29,7 @@ router.get("/events", requireAuth, async (req, res) => {
 });
 
 /**
- * GET /api/sports-betting/events/:eventId
+ * GET /api/event-betting/events/:eventId
  * Get single event with odds
  */
 router.get("/events/:eventId", requireAuth, async (req, res) => {
@@ -52,7 +52,7 @@ router.get("/events/:eventId", requireAuth, async (req, res) => {
 });
 
 /**
- * GET /api/sports-betting/my-bets
+ * GET /api/event-betting/my-bets
  * Get user's bets
  */
 router.get("/my-bets", requireAuth, async (req, res) => {
@@ -74,7 +74,7 @@ router.get("/my-bets", requireAuth, async (req, res) => {
 // Admin routes (require auth + admin)
 
 /**
- * POST /api/sports-betting/events
+ * POST /api/event-betting/events
  * Create a new event (admin only)
  */
 router.post("/events", requireAuth, requireAdmin, async (req, res) => {
@@ -120,7 +120,7 @@ router.post("/events", requireAuth, requireAdmin, async (req, res) => {
 });
 
 /**
- * PUT /api/sports-betting/events/:eventId/status
+ * PUT /api/event-betting/events/:eventId/status
  * Update event status (admin only)
  * Optionally update startTime when changing status
  */
@@ -179,7 +179,7 @@ router.put("/events/:eventId/status", requireAuth, requireAdmin, async (req, res
 });
 
 /**
- * POST /api/sports-betting/events/:eventId/resolve
+ * POST /api/event-betting/events/:eventId/resolve
  * Resolve event and pay winners (admin only)
  */
 router.post("/events/:eventId/resolve", requireAuth, requireAdmin, async (req, res) => {
@@ -201,7 +201,7 @@ router.post("/events/:eventId/resolve", requireAuth, requireAdmin, async (req, r
 
     await resolveEvent(req.params.eventId as string, result as BetOption);
 
-    res.json({ success: true, message: "Evento resolvido com sucesso" });
+    res.json({ success: true, message: "Evento encerrado com sucesso" });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

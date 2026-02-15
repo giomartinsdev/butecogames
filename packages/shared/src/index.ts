@@ -19,8 +19,8 @@ export type {
   BetOption,
   EventStatus,
   EventCategory,
-  SportsBettingEvent,
-  SportsBettingBet,
+  EventBettingEvent,
+  EventBettingBet,
   EventOdds,
 } from "./types/event-betting.js";
 
@@ -45,9 +45,9 @@ export {
   MAX_BETS_PER_ROUND,
 } from "./constants/roulette.js";
 export {
-  SPORTS_BETTING_HOUSE_EDGE,
-  SPORTS_BETTING_MIN_BET,
-  SPORTS_BETTING_MAX_BET,
-  SPORTS_BETTING_MAX_BETS_PER_EVENT,
+  EVENT_BETTING_HOUSE_EDGE,
+  EVENT_BETTING_MIN_BET,
+  EVENT_BETTING_MAX_BET,
+  EVENT_BETTING_MAX_BETS_PER_EVENT,
   EVENT_CATEGORIES,
 } from "./constants/event-betting.js";

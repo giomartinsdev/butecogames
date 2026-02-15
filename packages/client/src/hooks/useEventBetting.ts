@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type {
-  SportsBettingEvent,
+  EventBettingEvent,
   EventOdds,
   BetOption,
 } from "@butecogames/shared";
@@ -11,35 +11,37 @@ import { toast } from "sonner";
 export function useEventBetting() {
   const { socket } = useSocket();
   const [events, setEvents] = useState<
-    Array<SportsBettingEvent & { odds: EventOdds }>
+    Array<EventBettingEvent & { odds: EventOdds }>
   >([]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.emit("sports:join");
+    socket.emit("event:join");
 
-    socket.on("sports:events_update", (data) => {
+    socket.on("event:events_update", (data) => {
       setEvents(data.events as any);
     });
 
-    socket.on("sports:odds_update", ({ eventId, odds }) => {
+    socket.on("event:odds_update", ({ eventId, odds }) => {
       setEvents((prev) =>
         prev.map((e) => (e._id === eventId ? { ...e, odds } : e))
       );
-      // Invalidate wallet as odds update means a bet was placed
+      // Invalidate wallet and my bets as odds update means a bet was placed
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["event-betting-my-bets"] });
     });
 
-    socket.on("sports:bet_placed", ({ eventId }) => {
-      // Just log for now, odds update comes separately
-      console.log(`[Sports] Bet placed on event ${eventId}`);
+    socket.on("event:bet_placed", ({ eventId }) => {
+      // Invalidate my bets to show the newly placed bet
+      queryClient.invalidateQueries({ queryKey: ["event-betting-my-bets"] });
+      console.log(`[Event] Bet placed on event ${eventId}`);
     });
 
-    socket.on("sports:event_result", ({ eventId, result, winners }) => {
+    socket.on("event:event_result", ({ eventId, result, winners }) => {
       // Show event result
-      toast.info(`Evento resolvido: ${result}`, {
+      toast.info(`Evento encerrado: ${result}`, {
         description: winners.length > 0 ? `${winners.length} vencedor(es)` : undefined,
       });
 
@@ -52,21 +54,22 @@ export function useEventBetting() {
         )
       );
 
-      // Invalidate wallet to refresh balance
+      // Invalidate wallet and my bets to refresh balance and bet status
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["event-betting-my-bets"] });
     });
 
-    socket.on("sports:error", ({ message }) => {
+    socket.on("event:error", ({ message }) => {
       toast.error(message);
     });
 
     return () => {
-      socket.emit("sports:leave");
-      socket.off("sports:events_update");
-      socket.off("sports:odds_update");
-      socket.off("sports:bet_placed");
-      socket.off("sports:event_result");
-      socket.off("sports:error");
+      socket.emit("event:leave");
+      socket.off("event:events_update");
+      socket.off("event:odds_update");
+      socket.off("event:bet_placed");
+      socket.off("event:event_result");
+      socket.off("event:error");
     };
   }, [socket, queryClient]);
 
@@ -75,10 +78,10 @@ export function useEventBetting() {
       toast.error("Conexão não estabelecida");
       return;
     }
-    socket.emit("sports:place_bet", { eventId, option, amount });
+    socket.emit("event:place_bet", { eventId, option, amount });
 
     // Optimistically invalidate my bets query to refetch after bet is placed
-    queryClient.invalidateQueries({ queryKey: ["sports-betting-my-bets"] });
+    queryClient.invalidateQueries({ queryKey: ["event-betting-my-bets"] });
   };
 
   return { events, placeBet };

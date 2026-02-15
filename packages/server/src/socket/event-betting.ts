@@ -5,54 +5,54 @@ import type {
 } from "@butecogames/shared";
 import type { AuthenticatedSocket } from "./middleware.js";
 import {
-  placeSportsBet,
+  placeEventBet,
   getEventsWithOdds,
 } from "../services/event-betting.js";
 
-export function setupSportsBettingHandlers(
+export function setupEventBettingHandlers(
   io: SocketIOServer<ClientToServerEvents, ServerToClientEvents>
 ) {
   io.on("connection", (socket) => {
     const authSocket = socket as AuthenticatedSocket;
 
-    // Join sports betting room
-    socket.on("sports:join", async () => {
-      await socket.join("sports-betting");
+    // Join event betting room
+    socket.on("event:join", async () => {
+      await socket.join("event-betting");
 
       try {
         // Send current events with odds
         const events = await getEventsWithOdds();
-        socket.emit("sports:events_update", { events: events as any });
+        socket.emit("event:events_update", { events: events as any });
       } catch (error: any) {
-        socket.emit("sports:error", {
+        socket.emit("event:error", {
           message: error.message || "Erro ao carregar eventos",
         });
       }
     });
 
-    // Leave sports betting room
-    socket.on("sports:leave", () => {
-      socket.leave("sports-betting");
+    // Leave event betting room
+    socket.on("event:leave", () => {
+      socket.leave("event-betting");
     });
 
     // Place a bet
-    socket.on("sports:place_bet", async ({ eventId, option, amount }) => {
+    socket.on("event:place_bet", async ({ eventId, option, amount }) => {
       if (!authSocket.data.userId) {
-        socket.emit("sports:error", { message: "Não autenticado" });
+        socket.emit("event:error", { message: "Não autenticado" });
         return;
       }
 
       try {
-        await placeSportsBet(authSocket.data.userId, eventId, option, amount);
+        await placeEventBet(authSocket.data.userId, eventId, option, amount);
 
         // Broadcast to all users in the room (odds update is sent from service)
-        io.to("sports-betting").emit("sports:bet_placed", {
+        io.to("event-betting").emit("event:bet_placed", {
           eventId,
           option,
           amount,
         });
       } catch (error: any) {
-        socket.emit("sports:error", {
+        socket.emit("event:error", {
           message: error.message || "Erro ao fazer aposta",
         });
       }

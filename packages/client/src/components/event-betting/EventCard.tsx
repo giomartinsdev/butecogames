@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { SportsBettingEvent, EventOdds, BetOption } from "@butecogames/shared";
-import { EVENT_CATEGORIES, SPORTS_BETTING_MIN_BET, SPORTS_BETTING_MAX_BET } from "@butecogames/shared";
+import type { EventBettingEvent, EventOdds, BetOption } from "@butecogames/shared";
+import { EVENT_CATEGORIES, EVENT_BETTING_MIN_BET, EVENT_BETTING_MAX_BET } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 import { cn } from "@/lib/utils.js";
 
 interface EventCardProps {
-  event: SportsBettingEvent & { odds: EventOdds };
+  event: EventBettingEvent & { odds: EventOdds };
   onPlaceBet: (eventId: string, option: BetOption, amount: number) => void;
   disabled?: boolean;
 }
@@ -14,7 +14,7 @@ const QUICK_AMOUNTS = [10, 50, 100, 500, 1000];
 
 export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProps) {
   const [selectedOption, setSelectedOption] = useState<BetOption | null>(null);
-  const [amount, setAmount] = useState(SPORTS_BETTING_MIN_BET);
+  const [amount, setAmount] = useState(EVENT_BETTING_MIN_BET);
 
   const isUpcoming = event.status === "upcoming";
   const canBet = isUpcoming && !disabled && new Date(event.startTime) > new Date();
@@ -23,7 +23,7 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
     if (!selectedOption || !canBet) return;
     onPlaceBet(event._id, selectedOption, amount);
     setSelectedOption(null);
-    setAmount(SPORTS_BETTING_MIN_BET);
+    setAmount(EVENT_BETTING_MIN_BET);
   };
 
   const formatDate = (date: Date) => {
@@ -162,15 +162,15 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
             <label className="text-xs text-muted-foreground">Valor da aposta</label>
             <input
               type="number"
-              min={SPORTS_BETTING_MIN_BET}
-              max={SPORTS_BETTING_MAX_BET}
+              min={EVENT_BETTING_MIN_BET}
+              max={EVENT_BETTING_MAX_BET}
               value={amount}
               disabled={!canBet}
               onChange={(e) =>
                 setAmount(
                   Math.max(
-                    SPORTS_BETTING_MIN_BET,
-                    Math.min(SPORTS_BETTING_MAX_BET, Number(e.target.value))
+                    EVENT_BETTING_MIN_BET,
+                    Math.min(EVENT_BETTING_MAX_BET, Number(e.target.value))
                   )
                 )
               }
