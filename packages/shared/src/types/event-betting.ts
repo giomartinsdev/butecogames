@@ -1,4 +1,4 @@
-export type BetOption = "team1" | "team2" | "draw";
+export type BetOption = "option1" | "option2" | "draw";
 
 export type EventStatus = "upcoming" | "in_progress" | "completed" | "cancelled";
 
@@ -14,14 +14,14 @@ export interface EventBettingEvent {
   title: string;
   description: string;
   category: EventCategory;
-  team1: string;
-  team2: string;
+  option1: string;
+  option2: string;
   allowDraw: boolean;
   startTime: Date;
   status: EventStatus;
   totalPool: number;
-  team1Pool: number;
-  team2Pool: number;
+  option1Pool: number;
+  option2Pool: number;
   drawPool: number;
   result: BetOption | null;
   createdAt: Date;
@@ -41,7 +41,7 @@ export interface EventBettingBet {
 }
 
 export interface EventOdds {
-  team1: number;
-  team2: number;
+  option1: number;
+  option2: number;
   draw?: number;
 }

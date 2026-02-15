@@ -45,14 +45,14 @@ export function calculateOdds(
 ): EventOdds {
   const payoutPool = event.totalPool * (1 - EVENT_BETTING_HOUSE_EDGE);
 
-  const team1Odds =
-    event.team1Pool > 0 ? payoutPool / event.team1Pool : 1.01;
-  const team2Odds =
-    event.team2Pool > 0 ? payoutPool / event.team2Pool : 1.01;
+  const option1Odds =
+    event.option1Pool > 0 ? payoutPool / event.option1Pool : 1.01;
+  const option2Odds =
+    event.option2Pool > 0 ? payoutPool / event.option2Pool : 1.01;
 
   const odds: EventOdds = {
-    team1: Math.max(1.01, team1Odds),
-    team2: Math.max(1.01, team2Odds),
+    option1: Math.max(1.01, option1Odds),
+    option2: Math.max(1.01, option2Odds),
   };
 
   // Only include draw odds if draw is allowed
@@ -120,10 +120,10 @@ export async function placeEventBet(
 
   // Calculate current odds for potential payout snapshot
   const poolField =
-    option === "team1"
-      ? "team1Pool"
-      : option === "team2"
-      ? "team2Pool"
+    option === "option1"
+      ? "option1Pool"
+      : option === "option2"
+      ? "option2Pool"
       : "drawPool";
 
   // Update event pools atomically

@@ -28,8 +28,8 @@ export function AdminEventBettingPage() {
     title: "",
     description: "",
     category: "sports" as EventCategory,
-    team1: "",
-    team2: "",
+    option1: "",
+    option2: "",
     startTime: "",
     allowDraw: true,
   });
@@ -63,8 +63,8 @@ export function AdminEventBettingPage() {
         title: "",
         description: "",
         category: "sports",
-        team1: "",
-        team2: "",
+        option1: "",
+        option2: "",
         startTime: "",
         allowDraw: true,
       });
@@ -223,25 +223,25 @@ export function AdminEventBettingPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-muted-foreground">Time 1</label>
+                <label className="text-sm text-muted-foreground">Opção 1</label>
                 <input
                   type="text"
                   required
-                  value={formData.team1}
+                  value={formData.option1}
                   onChange={(e) =>
-                    setFormData({ ...formData, team1: e.target.value })
+                    setFormData({ ...formData, option1: e.target.value })
                   }
                   className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground">Time 2</label>
+                <label className="text-sm text-muted-foreground">Opção 2</label>
                 <input
                   type="text"
                   required
-                  value={formData.team2}
+                  value={formData.option2}
                   onChange={(e) =>
-                    setFormData({ ...formData, team2: e.target.value })
+                    setFormData({ ...formData, option2: e.target.value })
                   }
                   className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
                 />
@@ -311,7 +311,7 @@ export function AdminEventBettingPage() {
                     {event.title}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {event.team1} vs {event.team2}
+                    {event.option1} vs {event.option2}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Início:{" "}
@@ -325,9 +325,9 @@ export function AdminEventBettingPage() {
 
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div className="rounded bg-muted p-2">
-                  <div className="text-muted-foreground">{event.team1}</div>
+                  <div className="text-muted-foreground">{event.option1}</div>
                   <div className="font-bold text-card-foreground">
-                    {formatCoins(event.team1Pool)}
+                    {formatCoins(event.option1Pool)}
                   </div>
                 </div>
                 <div className="rounded bg-muted p-2">
@@ -337,9 +337,9 @@ export function AdminEventBettingPage() {
                   </div>
                 </div>
                 <div className="rounded bg-muted p-2">
-                  <div className="text-muted-foreground">{event.team2}</div>
+                  <div className="text-muted-foreground">{event.option2}</div>
                   <div className="font-bold text-card-foreground">
-                    {formatCoins(event.team2Pool)}
+                    {formatCoins(event.option2Pool)}
                   </div>
                 </div>
               </div>
@@ -516,12 +516,12 @@ export function AdminEventBettingPage() {
                       onClick={() =>
                         resolveEventMutation.mutate({
                           eventId: event._id,
-                          result: "team1",
+                          result: "option1",
                         })
                       }
                       className="rounded bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground hover:bg-accent/90"
                     >
-                      ✓ {event.team1}
+                      ✓ {event.option1}
                     </button>
                     {event.allowDraw && (
                       <button
@@ -540,12 +540,12 @@ export function AdminEventBettingPage() {
                       onClick={() =>
                         resolveEventMutation.mutate({
                           eventId: event._id,
-                          result: "team2",
+                          result: "option2",
                         })
                       }
                       className="rounded bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground hover:bg-accent/90"
                     >
-                      ✓ {event.team2}
+                      ✓ {event.option2}
                     </button>
                   </div>
                 )}

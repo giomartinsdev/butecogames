@@ -11,7 +11,7 @@ const eventBettingBetSchema = new Schema(
     userId: { type: String, required: true, index: true },
     option: {
       type: String,
-      enum: ["team1", "team2", "draw"],
+      enum: ["option1", "option2", "draw"],
       required: true,
     },
     amount: { type: Number, required: true },

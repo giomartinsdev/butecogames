@@ -79,10 +79,10 @@ router.get("/my-bets", requireAuth, async (req, res) => {
  */
 router.post("/events", requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { title, description, category, team1, team2, startTime, allowDraw } = req.body;
+    const { title, description, category, option1, option2, startTime, allowDraw } = req.body;
 
     // Validate required fields
-    if (!title || !description || !category || !team1 || !team2 || !startTime) {
+    if (!title || !description || !category || !option1 || !option2 || !startTime) {
       return res.status(400).json({ error: "Campos obrigatórios faltando" });
     }
 
@@ -104,8 +104,8 @@ router.post("/events", requireAuth, requireAdmin, async (req, res) => {
       title,
       description,
       category,
-      team1,
-      team2,
+      option1,
+      option2,
       startTime: start,
       allowDraw: allowDraw !== undefined ? allowDraw : true, // Default to true
     });
@@ -186,7 +186,7 @@ router.post("/events/:eventId/resolve", requireAuth, requireAdmin, async (req, r
   try {
     const { result } = req.body;
 
-    if (!["team1", "team2", "draw"].includes(result)) {
+    if (!["option1", "option2", "draw"].includes(result)) {
       return res.status(400).json({ error: "Resultado inválido" });
     }
 

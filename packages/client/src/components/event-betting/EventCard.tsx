@@ -70,23 +70,23 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
       {/* Betting options */}
       <div className={cn("grid gap-2", event.allowDraw ? "grid-cols-3" : "grid-cols-2")}>
         <button
-          onClick={() => setSelectedOption("team1")}
+          onClick={() => setSelectedOption("option1")}
           disabled={!canBet}
           className={cn(
             "rounded-lg border p-3 transition-all disabled:opacity-40",
-            selectedOption === "team1"
+            selectedOption === "option1"
               ? "border-primary bg-primary/10"
               : "border-border bg-muted hover:border-primary/50"
           )}
         >
           <div className="text-sm font-medium text-card-foreground mb-1">
-            {event.team1}
+            {event.option1}
           </div>
           <div className="text-xs text-accent font-bold">
-            {event.odds.team1.toFixed(2)}x
+            {event.odds.option1.toFixed(2)}x
           </div>
           <div className="text-xs text-muted-foreground mt-1">
-            Pool: {formatCoins(event.team1Pool)}
+            Pool: {formatCoins(event.option1Pool)}
           </div>
         </button>
 
@@ -112,23 +112,23 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
         )}
 
         <button
-          onClick={() => setSelectedOption("team2")}
+          onClick={() => setSelectedOption("option2")}
           disabled={!canBet}
           className={cn(
             "rounded-lg border p-3 transition-all disabled:opacity-40",
-            selectedOption === "team2"
+            selectedOption === "option2"
               ? "border-primary bg-primary/10"
               : "border-border bg-muted hover:border-primary/50"
           )}
         >
           <div className="text-sm font-medium text-card-foreground mb-1">
-            {event.team2}
+            {event.option2}
           </div>
           <div className="text-xs text-accent font-bold">
-            {event.odds.team2.toFixed(2)}x
+            {event.odds.option2.toFixed(2)}x
           </div>
           <div className="text-xs text-muted-foreground mt-1">
-            Pool: {formatCoins(event.team2Pool)}
+            Pool: {formatCoins(event.option2Pool)}
           </div>
         </button>
       </div>
@@ -138,10 +138,10 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
         <div className="rounded bg-accent/10 border border-accent/20 p-2 text-center">
           <span className="text-sm font-medium text-accent">
             Resultado:{" "}
-            {event.result === "team1"
-              ? event.team1
-              : event.result === "team2"
-              ? event.team2
+            {event.result === "option1"
+              ? event.option1
+              : event.result === "option2"
+              ? event.option2
               : "Empate"}
           </span>
         </div>

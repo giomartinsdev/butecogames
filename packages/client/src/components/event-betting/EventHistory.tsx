@@ -47,17 +47,17 @@ export function EventHistory({ events }: EventHistoryProps) {
           </div>
 
           <div className="text-sm font-medium text-card-foreground">
-            {event.team1} vs {event.team2}
+            {event.option1} vs {event.option2}
           </div>
 
           {event.result && (
             <div className="rounded bg-accent/10 border border-accent/20 p-2 text-center">
               <span className="text-sm font-medium text-accent">
                 Resultado:{" "}
-                {event.result === "team1"
-                  ? event.team1
-                  : event.result === "team2"
-                  ? event.team2
+                {event.result === "option1"
+                  ? event.option1
+                  : event.result === "option2"
+                  ? event.option2
                   : "Empate"}
               </span>
             </div>

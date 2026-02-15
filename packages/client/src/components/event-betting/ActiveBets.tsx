@@ -20,10 +20,10 @@ export function ActiveBets({ bets }: ActiveBetsProps) {
     const eventName = event?.title || "Evento";
 
     let choice = "";
-    if (option === "team1") {
-      choice = event?.team1 || "Time 1";
-    } else if (option === "team2") {
-      choice = event?.team2 || "Time 2";
+    if (option === "option1") {
+      choice = event?.option1 || "Opção 1";
+    } else if (option === "option2") {
+      choice = event?.option2 || "Opção 2";
     } else {
       choice = "Empate";
     }
