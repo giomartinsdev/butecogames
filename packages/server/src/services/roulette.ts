@@ -318,6 +318,11 @@ export function getRouletteState() {
   };
 }
 
+export function broadcastRouletteState() {
+  if (!io) return;
+  io.to("roulette").emit("roulette:state", getRouletteState());
+}
+
 export async function initRouletteEngine(socketIo: TypedIO) {
   io = socketIo;
 
