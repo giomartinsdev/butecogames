@@ -25,8 +25,10 @@ export type {
 } from "./types/event-betting.js";
 export type {
   RouletteSettings,
+  GeneralSettings,
   AppSettings,
 } from "./types/settings.js";
+export type { UserSettings } from "./types/user-settings.js";
 
 // Constants
 export {
@@ -55,3 +57,9 @@ export {
   EVENT_BETTING_MAX_BETS_PER_EVENT,
   EVENT_CATEGORIES,
 } from "./constants/event-betting.js";
+export {
+  CURSOR_SETS,
+  DEFAULT_CURSOR_SET_ID,
+  DEFAULT_CURSOR_SIZE,
+  type CursorSet,
+} from "./constants/cursors.js";

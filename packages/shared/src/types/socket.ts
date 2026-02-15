@@ -70,4 +70,5 @@ export interface ServerToClientEvents {
     winners: Array<{ userId: string; displayName: string; payout: number }>;
   }) => void;
   "event:error": (data: { message: string }) => void;
+  "settings:cursor_size": (data: { cursorSize: number }) => void;
 }

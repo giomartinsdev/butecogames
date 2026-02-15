@@ -3,6 +3,7 @@ import {
   DEFAULT_MIN_BET,
   DEFAULT_MAX_BET,
   DEFAULT_MAX_BETS_PER_ROUND,
+  DEFAULT_CURSOR_SIZE,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -14,6 +15,9 @@ export interface ISettings {
     minBet: number;
     maxBet: number;
     maxBetsPerRound: number;
+  };
+  general: {
+    cursorSize: number;
   };
   updatedAt: Date;
   createdAt: Date;
@@ -29,6 +33,9 @@ const settingsSchema = new Schema(
       minBet: { type: Number, default: DEFAULT_MIN_BET },
       maxBet: { type: Number, default: DEFAULT_MAX_BET },
       maxBetsPerRound: { type: Number, default: DEFAULT_MAX_BETS_PER_ROUND },
+    },
+    general: {
+      cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },
     },
   },
   { timestamps: true },

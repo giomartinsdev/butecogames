@@ -7,6 +7,11 @@ export interface RouletteSettings {
   maxBetsPerRound: number;
 }
 
+export interface GeneralSettings {
+  cursorSize: number;
+}
+
 export interface AppSettings {
   roulette: RouletteSettings;
+  general: GeneralSettings;
 }

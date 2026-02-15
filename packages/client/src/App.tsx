@@ -14,6 +14,7 @@ import { AdminSettingsPage } from "@/pages/AdminSettingsPage.js";
 import { AdminUsersPage } from "@/pages/AdminUsersPage.js";
 import { ProfilePage } from "@/pages/ProfilePage.js";
 import { LeaderboardPage } from "@/pages/LeaderboardPage.js";
+import { SettingsPage } from "@/pages/SettingsPage.js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,6 +88,7 @@ function AppRoutes() {
         <Route path="/admin/settings" element={<AdminSettingsPage />} />
         <Route path="/admin/users" element={<AdminUsersPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

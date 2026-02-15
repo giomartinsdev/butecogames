@@ -3,6 +3,7 @@ import {
   DEFAULT_MIN_BET,
   DEFAULT_MAX_BET,
   DEFAULT_MAX_BETS_PER_ROUND,
+  DEFAULT_CURSOR_SIZE,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -37,6 +38,12 @@ export async function updateSettings(
     }
   }
 
+  if (partial.general) {
+    for (const [key, value] of Object.entries(partial.general)) {
+      update[`general.${key}`] = value;
+    }
+  }
+
   const doc = await Settings.findByIdAndUpdate(
     "app_settings",
     { $set: update },
@@ -60,6 +67,9 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       minBet: doc.roulette.minBet ?? DEFAULT_MIN_BET,
       maxBet: doc.roulette.maxBet ?? DEFAULT_MAX_BET,
       maxBetsPerRound: doc.roulette.maxBetsPerRound ?? DEFAULT_MAX_BETS_PER_ROUND,
+    },
+    general: {
+      cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,
     },
   };
 }

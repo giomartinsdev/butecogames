@@ -18,9 +18,16 @@ export function AdminSettingsPage() {
     maxBetsPerRound: 5,
   });
 
+  const [general, setGeneral] = useState({
+    cursorSize: 32,
+  });
+
   useEffect(() => {
     if (settings) {
       setRoulette(settings.roulette);
+      if (settings.general) {
+        setGeneral(settings.general);
+      }
     }
   }, [settings]);
 
@@ -38,7 +45,7 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette },
+      { roulette, general },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
@@ -179,6 +186,32 @@ export function AdminSettingsPage() {
                 setRoulette((prev) => ({
                   ...prev,
                   maxBetsPerRound: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+
+        <h2 className="text-xl font-bold text-card-foreground mt-8 mb-4">
+          Geral
+        </h2>
+
+        <h3 className="text-sm font-semibold text-card-foreground mb-2">Cursor</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tamanho do cursor (px)
+            </label>
+            <input
+              type="number"
+              min={16}
+              max={128}
+              value={general.cursorSize}
+              onChange={(e) =>
+                setGeneral((prev) => ({
+                  ...prev,
+                  cursorSize: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

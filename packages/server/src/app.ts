@@ -10,6 +10,7 @@ import leaderboardRouter from "./routes/leaderboard.js";
 import eventBettingRouter from "./routes/event-betting.js";
 import settingsRouter from "./routes/settings.js";
 import adminUsersRouter from "./routes/admin-users.js";
+import userSettingsRouter from "./routes/user-settings.js";
 import { env } from "./config/env.js";
 
 export function createApp() {
@@ -37,6 +38,7 @@ export function createApp() {
   app.use("/api/event-betting", eventBettingRouter);
   app.use("/api/settings", settingsRouter);
   app.use("/api/admin", adminUsersRouter);
+  app.use("/api/user-settings", userSettingsRouter);
 
   // Health check
   app.get("/api/health", (_req, res) => {

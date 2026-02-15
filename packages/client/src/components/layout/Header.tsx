@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet } from "@/hooks/useWallet.js";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
@@ -8,6 +9,28 @@ export function Header() {
   const { user, signOut } = useAuth();
   const { data: wallet } = useWallet();
   const { isAdmin } = useUserProfile();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleMouseEnter() {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setDropdownOpen(true);
+  }
+
+  function handleMouseLeave() {
+    closeTimeoutRef.current = setTimeout(() => {
+      setDropdownOpen(false);
+    }, 200);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, []);
 
   return (
     <header className="border-b border-border bg-card px-6 py-3">
@@ -32,7 +55,7 @@ export function Header() {
           </Link>
           {isAdmin && (
             <Link to="/admin" className="text-sm text-accent hover:text-accent/80 transition-colors font-medium">
-              ⚙️ Admin
+              Admin
             </Link>
           )}
         </nav>
@@ -40,25 +63,51 @@ export function Header() {
         <div className="flex items-center gap-4">
           {user && (
             <div className="flex items-center gap-3">
-              {user.image && (
-                <img
-                  src={user.image}
-                  alt={user.name}
-                  className="h-8 w-8 rounded-full"
-                />
-              )}
               {wallet && (
                 <div className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-accent">
                   {formatCoins(wallet.balance)} coins
                 </div>
               )}
-              <span className="text-sm">{user.name}</span>
-              <button
-                onClick={() => signOut()}
-                className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+
+              <div
+                className="relative"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
-                Sair
-              </button>
+                <div className="flex items-center gap-2 cursor-pointer">
+                  {user.image && (
+                    <img
+                      src={user.image}
+                      alt={user.name}
+                      className="h-8 w-8 rounded-full"
+                    />
+                  )}
+                  <span className="text-sm">{user.name}</span>
+                </div>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-border bg-card shadow-lg z-50">
+                    <div className="py-1">
+                      <Link
+                        to="/settings"
+                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Configurações
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          signOut();
+                        }}
+                        className="block w-full px-4 py-2 text-left text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
+                      >
+                        Sair
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
