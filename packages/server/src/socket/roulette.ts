@@ -22,6 +22,8 @@ export function registerRouletteHandlers(io: TypedIO, socket: Socket) {
 
   socket.on("roulette:join", async () => {
     socket.join("roulette");
+    const size = await getRoomSize(io);
+    console.log(`[Roulette] ${authSocket.data.displayName} joined roulette room (room size: ${size})`);
 
     if (!isRouletteRunning()) {
       await startRouletteEngine();
@@ -35,6 +37,7 @@ export function registerRouletteHandlers(io: TypedIO, socket: Socket) {
   socket.on("roulette:leave", async () => {
     socket.leave("roulette");
     const size = await getRoomSize(io);
+    console.log(`[Roulette] ${authSocket.data.displayName} left roulette room (room size: ${size})`);
     if (size === 0) {
       requestRouletteStop();
     }

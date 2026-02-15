@@ -85,20 +85,67 @@ function getPayoutMultiplier(betType: RouletteBetType): number {
   return ROULETTE_PAYOUTS[key] || 0;
 }
 
+function getRoomSize(): number {
+  const room = io.sockets.adapter.rooms.get("roulette");
+  return room?.size ?? 0;
+}
+
+/** Cleanly stop the engine and reset state */
+function stopEngine(reason: string) {
+  if (state.timer) {
+    clearTimeout(state.timer);
+    state.timer = null;
+  }
+  state.running = false;
+  state.stopRequested = false;
+  state.currentRound = null;
+  console.log(`[Roulette] Engine stopped (${reason})`);
+}
+
+async function getNextRoundNumber(): Promise<number> {
+  const lastRound = await RouletteRound.findOne().sort({ roundNumber: -1 });
+  return (lastRound?.roundNumber ?? 0) + 1;
+}
+
 async function startBettingPhase() {
+  // Don't start a new round if no one is watching or stop was requested
+  if (getRoomSize() === 0 || state.stopRequested) {
+    stopEngine("room empty");
+    return;
+  }
+
   const seed = generateSeed();
   const seedHash = hashSeed(seed);
   state.seed = seed;
 
-  const lastRound = await RouletteRound.findOne().sort({ roundNumber: -1 });
-  const roundNumber = (lastRound?.roundNumber ?? 0) + 1;
+  let roundNumber = await getNextRoundNumber();
 
-  const round = await RouletteRound.create({
-    roundNumber,
-    seedHash,
-    status: "betting",
-    startedAt: new Date(),
-  });
+  // Re-check after async — another call might have started a round
+  if (!state.running) return;
+
+  let round: IRouletteRound;
+  try {
+    round = await RouletteRound.create({
+      roundNumber,
+      seedHash,
+      status: "betting",
+      startedAt: new Date(),
+    });
+  } catch (err: unknown) {
+    // Handle duplicate key collision (stale round from previous crash)
+    if (err instanceof Error && "code" in err && (err as any).code === 11000) {
+      console.log(`[Roulette] Round #${roundNumber} already exists, recalculating...`);
+      roundNumber = await getNextRoundNumber();
+      round = await RouletteRound.create({
+        roundNumber,
+        seedHash,
+        status: "betting",
+        startedAt: new Date(),
+      });
+    } else {
+      throw err;
+    }
+  }
 
   const { bettingDuration } = getSettings().roulette;
   const bettingMs = bettingDuration * 1000;
@@ -196,12 +243,9 @@ async function resolveRound() {
     `[Roulette] Round ${state.currentRound.roundNumber} - Result: ${result}, Winners: ${winners.length}`,
   );
 
-  // Check if we should stop after this round (room is empty)
-  if (state.stopRequested) {
-    state.running = false;
-    state.stopRequested = false;
-    state.currentRound = null;
-    console.log("[Roulette] Engine stopped (room empty)");
+  // Round is complete — check if we should stop or continue
+  if (state.stopRequested || getRoomSize() === 0) {
+    stopEngine("room empty");
     return;
   }
 
@@ -273,6 +317,32 @@ export function getRouletteState() {
 export async function initRouletteEngine(socketIo: TypedIO) {
   io = socketIo;
 
+  // Clean up orphaned rounds from a previous server crash/restart
+  const staleRounds = await RouletteRound.find({
+    status: { $in: ["betting", "spinning"] },
+  });
+
+  for (const round of staleRounds) {
+    const bets = await RouletteBet.find({ roundId: round._id });
+    for (const bet of bets) {
+      // Refund the bet amount back to the user
+      await creditWallet(bet.userId, bet.amount, "bet_won", {
+        gameId: "roulette",
+        roundId: round._id.toString(),
+      });
+      bet.won = false;
+      bet.payout = bet.amount;
+      await bet.save();
+    }
+
+    round.status = "completed";
+    round.completedAt = new Date();
+    await round.save();
+    console.log(
+      `[Roulette] Cleaned up stale round #${round.roundNumber} (refunded ${bets.length} bet(s))`,
+    );
+  }
+
   // Load recent results
   const recentRounds = await RouletteRound.find({ status: "completed" })
     .sort({ completedAt: -1 })
@@ -281,6 +351,7 @@ export async function initRouletteEngine(socketIo: TypedIO) {
     .filter((r) => r.result !== null)
     .map((r) => r.result as number);
 
+  // Engine starts idle — only `roulette:join` triggers startRouletteEngine()
   console.log("[Roulette] Engine initialized (waiting for players)");
 }
 
@@ -295,7 +366,7 @@ export async function startRouletteEngine() {
 export function requestRouletteStop() {
   if (!state.running) return;
   state.stopRequested = true;
-  console.log("[Roulette] Stop requested (room empty, will stop after current round)");
+  console.log("[Roulette] Stop requested (will stop after current round completes)");
 }
 
 export function cancelRouletteStop() {
@@ -307,10 +378,5 @@ export function isRouletteRunning() {
 }
 
 export function stopRouletteEngine() {
-  if (state.timer) {
-    clearTimeout(state.timer);
-    state.timer = null;
-  }
-  state.running = false;
-  state.stopRequested = false;
+  stopEngine("shutdown");
 }

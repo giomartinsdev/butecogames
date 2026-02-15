@@ -23,9 +23,10 @@ export function useEventBetting() {
     socket.emit("event:join");
 
     // Re-join room on reconnection (socket ref stays the same, effect won't re-run)
-    socket.on("connect", () => {
+    const onReconnect = () => {
       socket.emit("event:join");
-    });
+    };
+    socket.on("connect", onReconnect);
 
     socket.on("event:events_update", (data) => {
       setEvents(data.events as any);
@@ -84,7 +85,7 @@ export function useEventBetting() {
 
     return () => {
       socket.emit("event:leave");
-      socket.off("connect");
+      socket.off("connect", onReconnect);
       socket.off("event:events_update");
       socket.off("event:odds_update");
       socket.off("event:bet_placed");
