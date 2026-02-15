@@ -76,7 +76,9 @@ export function RouletteGame() {
             <div className="space-y-1">
               {roulette.lastResult.winners.map((w, i) => (
                 <div key={i} className="flex justify-between text-sm">
-                  <span className="text-card-foreground">{w.displayName}</span>
+                  <span className="text-card-foreground">
+                    {w.displayName} <span className="text-muted-foreground">({translateBetType(w.betType)})</span>
+                  </span>
                   <span className="font-medium text-accent">+{w.payout} coins</span>
                 </div>
               ))}

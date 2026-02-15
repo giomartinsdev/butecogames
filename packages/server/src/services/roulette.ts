@@ -215,6 +215,7 @@ async function resolveRound() {
       winners.push({
         userId: bet.userId,
         displayName: betDisplay?.displayName ?? "Unknown",
+        betType: bet.betType as RouletteBetType,
         payout,
       });
     } else {

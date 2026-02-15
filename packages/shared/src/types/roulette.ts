@@ -50,5 +50,6 @@ export interface RouletteBetDisplay {
 export interface RouletteWinner {
   userId: string;
   displayName: string;
+  betType: RouletteBetType;
   payout: number;
 }
