@@ -16,6 +16,12 @@ const adminActions: AdminAction[] = [
     icon: "⚽",
   },
   {
+    title: "Usuários",
+    description: "Gerenciar usuários, cargos e banimentos",
+    path: "/admin/users",
+    icon: "👥",
+  },
+  {
     title: "Configurações",
     description: "Configurar tempos da roleta e outros ajustes",
     path: "/admin/settings",
@@ -50,6 +56,12 @@ export function AdminPage() {
         </p>
       </div>
 
+      <div className="mb-8 rounded-lg border border-accent/20 bg-accent/10 p-4">
+        <p className="text-sm text-accent">
+          <strong>⚠️ Atenção:</strong> Você tem permissões de administrador. Use essas ferramentas com cuidado.
+        </p>
+      </div>
+
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {adminActions.map((action) => (
           <Link
@@ -64,38 +76,6 @@ export function AdminPage() {
             <p className="text-sm text-muted-foreground">{action.description}</p>
           </Link>
         ))}
-      </div>
-
-      <div className="mt-8 rounded-lg border border-border bg-card p-6">
-        <h2 className="text-xl font-bold text-card-foreground mb-4">
-          Informações do Sistema
-        </h2>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Seu Perfil:</span>
-            <span className="text-card-foreground font-medium">
-              {profile?.displayName} ({profile?.role})
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Level:</span>
-            <span className="text-card-foreground font-medium">
-              {profile?.level}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">XP:</span>
-            <span className="text-card-foreground font-medium">
-              {profile?.xp}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-8 rounded-lg border border-accent/20 bg-accent/10 p-4">
-        <p className="text-sm text-accent">
-          <strong>⚠️ Atenção:</strong> Você tem permissões de administrador. Use essas ferramentas com cuidado.
-        </p>
       </div>
     </div>
   );

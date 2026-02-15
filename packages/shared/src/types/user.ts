@@ -5,6 +5,8 @@ export interface UserProfile {
   xp: number;
   level: number;
   role: "user" | "admin";
+  banned: boolean;
+  bannedAt: string | null;
   achievements: string[];
   lastDailyReward: string | null;
   createdAt: string;

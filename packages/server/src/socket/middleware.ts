@@ -38,6 +38,10 @@ export async function socketAuthMiddleware(socket: Socket, next: (err?: Error) =
       });
     }
 
+    if (profile.banned) {
+      return next(new Error("Conta banida"));
+    }
+
     socket.data.userId = session.user.id;
     socket.data.displayName = profile.displayName;
     next();

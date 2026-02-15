@@ -6,6 +6,8 @@ export interface IUserProfile extends Document {
   xp: number;
   level: number;
   role: "user" | "admin";
+  banned: boolean;
+  bannedAt: Date | null;
   achievements: string[];
   lastDailyReward: Date | null;
   createdAt: Date;
@@ -19,6 +21,8 @@ const userProfileSchema = new Schema<IUserProfile>(
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    banned: { type: Boolean, default: false },
+    bannedAt: { type: Date, default: null },
     achievements: { type: [String], default: [] },
     lastDailyReward: { type: Date, default: null },
   },

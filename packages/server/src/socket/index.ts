@@ -8,6 +8,7 @@ import { setupEventBettingHandlers } from "./event-betting.js";
 import { initRouletteEngine } from "../services/roulette.js";
 import { setEventBettingIO } from "../services/event-betting.js";
 import { env } from "../config/env.js";
+import { setIO } from "./io-store.js";
 
 export async function setupSocket(httpServer: http.Server) {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
@@ -18,6 +19,7 @@ export async function setupSocket(httpServer: http.Server) {
   });
 
   io.use(socketAuthMiddleware);
+  setIO(io);
 
   // Setup event betting handlers and service
   setupEventBettingHandlers(io);

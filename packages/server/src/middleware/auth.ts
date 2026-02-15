@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { fromNodeHeaders } from "better-auth/node";
 import { getAuth } from "../lib/auth.js";
+import { UserProfile } from "../models/UserProfile.js";
 
 declare global {
   namespace Express {
@@ -34,6 +35,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
     req.user = session.user;
     req.session = session.session;
+
+    const profile = await UserProfile.findOne({ userId: session.user.id });
+    if (profile?.banned) {
+      res.status(403).json({ error: "Conta banida" });
+      return;
+    }
+
     next();
   } catch {
     res.status(401).json({ error: "Unauthorized" });

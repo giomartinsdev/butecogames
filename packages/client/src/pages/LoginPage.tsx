@@ -10,7 +10,7 @@ export function LoginPage() {
           className="mx-auto mb-2 h-75"
         />
         <p className="mt-4 text-lg text-muted-foreground">
-          A plataforma de jogos da comunidade do Buteco
+          A plataforma de jogos da comunidade do Buteco dos Devs
         </p>
         <div className="mt-8">
           <DiscordLoginButton />
