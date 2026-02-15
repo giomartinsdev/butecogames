@@ -73,7 +73,7 @@ function setupGifCursor(
     width: ${size}px;
     height: ${size}px;
     pointer-events: none;
-    z-index: 99999;
+    z-index: 2147483647;
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('${cursorUrl}');
