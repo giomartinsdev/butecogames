@@ -156,7 +156,7 @@ async function resolveRound() {
 
     if (won) {
       const multiplier = getPayoutMultiplier(bet.betType as RouletteBetType);
-      const payout = bet.amount * multiplier;
+      const payout = Math.ceil(bet.amount * multiplier);
       bet.payout = payout;
 
       await creditWallet(bet.userId, payout, "bet_won", {

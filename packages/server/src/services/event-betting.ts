@@ -145,7 +145,7 @@ export async function placeEventBet(
     ...eventObj,
     _id: eventObj._id.toString(),
   } as any);
-  const potentialPayout = amount * (odds[option] ?? 1.01); // Fallback to minimum odds
+  const potentialPayout = Math.ceil(amount * (odds[option] ?? 1.01)); // Fallback to minimum odds
 
   // Create bet record
   await EventBettingBet.create({
@@ -211,7 +211,7 @@ export async function resolveEvent(
   }> = [];
 
   for (const bet of winningBets) {
-    const actualPayout = bet.amount * (finalOdds[result] ?? 1.01); // Fallback to minimum odds
+    const actualPayout = Math.ceil(bet.amount * (finalOdds[result] ?? 1.01)); // Fallback to minimum odds
 
     // Update bet record
     await EventBettingBet.findByIdAndUpdate(bet._id, {

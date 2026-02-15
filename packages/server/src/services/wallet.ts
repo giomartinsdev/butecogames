@@ -37,6 +37,7 @@ export async function creditWallet(
   type: TransactionType,
   fields?: TransactionFields,
 ): Promise<IWallet> {
+  amount = Math.ceil(amount);
   const wallet = await Wallet.findOneAndUpdate(
     { userId },
     {
@@ -67,6 +68,7 @@ export async function debitWallet(
   type: TransactionType,
   fields?: TransactionFields,
 ): Promise<IWallet> {
+  amount = Math.ceil(amount);
   const wallet = await Wallet.findOneAndUpdate(
     { userId, balance: { $gte: amount } },
     {
