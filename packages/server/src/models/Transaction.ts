@@ -6,11 +6,10 @@ export interface ITransaction extends Document {
   type: TransactionType;
   amount: number;
   balanceAfter: number;
-  metadata?: {
-    gameId?: string;
-    roundId?: string;
-    achievementId?: string;
-  };
+  gameId?: string;
+  roundId?: string;
+  eventId?: string;
+  achievementId?: string;
   createdAt: Date;
 }
 
@@ -24,11 +23,10 @@ const transactionSchema = new Schema<ITransaction>(
     },
     amount: { type: Number, required: true },
     balanceAfter: { type: Number, required: true },
-    metadata: {
-      gameId: String,
-      roundId: String,
-      achievementId: String,
-    },
+    gameId: String,
+    roundId: String,
+    eventId: String,
+    achievementId: String,
   },
   { timestamps: true },
 );

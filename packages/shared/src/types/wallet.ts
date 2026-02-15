@@ -21,11 +21,9 @@ export interface Transaction {
   type: TransactionType;
   amount: number;
   balanceAfter: number;
-  metadata?: {
-    gameId?: string;
-    roundId?: string;
-    eventId?: string;
-    achievementId?: string;
-  };
+  gameId?: string;
+  roundId?: string;
+  eventId?: string;
+  achievementId?: string;
   createdAt: string;
 }

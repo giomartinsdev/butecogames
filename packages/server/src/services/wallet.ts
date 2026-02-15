@@ -24,11 +24,18 @@ export async function getOrCreateWallet(userId: string): Promise<IWallet> {
   }
 }
 
+interface TransactionFields {
+  gameId?: string;
+  roundId?: string;
+  eventId?: string;
+  achievementId?: string;
+}
+
 export async function creditWallet(
   userId: string,
   amount: number,
   type: TransactionType,
-  metadata?: { gameId?: string; roundId?: string; eventId?: string; achievementId?: string },
+  fields?: TransactionFields,
 ): Promise<IWallet> {
   const wallet = await Wallet.findOneAndUpdate(
     { userId },
@@ -48,7 +55,7 @@ export async function creditWallet(
     type,
     amount,
     balanceAfter: wallet.balance,
-    metadata,
+    ...fields,
   });
 
   return wallet;
@@ -58,7 +65,7 @@ export async function debitWallet(
   userId: string,
   amount: number,
   type: TransactionType,
-  metadata?: { gameId?: string; roundId?: string; eventId?: string; achievementId?: string },
+  fields?: TransactionFields,
 ): Promise<IWallet> {
   const wallet = await Wallet.findOneAndUpdate(
     { userId, balance: { $gte: amount } },
@@ -78,7 +85,7 @@ export async function debitWallet(
     type,
     amount: -amount,
     balanceAfter: wallet.balance,
-    metadata,
+    ...fields,
   });
 
   return wallet;

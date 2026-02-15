@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { RouletteBetType } from "@butecogames/shared";
+import type { RouletteBetType, TransactionType } from "@butecogames/shared";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -38,4 +38,26 @@ export function translateBetType(betType: RouletteBetType): string {
   }
 
   return betType;
+}
+
+const transactionTypeLabels: Record<TransactionType, string> = {
+  initial_balance: "Saldo inicial",
+  daily_reward: "Recompensa diária",
+  bet_placed: "Aposta",
+  bet_won: "Ganho",
+  achievement_reward: "Conquista",
+};
+
+export function translateTransactionType(type: TransactionType): string {
+  return transactionTypeLabels[type] ?? type;
+}
+
+const gameLabels: Record<string, string> = {
+  roulette: "Roleta",
+  "event-betting": "Apostas em Eventos",
+};
+
+export function translateGameId(gameId: string | undefined): string | null {
+  if (!gameId) return null;
+  return gameLabels[gameId] ?? gameId;
 }

@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet, useTransactions } from "@/hooks/useWallet.js";
-import { formatCoins } from "@/lib/utils.js";
+import { formatCoins, translateTransactionType, translateGameId } from "@/lib/utils.js";
 
 export function ProfilePage() {
   const { user } = useAuth();
@@ -52,6 +52,7 @@ export function ProfilePage() {
             <thead className="border-b border-border bg-muted">
               <tr>
                 <th className="px-4 py-2 text-left text-muted-foreground font-medium">Tipo</th>
+                <th className="px-4 py-2 text-left text-muted-foreground font-medium">Jogo</th>
                 <th className="px-4 py-2 text-right text-muted-foreground font-medium">Valor</th>
                 <th className="px-4 py-2 text-right text-muted-foreground font-medium">Saldo</th>
                 <th className="px-4 py-2 text-right text-muted-foreground font-medium">Data</th>
@@ -60,7 +61,10 @@ export function ProfilePage() {
             <tbody>
               {txData?.transactions.map((tx) => (
                 <tr key={tx._id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-2 text-card-foreground">{tx.type}</td>
+                  <td className="px-4 py-2 text-card-foreground">{translateTransactionType(tx.type)}</td>
+                  <td className="px-4 py-2 text-muted-foreground">
+                    {translateGameId(tx.gameId) ?? "—"}
+                  </td>
                   <td
                     className={`px-4 py-2 text-right font-medium ${
                       tx.amount > 0 ? "text-green-400" : "text-red-400"
