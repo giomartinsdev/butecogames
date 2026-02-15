@@ -3,10 +3,10 @@ export const SPORTS_BETTING_MIN_BET = 10;
 export const SPORTS_BETTING_MAX_BET = 10000;
 export const SPORTS_BETTING_MAX_BETS_PER_EVENT = 3;
 
-export const SPORT_CATEGORIES = {
-  football: "Futebol",
-  basketball: "Basquete",
-  volleyball: "Vôlei",
+export const EVENT_CATEGORIES = {
+  sports: "Esportes",
   esports: "eSports",
+  politics: "Política",
+  entertainment: "Entretenimento",
   other: "Outro",
 } as const;

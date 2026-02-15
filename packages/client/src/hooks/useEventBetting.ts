@@ -8,7 +8,7 @@ import type {
 import { useSocket } from "./useSocket.js";
 import { toast } from "sonner";
 
-export function useSportsBetting() {
+export function useEventBetting() {
   const { socket } = useSocket();
   const [events, setEvents] = useState<
     Array<SportsBettingEvent & { odds: EventOdds }>

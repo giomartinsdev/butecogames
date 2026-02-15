@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { SportCategory, BetOption, EventStatus } from "@butecogames/shared";
-import { SPORT_CATEGORIES } from "@butecogames/shared";
+import type { EventCategory, BetOption, EventStatus } from "@butecogames/shared";
+import { EVENT_CATEGORIES } from "@butecogames/shared";
 import { apiClient } from "@/api/client.js";
 import { toast } from "sonner";
 import { formatCoins } from "@/lib/utils.js";
@@ -18,7 +18,7 @@ const getStatusLabel = (status: EventStatus): string => {
   return labels[status];
 };
 
-export function AdminSportsBettingPage() {
+export function AdminEventBettingPage() {
   const { isAdmin, isLoading: profileLoading } = useUserProfile();
   const queryClient = useQueryClient();
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -27,10 +27,11 @@ export function AdminSportsBettingPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "football" as SportCategory,
+    category: "sports" as EventCategory,
     team1: "",
     team2: "",
     startTime: "",
+    allowDraw: true,
   });
 
   // Fetch all events
@@ -61,10 +62,11 @@ export function AdminSportsBettingPage() {
       setFormData({
         title: "",
         description: "",
-        category: "football",
+        category: "sports",
         team1: "",
         team2: "",
         startTime: "",
+        allowDraw: true,
       });
       queryClient.invalidateQueries({ queryKey: ["admin-sports-betting-events"] });
     },
@@ -192,12 +194,12 @@ export function AdminSportsBettingPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      category: e.target.value as SportCategory,
+                      category: e.target.value as EventCategory,
                     })
                   }
                   className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
                 >
-                  {Object.entries(SPORT_CATEGORIES).map(([key, label]) => (
+                  {Object.entries(EVENT_CATEGORIES).map(([key, label]) => (
                     <option key={key} value={key}>
                       {label}
                     </option>
@@ -261,6 +263,21 @@ export function AdminSportsBettingPage() {
               />
             </div>
 
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="allowDraw"
+                checked={formData.allowDraw}
+                onChange={(e) =>
+                  setFormData({ ...formData, allowDraw: e.target.checked })
+                }
+                className="h-4 w-4 rounded border-border bg-muted text-primary focus:ring-1 focus:ring-primary"
+              />
+              <label htmlFor="allowDraw" className="text-sm text-card-foreground">
+                Permitir apostas em empate
+              </label>
+            </div>
+
             <button
               type="submit"
               disabled={createEventMutation.isPending}
@@ -288,7 +305,7 @@ export function AdminSportsBettingPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-xs text-muted-foreground mb-1">
-                    {SPORT_CATEGORIES[event.category as SportCategory]}
+                    {EVENT_CATEGORIES[event.category as EventCategory]}
                   </div>
                   <h3 className="font-bold text-card-foreground">
                     {event.title}
@@ -506,17 +523,19 @@ export function AdminSportsBettingPage() {
                     >
                       ✓ {event.team1}
                     </button>
-                    <button
-                      onClick={() =>
-                        resolveEventMutation.mutate({
-                          eventId: event._id,
-                          result: "draw",
-                        })
-                      }
-                      className="rounded bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground hover:bg-accent/90"
-                    >
-                      ✓ Empate
-                    </button>
+                    {event.allowDraw && (
+                      <button
+                        onClick={() =>
+                          resolveEventMutation.mutate({
+                            eventId: event._id,
+                            result: "draw",
+                          })
+                        }
+                        className="rounded bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground hover:bg-accent/90"
+                      >
+                        ✓ Empate
+                      </button>
+                    )}
                     <button
                       onClick={() =>
                         resolveEventMutation.mutate({

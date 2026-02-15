@@ -2,20 +2,21 @@ export type BetOption = "team1" | "team2" | "draw";
 
 export type EventStatus = "upcoming" | "in_progress" | "completed" | "cancelled";
 
-export type SportCategory =
-  | "football"
-  | "basketball"
-  | "volleyball"
+export type EventCategory =
+  | "sports"
   | "esports"
+  | "politics"
+  | "entertainment"
   | "other";
 
 export interface SportsBettingEvent {
   _id: string;
   title: string;
   description: string;
-  category: SportCategory;
+  category: EventCategory;
   team1: string;
   team2: string;
+  allowDraw: boolean;
   startTime: Date;
   status: EventStatus;
   totalPool: number;
@@ -42,5 +43,5 @@ export interface SportsBettingBet {
 export interface EventOdds {
   team1: number;
   team2: number;
-  draw: number;
+  draw?: number;
 }

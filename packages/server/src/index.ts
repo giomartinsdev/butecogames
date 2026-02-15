@@ -4,7 +4,7 @@ import { connectDatabase } from "./db/connection.js";
 import { createAuth } from "./lib/auth.js";
 import { createApp } from "./app.js";
 import { setupSocket } from "./socket/index.js";
-import { autoCloseEvents } from "./services/sports-betting.js";
+import { autoCloseEvents } from "./services/event-betting.js";
 
 async function main() {
   console.log("[Server] Starting Buteco Games server...");

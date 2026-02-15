@@ -2,7 +2,7 @@ import type { Server as SocketIOServer } from "socket.io";
 import type {
   BetOption,
   EventOdds,
-  SportsBettingEvent as ISportsBettingEvent,
+  SportsBettingEvent as IEventBettingEvent,
 } from "@butecogames/shared";
 import {
   SPORTS_BETTING_HOUSE_EDGE,
@@ -10,8 +10,8 @@ import {
   SPORTS_BETTING_MAX_BET,
   SPORTS_BETTING_MAX_BETS_PER_EVENT,
 } from "@butecogames/shared";
-import { SportsBettingEvent } from "../models/SportsBettingEvent.js";
-import { SportsBettingBet } from "../models/SportsBettingBet.js";
+import { EventBettingEvent } from "../models/EventBettingEvent.js";
+import { EventBettingBet } from "../models/EventBettingBet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
 import { UserProfile } from "../models/UserProfile.js";
 
@@ -41,7 +41,7 @@ export async function broadcastEventsUpdate(): Promise<void> {
  * Minimum odds of 1.01 (1% return)
  */
 export function calculateOdds(
-  event: ISportsBettingEvent | (ISportsBettingEvent & { _id: any })
+  event: IEventBettingEvent | (IEventBettingEvent & { _id: any })
 ): EventOdds {
   const payoutPool = event.totalPool * (1 - SPORTS_BETTING_HOUSE_EDGE);
 
@@ -49,13 +49,19 @@ export function calculateOdds(
     event.team1Pool > 0 ? payoutPool / event.team1Pool : 1.01;
   const team2Odds =
     event.team2Pool > 0 ? payoutPool / event.team2Pool : 1.01;
-  const drawOdds = event.drawPool > 0 ? payoutPool / event.drawPool : 1.01;
 
-  return {
+  const odds: EventOdds = {
     team1: Math.max(1.01, team1Odds),
     team2: Math.max(1.01, team2Odds),
-    draw: Math.max(1.01, drawOdds),
   };
+
+  // Only include draw odds if draw is allowed
+  if (event.allowDraw) {
+    const drawOdds = event.drawPool > 0 ? payoutPool / event.drawPool : 1.01;
+    odds.draw = Math.max(1.01, drawOdds);
+  }
+
+  return odds;
 }
 
 /**
@@ -75,9 +81,14 @@ export async function placeSportsBet(
   }
 
   // Get event
-  const event = await SportsBettingEvent.findById(eventId);
+  const event = await EventBettingEvent.findById(eventId);
   if (!event) {
     throw new Error("Evento não encontrado");
+  }
+
+  // Validate draw bet if draw is not allowed
+  if (option === "draw" && !event.allowDraw) {
+    throw new Error("Apostas em empate não são permitidas para este evento");
   }
 
   // Validate event status
@@ -91,7 +102,7 @@ export async function placeSportsBet(
   }
 
   // Check user's bet count for this event
-  const userBetCount = await SportsBettingBet.countDocuments({
+  const userBetCount = await EventBettingBet.countDocuments({
     eventId,
     userId,
   });
@@ -116,7 +127,7 @@ export async function placeSportsBet(
       : "drawPool";
 
   // Update event pools atomically
-  await SportsBettingEvent.findByIdAndUpdate(eventId, {
+  await EventBettingEvent.findByIdAndUpdate(eventId, {
     $inc: {
       totalPool: amount,
       [poolField]: amount,
@@ -124,7 +135,7 @@ export async function placeSportsBet(
   });
 
   // Get updated event for odds calculation
-  const updatedEvent = await SportsBettingEvent.findById(eventId);
+  const updatedEvent = await EventBettingEvent.findById(eventId);
   if (!updatedEvent) {
     throw new Error("Erro ao atualizar evento");
   }
@@ -134,10 +145,10 @@ export async function placeSportsBet(
     ...eventObj,
     _id: eventObj._id.toString(),
   } as any);
-  const potentialPayout = amount * odds[option];
+  const potentialPayout = amount * (odds[option] ?? 1.01); // Fallback to minimum odds
 
   // Create bet record
-  await SportsBettingBet.create({
+  await EventBettingBet.create({
     eventId,
     userId,
     option,
@@ -162,7 +173,7 @@ export async function resolveEvent(
   result: BetOption
 ): Promise<void> {
   // Update event status and result
-  const event = await SportsBettingEvent.findByIdAndUpdate(
+  const event = await EventBettingEvent.findByIdAndUpdate(
     eventId,
     {
       status: "completed",
@@ -183,7 +194,7 @@ export async function resolveEvent(
   } as any);
 
   // Find all winning bets
-  const winningBets = await SportsBettingBet.find({
+  const winningBets = await EventBettingBet.find({
     eventId,
     option: result,
   });
@@ -196,10 +207,10 @@ export async function resolveEvent(
   }> = [];
 
   for (const bet of winningBets) {
-    const actualPayout = bet.amount * finalOdds[result];
+    const actualPayout = bet.amount * (finalOdds[result] ?? 1.01); // Fallback to minimum odds
 
     // Update bet record
-    await SportsBettingBet.findByIdAndUpdate(bet._id, {
+    await EventBettingBet.findByIdAndUpdate(bet._id, {
       actualPayout,
       won: true,
     });
@@ -220,7 +231,7 @@ export async function resolveEvent(
   }
 
   // Mark losing bets
-  await SportsBettingBet.updateMany(
+  await EventBettingBet.updateMany(
     {
       eventId,
       option: { $ne: result },
@@ -248,7 +259,7 @@ export async function resolveEvent(
 export async function autoCloseEvents(): Promise<void> {
   const now = new Date();
 
-  await SportsBettingEvent.updateMany(
+  await EventBettingEvent.updateMany(
     {
       status: "upcoming",
       startTime: { $lte: now },
@@ -264,9 +275,9 @@ export async function autoCloseEvents(): Promise<void> {
  */
 export async function getEventsWithOdds(
   status?: string
-): Promise<Array<ISportsBettingEvent & { odds: EventOdds }>> {
+): Promise<Array<IEventBettingEvent & { odds: EventOdds }>> {
   const filter = status ? { status } : {};
-  const events = await SportsBettingEvent.find(filter).sort({ startTime: 1 });
+  const events = await EventBettingEvent.find(filter).sort({ startTime: 1 });
 
   return events.map((event) => {
     const eventObj = event.toObject();
@@ -291,7 +302,7 @@ export async function getUserBets(userId: string, eventId?: string) {
     filter.eventId = eventId;
   }
 
-  return SportsBettingBet.find(filter)
+  return EventBettingBet.find(filter)
     .populate("eventId")
     .sort({ createdAt: -1 });
 }

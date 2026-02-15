@@ -6,11 +6,12 @@ const sportsBettingEventSchema = new Schema(
     description: { type: String, required: true },
     category: {
       type: String,
-      enum: ["football", "basketball", "volleyball", "esports", "other"],
+      enum: ["sports", "esports", "politics", "entertainment", "other"],
       required: true,
     },
     team1: { type: String, required: true },
     team2: { type: String, required: true },
+    allowDraw: { type: Boolean, default: true },
     startTime: { type: Date, required: true },
     status: {
       type: String,
@@ -31,7 +32,7 @@ const sportsBettingEventSchema = new Schema(
   { timestamps: true }
 );
 
-export const SportsBettingEvent = model(
-  "SportsBettingEvent",
+export const EventBettingEvent = model(
+  "SportsBettingEvent",  // Keep collection name for backward compatibility
   sportsBettingEventSchema
 );

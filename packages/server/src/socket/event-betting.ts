@@ -7,7 +7,7 @@ import type { AuthenticatedSocket } from "./middleware.js";
 import {
   placeSportsBet,
   getEventsWithOdds,
-} from "../services/sports-betting.js";
+} from "../services/event-betting.js";
 
 export function setupSportsBettingHandlers(
   io: SocketIOServer<ClientToServerEvents, ServerToClientEvents>

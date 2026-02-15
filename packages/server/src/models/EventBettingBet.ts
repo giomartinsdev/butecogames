@@ -22,7 +22,7 @@ const sportsBettingBetSchema = new Schema(
   { timestamps: true }
 );
 
-export const SportsBettingBet = model(
-  "SportsBettingBet",
+export const EventBettingBet = model(
+  "SportsBettingBet",  // Keep collection name for backward compatibility
   sportsBettingBetSchema
 );

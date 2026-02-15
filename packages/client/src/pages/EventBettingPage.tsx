@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSportsBetting } from "@/hooks/useSportsBetting.js";
-import { EventCard } from "@/components/sports-betting/EventCard.js";
-import { ActiveBets } from "@/components/sports-betting/ActiveBets.js";
-import { EventHistory } from "@/components/sports-betting/EventHistory.js";
+import { useEventBetting } from "@/hooks/useEventBetting.js";
+import { EventCard } from "@/components/event-betting/EventCard.js";
+import { ActiveBets } from "@/components/event-betting/ActiveBets.js";
+import { EventHistory } from "@/components/event-betting/EventHistory.js";
 import { apiClient } from "@/api/client.js";
 
 type FilterTab = "upcoming" | "in_progress" | "completed";
 
-export function SportsBettingPage() {
+export function EventBettingPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>("upcoming");
-  const { events, placeBet } = useSportsBetting();
+  const { events, placeBet } = useEventBetting();
 
   // Fetch user's bets
   const { data: myBetsData } = useQuery({
-    queryKey: ["sports-betting-my-bets"],
+    queryKey: ["event-betting-my-bets"],
     queryFn: async () => {
-      const res = await apiClient.get("/api/sports-betting/my-bets");
+      const res = await apiClient.get("/api/event-betting/my-bets");
       return res.json();
     },
   });

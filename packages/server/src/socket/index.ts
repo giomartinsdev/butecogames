@@ -4,9 +4,9 @@ import type { ClientToServerEvents, ServerToClientEvents } from "@butecogames/sh
 import { socketAuthMiddleware } from "./middleware.js";
 import { registerRouletteHandlers } from "./roulette.js";
 import { registerChatHandlers } from "./chat.js";
-import { setupSportsBettingHandlers } from "./sports-betting.js";
+import { setupSportsBettingHandlers } from "./event-betting.js";
 import { initRouletteEngine } from "../services/roulette.js";
-import { setSportsBettingIO } from "../services/sports-betting.js";
+import { setSportsBettingIO } from "../services/event-betting.js";
 import { env } from "../config/env.js";
 
 export async function setupSocket(httpServer: http.Server) {

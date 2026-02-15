@@ -2,13 +2,13 @@ import { Router } from "express";
 import type { BetOption } from "@butecogames/shared";
 import { requireAuth } from "../middleware/auth.js";
 import { requireAdmin } from "../middleware/admin.js";
-import { SportsBettingEvent } from "../models/SportsBettingEvent.js";
+import { EventBettingEvent } from "../models/EventBettingEvent.js";
 import {
   getEventsWithOdds,
   getUserBets,
   resolveEvent,
   broadcastEventsUpdate,
-} from "../services/sports-betting.js";
+} from "../services/event-betting.js";
 
 const router = Router();
 
@@ -34,7 +34,7 @@ router.get("/events", requireAuth, async (req, res) => {
  */
 router.get("/events/:eventId", requireAuth, async (req, res) => {
   try {
-    const event = await SportsBettingEvent.findById(req.params.eventId);
+    const event = await EventBettingEvent.findById(req.params.eventId);
     if (!event) {
       return res.status(404).json({ error: "Evento não encontrado" });
     }
@@ -79,7 +79,7 @@ router.get("/my-bets", requireAuth, async (req, res) => {
  */
 router.post("/events", requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { title, description, category, team1, team2, startTime } = req.body;
+    const { title, description, category, team1, team2, startTime, allowDraw } = req.body;
 
     // Validate required fields
     if (!title || !description || !category || !team1 || !team2 || !startTime) {
@@ -95,18 +95,19 @@ router.post("/events", requireAuth, requireAdmin, async (req, res) => {
     }
 
     // Validate category
-    const validCategories = ["football", "basketball", "volleyball", "esports", "other"];
+    const validCategories = ["sports", "esports", "politics", "entertainment", "other"];
     if (!validCategories.includes(category)) {
       return res.status(400).json({ error: "Categoria inválida" });
     }
 
-    const event = await SportsBettingEvent.create({
+    const event = await EventBettingEvent.create({
       title,
       description,
       category,
       team1,
       team2,
       startTime: start,
+      allowDraw: allowDraw !== undefined ? allowDraw : true, // Default to true
     });
 
     // Broadcast updated events to all users
@@ -132,7 +133,7 @@ router.put("/events/:eventId/status", requireAuth, requireAdmin, async (req, res
       return res.status(400).json({ error: "Status inválido" });
     }
 
-    const event = await SportsBettingEvent.findById(req.params.eventId);
+    const event = await EventBettingEvent.findById(req.params.eventId);
     if (!event) {
       return res.status(404).json({ error: "Evento não encontrado" });
     }
@@ -189,7 +190,7 @@ router.post("/events/:eventId/resolve", requireAuth, requireAdmin, async (req, r
       return res.status(400).json({ error: "Resultado inválido" });
     }
 
-    const event = await SportsBettingEvent.findById(req.params.eventId);
+    const event = await EventBettingEvent.findById(req.params.eventId);
     if (!event) {
       return res.status(404).json({ error: "Evento não encontrado" });
     }

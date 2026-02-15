@@ -1,5 +1,5 @@
 import type { SportsBettingEvent, EventOdds } from "@butecogames/shared";
-import { SPORT_CATEGORIES } from "@butecogames/shared";
+import { EVENT_CATEGORIES } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 
 interface EventHistoryProps {
@@ -34,7 +34,7 @@ export function EventHistory({ events }: EventHistoryProps) {
           <div className="flex items-start justify-between">
             <div>
               <div className="text-xs text-muted-foreground mb-1">
-                {SPORT_CATEGORIES[event.category]}
+                {EVENT_CATEGORIES[event.category]}
               </div>
               <h4 className="font-bold text-card-foreground">{event.title}</h4>
               <p className="text-xs text-muted-foreground mt-1">

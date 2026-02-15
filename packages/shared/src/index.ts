@@ -18,11 +18,11 @@ export type {
 export type {
   BetOption,
   EventStatus,
-  SportCategory,
+  EventCategory,
   SportsBettingEvent,
   SportsBettingBet,
   EventOdds,
-} from "./types/sports-betting.js";
+} from "./types/event-betting.js";
 
 // Constants
 export {
@@ -49,5 +49,5 @@ export {
   SPORTS_BETTING_MIN_BET,
   SPORTS_BETTING_MAX_BET,
   SPORTS_BETTING_MAX_BETS_PER_EVENT,
-  SPORT_CATEGORIES,
-} from "./constants/sports-betting.js";
+  EVENT_CATEGORIES,
+} from "./constants/event-betting.js";

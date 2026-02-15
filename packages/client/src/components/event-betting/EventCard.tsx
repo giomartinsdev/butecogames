@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SportsBettingEvent, EventOdds, BetOption } from "@butecogames/shared";
-import { SPORT_CATEGORIES, SPORTS_BETTING_MIN_BET, SPORTS_BETTING_MAX_BET } from "@butecogames/shared";
+import { EVENT_CATEGORIES, SPORTS_BETTING_MIN_BET, SPORTS_BETTING_MAX_BET } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 import { cn } from "@/lib/utils.js";
 
@@ -41,7 +41,7 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
       <div className="flex items-start justify-between">
         <div>
           <div className="text-xs text-muted-foreground mb-1">
-            {SPORT_CATEGORIES[event.category]}
+            {EVENT_CATEGORIES[event.category]}
           </div>
           <h3 className="font-bold text-card-foreground">{event.title}</h3>
           <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
@@ -68,7 +68,7 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
       </div>
 
       {/* Betting options */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className={cn("grid gap-2", event.allowDraw ? "grid-cols-3" : "grid-cols-2")}>
         <button
           onClick={() => setSelectedOption("team1")}
           disabled={!canBet}
@@ -90,24 +90,26 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
           </div>
         </button>
 
-        <button
-          onClick={() => setSelectedOption("draw")}
-          disabled={!canBet}
-          className={cn(
-            "rounded-lg border p-3 transition-all disabled:opacity-40",
-            selectedOption === "draw"
-              ? "border-primary bg-primary/10"
-              : "border-border bg-muted hover:border-primary/50"
-          )}
-        >
-          <div className="text-sm font-medium text-card-foreground mb-1">Empate</div>
-          <div className="text-xs text-accent font-bold">
-            {event.odds.draw.toFixed(2)}x
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            Pool: {formatCoins(event.drawPool)}
-          </div>
-        </button>
+        {event.allowDraw && (
+          <button
+            onClick={() => setSelectedOption("draw")}
+            disabled={!canBet}
+            className={cn(
+              "rounded-lg border p-3 transition-all disabled:opacity-40",
+              selectedOption === "draw"
+                ? "border-primary bg-primary/10"
+                : "border-border bg-muted hover:border-primary/50"
+            )}
+          >
+            <div className="text-sm font-medium text-card-foreground mb-1">Empate</div>
+            <div className="text-xs text-accent font-bold">
+              {event.odds.draw?.toFixed(2)}x
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              Pool: {formatCoins(event.drawPool)}
+            </div>
+          </button>
+        )}
 
         <button
           onClick={() => setSelectedOption("team2")}
@@ -199,9 +201,9 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
               : `Apostar ${formatCoins(amount)} coins`}
           </button>
 
-          {selectedOption && canBet && (
+          {selectedOption && canBet && event.odds[selectedOption] && (
             <p className="text-center text-xs text-muted-foreground">
-              Possível retorno: ~{formatCoins(Math.floor(amount * event.odds[selectedOption]))} coins
+              Possível retorno: ~{formatCoins(Math.floor(amount * event.odds[selectedOption]!))} coins
             </p>
           )}
         </div>

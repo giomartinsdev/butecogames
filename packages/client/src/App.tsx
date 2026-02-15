@@ -7,9 +7,9 @@ import { LoginPage } from "@/pages/LoginPage.js";
 import { DashboardPage } from "@/pages/DashboardPage.js";
 import { GamesPage } from "@/pages/GamesPage.js";
 import { RoulettePage } from "@/pages/RoulettePage.js";
-import { SportsBettingPage } from "@/pages/SportsBettingPage.js";
+import { EventBettingPage } from "@/pages/EventBettingPage.js";
 import { AdminPage } from "@/pages/AdminPage.js";
-import { AdminSportsBettingPage } from "@/pages/AdminSportsBettingPage.js";
+import { AdminEventBettingPage } from "@/pages/AdminEventBettingPage.js";
 import { ProfilePage } from "@/pages/ProfilePage.js";
 import { LeaderboardPage } from "@/pages/LeaderboardPage.js";
 
@@ -79,9 +79,9 @@ function AppRoutes() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/games" element={<GamesPage />} />
         <Route path="/games/roulette" element={<RoulettePage />} />
-        <Route path="/games/sports-betting" element={<SportsBettingPage />} />
+        <Route path="/games/sports-betting" element={<EventBettingPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/sports-betting" element={<AdminSportsBettingPage />} />
+        <Route path="/admin/sports-betting" element={<AdminEventBettingPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
       </Route>

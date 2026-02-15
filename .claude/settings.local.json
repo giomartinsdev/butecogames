@@ -5,7 +5,9 @@
       "Bash(node --version:*)",
       "Bash(pnpm --version:*)",
       "Bash(docker:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(git mv:*)",
+      "Bash(pnpm run build:shared:*)"
     ]
   }
 }

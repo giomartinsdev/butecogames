@@ -1,5 +1,5 @@
 import type { RouletteBetDisplay, RouletteBetType, RouletteWinner } from "./roulette.js";
-import type { BetOption, SportsBettingEvent, EventOdds } from "./sports-betting.js";
+import type { BetOption, SportsBettingEvent, EventOdds } from "./event-betting.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
