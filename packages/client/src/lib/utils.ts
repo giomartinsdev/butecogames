@@ -46,6 +46,8 @@ const transactionTypeLabels: Record<TransactionType, string> = {
   bet_placed: "Aposta",
   bet_won: "Ganho",
   achievement_reward: "Conquista",
+  transfer_sent: "Transferência enviada",
+  transfer_received: "Transferência recebida",
 };
 
 export function translateTransactionType(type: TransactionType): string {

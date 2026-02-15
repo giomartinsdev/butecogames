@@ -93,6 +93,33 @@ export async function debitWallet(
   return wallet;
 }
 
+export async function transferCoins(
+  senderId: string,
+  recipientId: string,
+  amount: number,
+): Promise<IWallet> {
+  if (senderId === recipientId) {
+    throw new Error("Você não pode transferir para si mesmo");
+  }
+
+  if (amount <= 0) {
+    throw new Error("Valor inválido");
+  }
+
+  amount = Math.ceil(amount);
+
+  // Ensure recipient wallet exists before debiting sender
+  await getOrCreateWallet(recipientId);
+
+  // Debit sender
+  const senderWallet = await debitWallet(senderId, amount, "transfer_sent");
+
+  // Credit recipient
+  await creditWallet(recipientId, amount, "transfer_received");
+
+  return senderWallet;
+}
+
 export async function claimDailyReward(
   userId: string,
 ): Promise<{ wallet: IWallet; claimed: boolean }> {

@@ -28,6 +28,9 @@ export async function setupSocket(httpServer: http.Server) {
   io.on("connection", (socket) => {
     console.log(`[Socket] Connected: ${socket.data.displayName} (${socket.data.userId})`);
 
+    // Join a user-specific room for targeted events (e.g. wallet updates)
+    socket.join(`user:${socket.data.userId}`);
+
     registerRouletteHandlers(io, socket);
     registerChatHandlers(io, socket);
 

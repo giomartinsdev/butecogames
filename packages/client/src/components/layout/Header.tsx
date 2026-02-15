@@ -4,12 +4,14 @@ import { useWallet } from "@/hooks/useWallet.js";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { formatCoins } from "@/lib/utils.js";
 import { Link } from "react-router-dom";
+import { TransferModal } from "@/components/wallet/TransferModal.js";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const { data: wallet } = useWallet();
   const { isAdmin } = useUserProfile();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleMouseEnter() {
@@ -88,6 +90,15 @@ export function Header() {
                 {dropdownOpen && (
                   <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-border bg-card shadow-lg z-50">
                     <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          setTransferOpen(true);
+                        }}
+                        className="block w-full px-4 py-2 text-left text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
+                      >
+                        Transferir
+                      </button>
                       <Link
                         to="/settings"
                         className="block px-4 py-2 text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
@@ -112,6 +123,7 @@ export function Header() {
           )}
         </div>
       </div>
+      <TransferModal open={transferOpen} onClose={() => setTransferOpen(false)} />
     </header>
   );
 }

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchWallet, fetchTransactions, claimDailyReward } from "@/api/wallet.js";
+import { fetchWallet, fetchTransactions, claimDailyReward, transferCoins } from "@/api/wallet.js";
 
 export function useWallet() {
   return useQuery({
@@ -21,6 +21,19 @@ export function useClaimDailyReward() {
 
   return useMutation({
     mutationFn: claimDailyReward,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+}
+
+export function useTransferCoins() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ recipientName, amount }: { recipientName: string; amount: number }) =>
+      transferCoins(recipientName, amount),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });

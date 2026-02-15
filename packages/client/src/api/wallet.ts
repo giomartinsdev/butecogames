@@ -33,3 +33,14 @@ export function claimDailyReward() {
     method: "POST",
   });
 }
+
+interface TransferResponse {
+  wallet: Wallet;
+}
+
+export function transferCoins(recipientName: string, amount: number) {
+  return apiFetch<TransferResponse>("/api/wallet/transfer", {
+    method: "POST",
+    body: JSON.stringify({ recipientName, amount }),
+  });
+}

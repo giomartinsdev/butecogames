@@ -13,7 +13,9 @@ export type TransactionType =
   | "daily_reward"
   | "bet_placed"
   | "bet_won"
-  | "achievement_reward";
+  | "achievement_reward"
+  | "transfer_sent"
+  | "transfer_received";
 
 export interface Transaction {
   _id: string;

@@ -1,11 +1,27 @@
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Header } from "./Header.js";
 import { useSocket } from "@/hooks/useSocket.js";
 import { useCursorEffect } from "@/hooks/useCursorEffect.js";
 
 export function Layout() {
-  useSocket();
+  const { socket } = useSocket();
   useCursorEffect();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleWalletUpdated = () => {
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+    };
+
+    socket.on("wallet:updated", handleWalletUpdated);
+    return () => {
+      socket.off("wallet:updated", handleWalletUpdated);
+    };
+  }, [socket, queryClient]);
 
   return (
     <div className="min-h-screen">

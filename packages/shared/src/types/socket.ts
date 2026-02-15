@@ -71,4 +71,5 @@ export interface ServerToClientEvents {
   }) => void;
   "event:error": (data: { message: string }) => void;
   "settings:cursor_size": (data: { cursorSize: number }) => void;
+  "wallet:updated": (data: { balance: number }) => void;
 }

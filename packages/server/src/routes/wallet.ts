@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth.js";
 import { Transaction } from "../models/Transaction.js";
-import { getOrCreateWallet, claimDailyReward } from "../services/wallet.js";
+import { UserProfile } from "../models/UserProfile.js";
+import { Wallet } from "../models/Wallet.js";
+import { getOrCreateWallet, claimDailyReward, transferCoins } from "../services/wallet.js";
+import { getIO } from "../socket/io-store.js";
 
 const router = Router();
 
@@ -51,6 +54,55 @@ router.post("/daily-reward", requireAuth, async (req, res) => {
     res.json({ wallet, claimed });
   } catch (err) {
     res.status(500).json({ error: "Failed to claim daily reward" });
+  }
+});
+
+// Transfer coins to another user
+router.post("/transfer", requireAuth, async (req, res) => {
+  try {
+    const { recipientName, amount } = req.body;
+
+    if (!recipientName || typeof recipientName !== "string") {
+      res.status(400).json({ error: "Nome do destinatário é obrigatório" });
+      return;
+    }
+
+    if (!amount || typeof amount !== "number" || amount <= 0) {
+      res.status(400).json({ error: "Valor inválido" });
+      return;
+    }
+
+    const recipient = await UserProfile.findOne({
+      displayName: { $regex: new RegExp(`^${recipientName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+    });
+
+    if (!recipient) {
+      res.status(404).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    if (recipient.userId === req.user!.id) {
+      res.status(400).json({ error: "Você não pode transferir para si mesmo" });
+      return;
+    }
+
+    const wallet = await transferCoins(req.user!.id, recipient.userId, amount);
+
+    // Notify recipient in real-time
+    const recipientWallet = await Wallet.findOne({ userId: recipient.userId });
+    if (recipientWallet) {
+      getIO().to(`user:${recipient.userId}`).emit("wallet:updated", {
+        balance: recipientWallet.balance,
+      });
+    }
+
+    res.json({ wallet });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.status(500).json({ error: "Erro ao transferir coins" });
   }
 });
 
