@@ -50,8 +50,9 @@ export function useEventBetting() {
           : result === "option2"
           ? ev?.option2 ?? "Opção 2"
           : "Empate";
-      toast.info(`Evento encerrado: ${resultLabel}`, {
-        description: winners.length > 0 ? `${winners.length} vencedor(es)` : undefined,
+      const eventName = ev?.title ?? "Evento";
+      toast.info(`${eventName} encerrado`, {
+        description: `Vencedor: ${resultLabel}${winners.length > 0 ? ` — ${winners.length} vencedor(es)` : ""}`,
       });
 
       // Update event in state
