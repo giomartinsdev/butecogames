@@ -3,6 +3,7 @@ import type { EventBettingEvent, EventOdds, BetOption } from "@butecogames/share
 import { EVENT_CATEGORIES, EVENT_BETTING_MIN_BET, EVENT_BETTING_MAX_BET } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 import { cn } from "@/lib/utils.js";
+import { BetAmountInput } from "@/components/ui/BetAmountInput.js";
 
 interface EventCardProps {
   event: EventBettingEvent & { odds: EventOdds };
@@ -10,20 +11,18 @@ interface EventCardProps {
   disabled?: boolean;
 }
 
-const QUICK_AMOUNTS = [10, 50, 100, 500, 1000];
-
 export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProps) {
   const [selectedOption, setSelectedOption] = useState<BetOption | null>(null);
-  const [amount, setAmount] = useState(EVENT_BETTING_MIN_BET);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   const isUpcoming = event.status === "upcoming";
   const canBet = isUpcoming && !disabled && (!event.startTime || new Date(event.startTime) > new Date());
 
-  const handlePlaceBet = () => {
+  const handlePlaceBet = (amount: number) => {
     if (!selectedOption || !canBet) return;
     onPlaceBet(event._id, selectedOption, amount);
     setSelectedOption(null);
-    setAmount(EVENT_BETTING_MIN_BET);
+    setResetTrigger((t) => t + 1);
   };
 
   const formatDate = (date: Date) => {
@@ -153,63 +152,24 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
 
       {/* Betting controls */}
       {isUpcoming && (
-        <div className="space-y-2 pt-2 border-t border-border">
+        <div className="pt-2 border-t border-border">
           {!canBet && (
-            <div className="rounded bg-muted p-2 text-center text-xs text-muted-foreground">
+            <div className="rounded bg-muted p-2 text-center text-xs text-muted-foreground mb-2">
               {event.startTime && new Date(event.startTime) <= new Date()
                 ? "Este evento já começou"
                 : "Apostas indisponíveis"}
             </div>
           )}
 
-          <div>
-            <label className="text-xs text-muted-foreground">Valor da aposta</label>
-            <input
-              type="number"
-              min={EVENT_BETTING_MIN_BET}
-              max={EVENT_BETTING_MAX_BET}
-              value={amount}
-              disabled={!canBet}
-              onChange={(e) =>
-                setAmount(
-                  Math.max(
-                    EVENT_BETTING_MIN_BET,
-                    Math.min(EVENT_BETTING_MAX_BET, Number(e.target.value))
-                  )
-                )
-              }
-              className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-sm text-card-foreground outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-1">
-            {QUICK_AMOUNTS.map((v) => (
-              <button
-                key={v}
-                onClick={() => setAmount(v)}
-                disabled={!canBet}
-                className="rounded bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors disabled:opacity-40"
-              >
-                {formatCoins(v)}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={handlePlaceBet}
-            disabled={!selectedOption || !canBet}
-            className="w-full rounded-lg bg-accent py-2 text-sm font-bold text-accent-foreground hover:bg-accent/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {!selectedOption
-              ? "Selecione uma opção"
-              : `Apostar ${formatCoins(amount)} coins`}
-          </button>
-
-          {selectedOption && canBet && event.odds[selectedOption] && (
-            <p className="text-center text-xs text-muted-foreground">
-              Possível retorno: ~{formatCoins(Math.floor(amount * event.odds[selectedOption]!))} coins
-            </p>
-          )}
+          <BetAmountInput
+            minBet={EVENT_BETTING_MIN_BET}
+            maxBet={EVENT_BETTING_MAX_BET}
+            disabled={!canBet}
+            hasSelection={!!selectedOption}
+            onPlaceBet={handlePlaceBet}
+            placeholderText="Selecione uma opção"
+            resetTrigger={resetTrigger}
+          />
         </div>
       )}
 

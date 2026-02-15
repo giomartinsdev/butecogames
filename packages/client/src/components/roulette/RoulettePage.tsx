@@ -54,17 +54,6 @@ export function RouletteGame() {
           </div>
         </div>
 
-        {/* Wheel */}
-        <div className="flex justify-center py-6">
-          <RouletteWheel
-            result={roulette.lastResult?.result ?? null}
-            spinning={isSpinning}
-          />
-        </div>
-
-        {/* Betting board */}
-        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen} />
-
         {/* Error display */}
         {roulette.error && (
           <div className="rounded-lg bg-destructive/20 px-4 py-2 text-sm text-destructive">
@@ -72,8 +61,13 @@ export function RouletteGame() {
           </div>
         )}
 
-        {/* Round history */}
-        <RoundHistory results={roulette.recentResults} />
+        {/* Wheel */}
+        <div className="flex justify-center py-6">
+          <RouletteWheel
+            result={roulette.lastResult?.result ?? null}
+            spinning={isSpinning}
+          />
+        </div>
 
         {/* Winners display */}
         {roulette.lastResult && roulette.lastResult.winners.length > 0 && (
@@ -89,6 +83,12 @@ export function RouletteGame() {
             </div>
           </div>
         )}
+
+        {/* Betting board */}
+        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen} />
+
+        {/* Round history */}
+        <RoundHistory results={roulette.recentResults} />
       </div>
 
       {/* Sidebar */}

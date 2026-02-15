@@ -80,7 +80,7 @@ export async function debitWallet(
     { new: true },
   );
 
-  if (!wallet) throw new Error("Insufficient balance");
+  if (!wallet) throw new Error("Você não possui coins suficientes");
 
   await Transaction.create({
     userId,
