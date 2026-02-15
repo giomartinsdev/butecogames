@@ -42,7 +42,7 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                 onClick={() => onBet(`number:${n}` as RouletteBetType)}
                 disabled={disabled}
                 className={cn(
-                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40",
+                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
                   colorMap[color],
                 )}
               >
@@ -61,7 +61,7 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                 onClick={() => onBet(`number:${n}` as RouletteBetType)}
                 disabled={disabled}
                 className={cn(
-                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40",
+                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
                   colorMap[color],
                 )}
               >
@@ -80,7 +80,7 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                 onClick={() => onBet(`number:${n}` as RouletteBetType)}
                 disabled={disabled}
                 className={cn(
-                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40",
+                  "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
                   colorMap[color],
                 )}
               >
@@ -96,21 +96,21 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
         <button
           onClick={() => onBet("dozen:1")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           1-12
         </button>
         <button
           onClick={() => onBet("dozen:2")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           13-24
         </button>
         <button
           onClick={() => onBet("dozen:3")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           25-36
         </button>
@@ -120,42 +120,42 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
         <button
           onClick={() => onBet("low")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           1-18
         </button>
         <button
           onClick={() => onBet("even")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           Par
         </button>
         <button
           onClick={() => onBet("red")}
           disabled={disabled}
-          className="rounded bg-roulette-red px-2 py-2 text-sm font-medium text-white hover:bg-roulette-red/80 transition-colors disabled:opacity-40"
+          className="rounded bg-roulette-red px-2 py-2 text-sm font-medium text-white hover:bg-roulette-red/80 transition-colors disabled:opacity-40 cursor-pointer"
         >
           Verm.
         </button>
         <button
           onClick={() => onBet("black")}
           disabled={disabled}
-          className="rounded bg-roulette-black border border-gray-600 px-2 py-2 text-sm font-medium text-white hover:bg-roulette-black/80 transition-colors disabled:opacity-40"
+          className="rounded bg-roulette-black border border-gray-600 px-2 py-2 text-sm font-medium text-white hover:bg-roulette-black/80 transition-colors disabled:opacity-40 cursor-pointer"
         >
           Preto
         </button>
         <button
           onClick={() => onBet("odd")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           Impar
         </button>
         <button
           onClick={() => onBet("high")}
           disabled={disabled}
-          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40"
+          className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
         >
           19-36
         </button>
