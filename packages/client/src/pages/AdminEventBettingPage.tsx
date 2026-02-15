@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { EventCategory, BetOption, EventStatus } from "@butecogames/shared";
 import { EVENT_CATEGORIES } from "@butecogames/shared";
@@ -152,9 +152,17 @@ export function AdminEventBettingPage() {
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-card-foreground mb-2">
-            Administração - Apostas Esportivas
-          </h1>
+          <div className="flex items-center gap-4 mb-2">
+            <Link
+              to="/admin"
+              className="text-sm text-muted-foreground hover:text-card-foreground transition-colors"
+            >
+              ← Voltar
+            </Link>
+            <h1 className="text-3xl font-bold text-card-foreground">
+              Eventos
+            </h1>
+          </div>
           <p className="text-muted-foreground">
             Gerenciar eventos e resultados
           </p>

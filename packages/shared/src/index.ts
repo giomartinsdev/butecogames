@@ -23,6 +23,10 @@ export type {
   EventBettingBet,
   EventOdds,
 } from "./types/event-betting.js";
+export type {
+  RouletteSettings,
+  AppSettings,
+} from "./types/settings.js";
 
 // Constants
 export {

@@ -30,11 +30,9 @@ export function EventBettingPage() {
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-card-foreground mb-2">
-          Apostas Esportivas
+          Eventos
         </h1>
-        <p className="text-muted-foreground">
-          Aposte em eventos esportivos com odds dinâmicas
-        </p>
+        <p className="text-muted-foreground"></p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

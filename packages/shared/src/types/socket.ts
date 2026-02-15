@@ -48,7 +48,14 @@ export interface ServerToClientEvents {
   "user:level_up": (data: { level: number; xp: number }) => void;
   "user:achievement": (data: { achievementId: string; name: string; reward: number }) => void;
   "event:events_update": (data: { events: EventBettingEvent[] }) => void;
-  "event:odds_update": (data: { eventId: string; odds: EventOdds }) => void;
+  "event:odds_update": (data: {
+    eventId: string;
+    odds: EventOdds;
+    totalPool: number;
+    option1Pool: number;
+    option2Pool: number;
+    drawPool: number;
+  }) => void;
   "event:bet_placed": (data: {
     eventId: string;
     option: BetOption;

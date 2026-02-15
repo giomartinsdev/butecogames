@@ -26,9 +26,13 @@ export function useEventBetting() {
       setEvents(data.events as any);
     });
 
-    socket.on("event:odds_update", ({ eventId, odds }) => {
+    socket.on("event:odds_update", ({ eventId, odds, totalPool, option1Pool, option2Pool, drawPool }) => {
       setEvents((prev) =>
-        prev.map((e) => (e._id === eventId ? { ...e, odds } : e))
+        prev.map((e) =>
+          e._id === eventId
+            ? { ...e, odds, totalPool, option1Pool, option2Pool, drawPool }
+            : e
+        )
       );
       // Invalidate wallet and my bets as odds update means a bet was placed
       queryClient.invalidateQueries({ queryKey: ["wallet"] });

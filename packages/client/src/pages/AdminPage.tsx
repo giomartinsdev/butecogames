@@ -10,12 +10,17 @@ interface AdminAction {
 
 const adminActions: AdminAction[] = [
   {
-    title: "Apostas Esportivas",
-    description: "Criar e gerenciar eventos de apostas esportivas",
+    title: "Eventos",
+    description: "Criar e gerenciar eventos de apostas",
     path: "/admin/event-betting",
     icon: "⚽",
   },
-  // Add more admin actions here as needed
+  {
+    title: "Configurações",
+    description: "Configurar tempos da roleta e outros ajustes",
+    path: "/admin/settings",
+    icon: "⚙️",
+  },
 ];
 
 export function AdminPage() {

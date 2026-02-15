@@ -1,9 +1,6 @@
 import crypto from "node:crypto";
 import type { Server } from "socket.io";
 import {
-  BETTING_PHASE_DURATION,
-  SPINNING_PHASE_DURATION,
-  RESULT_DISPLAY_DURATION,
   RED_NUMBERS,
   ROULETTE_PAYOUTS,
   MIN_BET,
@@ -14,6 +11,7 @@ import type { RouletteBetType, RouletteBetDisplay, RouletteWinner, ClientToServe
 import { RouletteRound, type IRouletteRound } from "../models/RouletteRound.js";
 import { RouletteBet } from "../models/RouletteBet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
+import { getSettings } from "./settings.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -98,21 +96,24 @@ async function startBettingPhase() {
     startedAt: new Date(),
   });
 
+  const { bettingDuration } = getSettings().roulette;
+  const bettingMs = bettingDuration * 1000;
+
   state.currentRound = round;
   state.currentBets = [];
-  state.bettingEndTime = Date.now() + BETTING_PHASE_DURATION;
+  state.bettingEndTime = Date.now() + bettingMs;
 
   io.to("roulette").emit("roulette:betting_open", {
     roundNumber,
     seedHash,
-    timeRemaining: BETTING_PHASE_DURATION / 1000,
+    timeRemaining: bettingDuration,
   });
 
   console.log(`[Roulette] Round ${roundNumber} - Betting open (seed hash: ${seedHash.slice(0, 8)}...)`);
 
   state.timer = setTimeout(() => {
     closeBettingPhase();
-  }, BETTING_PHASE_DURATION);
+  }, bettingMs);
 }
 
 async function closeBettingPhase() {
@@ -126,7 +127,7 @@ async function closeBettingPhase() {
 
   state.timer = setTimeout(() => {
     resolveRound();
-  }, SPINNING_PHASE_DURATION);
+  }, getSettings().roulette.spinningDuration * 1000);
 }
 
 async function resolveRound() {
@@ -194,7 +195,7 @@ async function resolveRound() {
   // Wait before starting next round
   state.timer = setTimeout(() => {
     startBettingPhase();
-  }, RESULT_DISPLAY_DURATION);
+  }, getSettings().roulette.resultDuration * 1000);
 }
 
 export async function placeBet(

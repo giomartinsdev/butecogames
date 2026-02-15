@@ -14,9 +14,9 @@ export const GAMES: GameInfo[] = [
   },
   {
     id: "event-betting",
-    name: "Apostas Esportivas",
+    name: "Eventos",
     description:
-      "Aposte em eventos esportivos e eSports com odds dinâmicas!",
+      "Aposte em eventos esportivos, eSports e muito mais com odds dinâmicas!",
     minPlayers: 1,
     maxPlayers: 100,
     available: true,

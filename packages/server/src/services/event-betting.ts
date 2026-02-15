@@ -156,11 +156,15 @@ export async function placeEventBet(
     potentialPayout,
   });
 
-  // Broadcast odds update
+  // Broadcast odds and pool update
   if (io) {
     io.to("event-betting").emit("event:odds_update", {
       eventId: eventId,
       odds,
+      totalPool: updatedEvent.totalPool,
+      option1Pool: updatedEvent.option1Pool,
+      option2Pool: updatedEvent.option2Pool,
+      drawPool: updatedEvent.drawPool,
     });
   }
 }

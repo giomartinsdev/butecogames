@@ -13,7 +13,8 @@
       "Bash(/Users/bruno/projects/funnietech/buteco/butecogames/wipe-db.js:*)",
       "Bash(chmod:*)",
       "Bash(pnpm run docker:push:server:*)",
-      "Bash(pnpm run docker:push:client:*)"
+      "Bash(pnpm run docker:push:client:*)",
+      "Bash(pnpm run build:*)"
     ]
   }
 }

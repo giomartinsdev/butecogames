@@ -5,6 +5,7 @@ import { createAuth } from "./lib/auth.js";
 import { createApp } from "./app.js";
 import { setupSocket } from "./socket/index.js";
 import { autoCloseEvents } from "./services/event-betting.js";
+import { initSettings } from "./services/settings.js";
 
 async function main() {
   console.log("[Server] Starting Buteco Games server...");
@@ -12,7 +13,10 @@ async function main() {
   // 1. Connect to database
   await connectDatabase();
 
-  // 2. Initialize Better Auth (needs DB connection)
+  // 2. Initialize settings (needs DB connection)
+  await initSettings();
+
+  // 3. Initialize Better Auth (needs DB connection)
   createAuth();
 
   // 3. Create Express app
