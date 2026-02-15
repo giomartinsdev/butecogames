@@ -209,9 +209,8 @@ export function AdminEventBettingPage() {
             </div>
 
             <div>
-              <label className="text-sm text-muted-foreground">Descrição</label>
+              <label className="text-sm text-muted-foreground">Descrição (opcional)</label>
               <textarea
-                required
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -250,11 +249,10 @@ export function AdminEventBettingPage() {
 
             <div>
               <label className="text-sm text-muted-foreground">
-                Horário de Início
+                Horário de Início (opcional)
               </label>
               <input
                 type="datetime-local"
-                required
                 value={formData.startTime}
                 onChange={(e) =>
                   setFormData({ ...formData, startTime: e.target.value })
@@ -313,29 +311,33 @@ export function AdminEventBettingPage() {
                   <p className="text-sm text-muted-foreground mt-1">
                     {event.option1} vs {event.option2}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Início:{" "}
-                    {new Date(event.startTime).toLocaleString("pt-BR")}
-                  </p>
+                  {event.startTime && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Início:{" "}
+                      {new Date(event.startTime).toLocaleString("pt-BR")}
+                    </p>
+                  )}
                 </div>
                 <div className="rounded px-2 py-1 text-xs font-medium bg-muted">
                   {getStatusLabel(event.status)}
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className={`grid gap-2 text-xs ${event.allowDraw ? "grid-cols-3" : "grid-cols-2"}`}>
                 <div className="rounded bg-muted p-2">
                   <div className="text-muted-foreground">{event.option1}</div>
                   <div className="font-bold text-card-foreground">
                     {formatCoins(event.option1Pool)}
                   </div>
                 </div>
-                <div className="rounded bg-muted p-2">
-                  <div className="text-muted-foreground">Empate</div>
-                  <div className="font-bold text-card-foreground">
-                    {formatCoins(event.drawPool)}
+                {event.allowDraw && (
+                  <div className="rounded bg-muted p-2">
+                    <div className="text-muted-foreground">Empate</div>
+                    <div className="font-bold text-card-foreground">
+                      {formatCoins(event.drawPool)}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="rounded bg-muted p-2">
                   <div className="text-muted-foreground">{event.option2}</div>
                   <div className="font-bold text-card-foreground">

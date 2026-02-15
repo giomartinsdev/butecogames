@@ -96,8 +96,8 @@ export async function placeEventBet(
     throw new Error("Apostas só podem ser feitas em eventos que ainda não começaram");
   }
 
-  // Validate event hasn't started
-  if (new Date(event.startTime) <= new Date()) {
+  // Validate event hasn't started (only if startTime is set)
+  if (event.startTime && new Date(event.startTime) <= new Date()) {
     throw new Error("Este evento já começou");
   }
 
@@ -262,7 +262,7 @@ export async function autoCloseEvents(): Promise<void> {
   await EventBettingEvent.updateMany(
     {
       status: "upcoming",
-      startTime: { $lte: now },
+      startTime: { $ne: null, $lte: now },
     },
     {
       status: "in_progress",
@@ -277,7 +277,7 @@ export async function getEventsWithOdds(
   status?: string
 ): Promise<Array<IEventBettingEvent & { odds: EventOdds }>> {
   const filter = status ? { status } : {};
-  const events = await EventBettingEvent.find(filter).sort({ startTime: 1 });
+  const events = await EventBettingEvent.find(filter).sort({ startTime: 1, createdAt: 1 });
 
   return events.map((event) => {
     const eventObj = event.toObject();

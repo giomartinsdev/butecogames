@@ -17,7 +17,7 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
   const [amount, setAmount] = useState(EVENT_BETTING_MIN_BET);
 
   const isUpcoming = event.status === "upcoming";
-  const canBet = isUpcoming && !disabled && new Date(event.startTime) > new Date();
+  const canBet = isUpcoming && !disabled && (!event.startTime || new Date(event.startTime) > new Date());
 
   const handlePlaceBet = () => {
     if (!selectedOption || !canBet) return;
@@ -44,7 +44,9 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
             {EVENT_CATEGORIES[event.category]}
           </div>
           <h3 className="font-bold text-card-foreground">{event.title}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
+          {event.description && (
+            <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
+          )}
         </div>
         <div
           className={cn(
@@ -63,9 +65,11 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
       </div>
 
       {/* Start time */}
-      <div className="text-sm text-muted-foreground">
-        Início: {formatDate(event.startTime)}
-      </div>
+      {event.startTime && (
+        <div className="text-sm text-muted-foreground">
+          Início: {formatDate(event.startTime)}
+        </div>
+      )}
 
       {/* Betting options */}
       <div className={cn("grid gap-2", event.allowDraw ? "grid-cols-3" : "grid-cols-2")}>
@@ -152,7 +156,7 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
         <div className="space-y-2 pt-2 border-t border-border">
           {!canBet && (
             <div className="rounded bg-muted p-2 text-center text-xs text-muted-foreground">
-              {new Date(event.startTime) <= new Date()
+              {event.startTime && new Date(event.startTime) <= new Date()
                 ? "Este evento já começou"
                 : "Apostas indisponíveis"}
             </div>

@@ -82,16 +82,19 @@ router.post("/events", requireAuth, requireAdmin, async (req, res) => {
     const { title, description, category, option1, option2, startTime, allowDraw } = req.body;
 
     // Validate required fields
-    if (!title || !description || !category || !option1 || !option2 || !startTime) {
+    if (!title || !category || !option1 || !option2) {
       return res.status(400).json({ error: "Campos obrigatórios faltando" });
     }
 
-    // Validate startTime is in the future
-    const start = new Date(startTime);
-    if (start <= new Date()) {
-      return res.status(400).json({
-        error: "O horário de início deve estar no futuro",
-      });
+    // Validate startTime is in the future (if provided)
+    let start: Date | null = null;
+    if (startTime) {
+      start = new Date(startTime);
+      if (start <= new Date()) {
+        return res.status(400).json({
+          error: "O horário de início deve estar no futuro",
+        });
+      }
     }
 
     // Validate category

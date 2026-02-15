@@ -12,12 +12,12 @@ export type EventCategory =
 export interface EventBettingEvent {
   _id: string;
   title: string;
-  description: string;
+  description: string | null;
   category: EventCategory;
   option1: string;
   option2: string;
   allowDraw: boolean;
-  startTime: Date;
+  startTime: Date | null;
   status: EventStatus;
   totalPool: number;
   option1Pool: number;

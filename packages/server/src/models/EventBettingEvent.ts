@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 const eventBettingEventSchema = new Schema(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, default: null },
     category: {
       type: String,
       enum: ["sports", "esports", "politics", "entertainment", "other"],
@@ -12,7 +12,7 @@ const eventBettingEventSchema = new Schema(
     option1: { type: String, required: true },
     option2: { type: String, required: true },
     allowDraw: { type: Boolean, default: true },
-    startTime: { type: Date, required: true },
+    startTime: { type: Date, default: null },
     status: {
       type: String,
       enum: ["upcoming", "in_progress", "completed", "cancelled"],

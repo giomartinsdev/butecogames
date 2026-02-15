@@ -37,9 +37,11 @@ export function EventHistory({ events }: EventHistoryProps) {
                 {EVENT_CATEGORIES[event.category]}
               </div>
               <h4 className="font-bold text-card-foreground">{event.title}</h4>
-              <p className="text-xs text-muted-foreground mt-1">
-                {formatDate(event.startTime)}
-              </p>
+              {event.startTime && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {formatDate(event.startTime)}
+                </p>
+              )}
             </div>
             <div className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground">
               {event.status === "completed" ? "Concluído" : "Cancelado"}
