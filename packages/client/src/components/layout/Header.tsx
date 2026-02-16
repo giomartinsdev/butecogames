@@ -1,12 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet } from "@/hooks/useWallet.js";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { formatCoins } from "@/lib/utils.js";
 import { Link } from "react-router-dom";
 import { TransferModal } from "@/components/wallet/TransferModal.js";
+import type { SearchUser } from "@/api/wallet.js";
 import { OnlineUsers } from "./OnlineUsers.js";
 import { useOnlineUsersStore } from "@/stores/onlineUsersStore.js";
+import type { OnlineUser } from "@butecogames/shared";
+import { HandCoins, Settings, LogOut } from "lucide-react";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -15,7 +18,18 @@ export function Header() {
   const onlineUsers = useOnlineUsersStore((s) => s.users);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [transferUser, setTransferUser] = useState<SearchUser | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTransferFromOnline = useCallback((onlineUser: OnlineUser) => {
+    setTransferUser({
+      id: onlineUser.userId,
+      name: onlineUser.displayName,
+      image: onlineUser.avatar || null,
+      discordId: null,
+    });
+    setTransferOpen(true);
+  }, []);
 
   function handleMouseEnter() {
     if (closeTimeoutRef.current) {
@@ -68,7 +82,7 @@ export function Header() {
         <div className="flex items-center gap-4">
           {user && (
             <div className="flex items-center gap-3">
-              <OnlineUsers users={onlineUsers} />
+              <OnlineUsers users={onlineUsers} onTransferClick={handleTransferFromOnline} />
 
               {wallet && (
                 <div className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-accent">
@@ -94,22 +108,24 @@ export function Header() {
                 </div>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-border bg-card shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-3 w-48 rounded-lg border border-border bg-card shadow-lg z-50">
                     <div className="py-1">
                       <button
                         onClick={() => {
                           setDropdownOpen(false);
                           setTransferOpen(true);
                         }}
-                        className="block w-full px-4 py-2 text-left text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
                       >
+                        <HandCoins size={15} />
                         Transferir
                       </button>
                       <Link
                         to="/settings"
-                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
                         onClick={() => setDropdownOpen(false)}
                       >
+                        <Settings size={15} />
                         Configurações
                       </Link>
                       <button
@@ -117,8 +133,9 @@ export function Header() {
                           setDropdownOpen(false);
                           signOut();
                         }}
-                        className="block w-full px-4 py-2 text-left text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors"
                       >
+                        <LogOut size={15} />
                         Sair
                       </button>
                     </div>
@@ -129,7 +146,14 @@ export function Header() {
           )}
         </div>
       </div>
-      <TransferModal open={transferOpen} onClose={() => setTransferOpen(false)} />
+      <TransferModal
+        open={transferOpen}
+        onClose={() => {
+          setTransferOpen(false);
+          setTransferUser(null);
+        }}
+        preselectedUser={transferUser}
+      />
     </header>
   );
 }

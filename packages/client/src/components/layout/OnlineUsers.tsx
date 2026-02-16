@@ -1,31 +1,85 @@
+import { useState, useRef, useEffect } from "react";
 import type { OnlineUser } from "@butecogames/shared";
+import { HandCoins } from "lucide-react";
 
 interface OnlineUsersProps {
   users: OnlineUser[];
+  onTransferClick: (user: OnlineUser) => void;
 }
 
-const MAX_VISIBLE = 5;
+export function OnlineUsers({ users, onTransferClick }: OnlineUsersProps) {
+  const [open, setOpen] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-export function OnlineUsers({ users }: OnlineUsersProps) {
+  function handleMouseEnter() {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setOpen(true);
+  }
+
+  function handleMouseLeave() {
+    closeTimeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 200);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, []);
+
   if (users.length === 0) return null;
 
-  const visible = users.slice(0, MAX_VISIBLE);
-  const extra = users.length - MAX_VISIBLE;
-
   return (
-    <div className="flex items-center gap-1">
-      <div className="h-2 w-2 rounded-full bg-green-500" />
-      <div className="flex">
-        {extra > 0 && (
-          <div
-            className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-secondary text-xs font-medium text-secondary-foreground"
-            title={`+${extra} online`}
-          >
-            +{extra}
-          </div>
-        )}
+    <div
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="flex items-center gap-1 cursor-pointer">
+        <div className="h-2 w-2 rounded-full bg-green-500" />
+        <span className="text-xs text-muted-foreground">{users.length} online</span>
       </div>
-      <span className="text-xs text-muted-foreground">{users.length} online</span>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-4 w-64 rounded-lg border border-border bg-card shadow-lg z-50">
+          <div className="px-3 py-2 border-b border-border">
+            <span className="text-xs font-medium text-muted-foreground">
+              Usuários Online ({users.length})
+            </span>
+          </div>
+          <div className="overflow-y-auto" style={{ maxHeight: "250px" }}>
+            {users.map((user) => (
+              <div
+                key={user.userId}
+                className="flex items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors"
+              >
+                <img
+                  src={user.avatar || "/default-avatar.png"}
+                  alt={user.displayName}
+                  className="h-7 w-7 shrink-0 rounded-full object-cover"
+                />
+                <span className="min-w-0 flex-1 truncate text-sm text-card-foreground">
+                  {user.displayName}
+                </span>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    onTransferClick(user);
+                  }}
+                  className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-accent transition-colors"
+                  title={`Transferir coins para ${user.displayName}`}
+                >
+                  <HandCoins size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

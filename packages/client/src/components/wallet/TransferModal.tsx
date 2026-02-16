@@ -7,9 +7,10 @@ import { toast } from "sonner";
 interface TransferModalProps {
   open: boolean;
   onClose: () => void;
+  preselectedUser?: SearchUser | null;
 }
 
-export function TransferModal({ open, onClose }: TransferModalProps) {
+export function TransferModal({ open, onClose, preselectedUser }: TransferModalProps) {
   const [selectedUser, setSelectedUser] = useState<SearchUser | null>(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchUser[]>([]);
@@ -25,8 +26,10 @@ export function TransferModal({ open, onClose }: TransferModalProps) {
       setResults([]);
       setShowDropdown(false);
       setAmount("");
+    } else if (preselectedUser) {
+      setSelectedUser(preselectedUser);
     }
-  }, [open]);
+  }, [open, preselectedUser]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

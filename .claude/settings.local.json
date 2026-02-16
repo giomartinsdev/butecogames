@@ -18,7 +18,8 @@
       "WebFetch(domain:discord.com)",
       "WebFetch(domain:docs.discord.com)",
       "WebFetch(domain:www.better-auth.com)",
-      "Bash(mongosh:*)"
+      "Bash(mongosh:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
