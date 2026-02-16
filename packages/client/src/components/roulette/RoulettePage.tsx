@@ -10,8 +10,8 @@ import { ChatBox } from "@/components/chat/ChatBox.js";
 import { cn, translateBetType } from "@/lib/utils.js";
 
 export function RouletteGame() {
-  const roulette = useRoulette();
   const { user } = useUserProfile();
+  const roulette = useRoulette(user?.id);
   const [selectedBet, setSelectedBet] = useState<RouletteBetType | null>(null);
 
   const myBetCounts = useMemo(() => {

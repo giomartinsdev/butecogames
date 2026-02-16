@@ -20,8 +20,8 @@ router.get("/", requireAuth, async (req, res) => {
 
 router.put("/", requireAuth, async (req, res) => {
   try {
-    const { cursorSetId } = req.body;
-    const settings = await updateUserSettings(req.user!.id, { cursorSetId });
+    const { cursorSetId, soundEnabled } = req.body;
+    const settings = await updateUserSettings(req.user!.id, { cursorSetId, soundEnabled });
     const { general } = getSettings();
     res.json({ settings, cursorSize: general.cursorSize });
   } catch (err: unknown) {

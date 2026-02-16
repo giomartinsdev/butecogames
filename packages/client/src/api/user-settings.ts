@@ -10,7 +10,7 @@ export function fetchUserSettings() {
   return apiFetch<UserSettingsResponse>("/api/user-settings");
 }
 
-export function updateUserSettings(data: { cursorSetId: string }) {
+export function updateUserSettings(data: { cursorSetId?: string; soundEnabled?: boolean }) {
   return apiFetch<UserSettingsResponse>("/api/user-settings", {
     method: "PUT",
     body: JSON.stringify(data),

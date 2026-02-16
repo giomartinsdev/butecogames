@@ -9,13 +9,18 @@ import type { SearchUser } from "@/api/wallet.js";
 import { OnlineUsers } from "./OnlineUsers.js";
 import { useOnlineUsersStore } from "@/stores/onlineUsersStore.js";
 import type { OnlineUser } from "@butecogames/shared";
-import { HandCoins, Settings, LogOut } from "lucide-react";
+import { HandCoins, Settings, LogOut, Volume2, VolumeOff } from "lucide-react";
+import { useSoundStore } from "@/stores/soundStore.js";
+import { useUpdateUserSettings } from "@/hooks/useUserSettings.js";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const { data: wallet } = useWallet();
   const { isAdmin } = useUserProfile();
   const onlineUsers = useOnlineUsersStore((s) => s.users);
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const setSoundEnabled = useSoundStore((s) => s.setEnabled);
+  const updateSettings = useUpdateUserSettings();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferUser, setTransferUser] = useState<SearchUser | null>(null);
@@ -119,6 +124,17 @@ export function Header() {
                       >
                         <HandCoins size={15} />
                         Transferir
+                      </button>
+                      <button
+                        onClick={() => {
+                          const next = !soundEnabled;
+                          setSoundEnabled(next);
+                          updateSettings.mutate({ soundEnabled: next });
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-muted-foreground hover:text-card-foreground hover:bg-muted transition-colors"
+                      >
+                        {soundEnabled ? <Volume2 size={15} /> : <VolumeOff size={15} />}
+                        {soundEnabled ? "Sons ligados" : "Sons desligados"}
                       </button>
                       <Link
                         to="/settings"

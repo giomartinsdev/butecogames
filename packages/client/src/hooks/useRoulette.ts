@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSocketStore } from "@/stores/socketStore.js";
+import { useSoundStore } from "@/stores/soundStore.js";
 import { useQueryClient } from "@tanstack/react-query";
 import type {
   RouletteBetType,
@@ -26,7 +27,7 @@ interface RouletteState {
   maxBetsPerRound: number;
 }
 
-export function useRoulette() {
+export function useRoulette(userId?: string) {
   const socket = useSocketStore((s) => s.socket);
   const queryClient = useQueryClient();
 
@@ -43,6 +44,11 @@ export function useRoulette() {
     maxBet: DEFAULT_MAX_BET,
     maxBetsPerRound: DEFAULT_MAX_BETS_PER_ROUND,
   });
+
+  // Track current user's bets in this round via ref (accessible in socket callbacks)
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
+  const userHasBetsRef = useRef(false);
 
   // Countdown timer
   useEffect(() => {
@@ -70,6 +76,10 @@ export function useRoulette() {
     socket.on("connect", onReconnect);
 
     socket.on("roulette:state", (data) => {
+      const uid = userIdRef.current;
+      userHasBetsRef.current = uid
+        ? data.currentBets.some((b: RouletteBetDisplay) => b.userId === uid)
+        : false;
       setState((prev) => ({
         ...prev,
         roundNumber: data.roundNumber,
@@ -86,6 +96,7 @@ export function useRoulette() {
     });
 
     socket.on("roulette:betting_open", (data) => {
+      userHasBetsRef.current = false;
       setState((prev) => ({
         ...prev,
         roundNumber: data.roundNumber,
@@ -99,6 +110,10 @@ export function useRoulette() {
     });
 
     socket.on("roulette:bet_placed", (data) => {
+      const uid = userIdRef.current;
+      if (uid && data.userId === uid) {
+        userHasBetsRef.current = true;
+      }
       setState((prev) => ({
         ...prev,
         currentBets: [...prev.currentBets, data],
@@ -113,6 +128,11 @@ export function useRoulette() {
     });
 
     socket.on("roulette:result", (data) => {
+      const uid = userIdRef.current;
+      if (uid && userHasBetsRef.current) {
+        const won = data.winners.some((w: RouletteWinner) => w.userId === uid);
+        useSoundStore.getState().playSound(won ? "bet_win" : "bet_lost");
+      }
       setState((prev) => ({
         ...prev,
         status: "completed",
@@ -147,6 +167,7 @@ export function useRoulette() {
       if (!socket) return;
       setState((prev) => ({ ...prev, error: null }));
       socket.emit("roulette:place_bet", { betType, amount });
+      useSoundStore.getState().playSound("bet_placed");
     },
     [socket],
   );

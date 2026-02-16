@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import type { OnlineUser } from "@butecogames/shared";
 import { HandCoins } from "lucide-react";
 
@@ -32,6 +32,15 @@ export function OnlineUsers({ users, currentUserId, onTransferClick }: OnlineUse
     };
   }, []);
 
+  const sortedUsers = useMemo(() => {
+    if (!currentUserId) return users;
+    return [...users].sort((a, b) => {
+      if (a.userId === currentUserId) return -1;
+      if (b.userId === currentUserId) return 1;
+      return 0;
+    });
+  }, [users, currentUserId]);
+
   if (users.length === 0) return null;
 
   return (
@@ -53,7 +62,7 @@ export function OnlineUsers({ users, currentUserId, onTransferClick }: OnlineUse
             </span>
           </div>
           <div className="overflow-y-auto" style={{ maxHeight: "250px" }}>
-            {users.map((user) => (
+            {sortedUsers.map((user) => (
               <div
                 key={user.userId}
                 className="flex items-center gap-2.5 px-3 py-2 hover:bg-muted transition-colors"

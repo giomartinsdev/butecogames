@@ -18,7 +18,7 @@ export async function getOrCreateUserSettings(
 
 export async function updateUserSettings(
   userId: string,
-  updates: { cursorSetId?: string },
+  updates: { cursorSetId?: string; soundEnabled?: boolean },
 ): Promise<IUserSettings> {
   if (updates.cursorSetId) {
     const valid = CURSOR_SETS.some((cs) => cs.id === updates.cursorSetId);
@@ -27,9 +27,13 @@ export async function updateUserSettings(
     }
   }
 
+  const setFields: Record<string, unknown> = {};
+  if (updates.cursorSetId !== undefined) setFields.cursorSetId = updates.cursorSetId;
+  if (updates.soundEnabled !== undefined) setFields.soundEnabled = updates.soundEnabled;
+
   const doc = await UserSettings.findOneAndUpdate(
     { userId },
-    { $set: updates },
+    { $set: setFields },
     { new: true, runValidators: true, upsert: true },
   );
 

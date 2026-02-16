@@ -6,9 +6,10 @@ import type {
   BetOption,
 } from "@butecogames/shared";
 import { useSocket } from "./useSocket.js";
+import { useSoundStore } from "@/stores/soundStore.js";
 import { toast } from "sonner";
 
-export function useEventBetting() {
+export function useEventBetting(userId?: string) {
   const { socket } = useSocket();
   const [events, setEvents] = useState<
     Array<EventBettingEvent & { odds: EventOdds }>
@@ -16,6 +17,11 @@ export function useEventBetting() {
   const queryClient = useQueryClient();
   const eventsRef = useRef(events);
   eventsRef.current = events;
+
+  // Track events the current user has bet on this session
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
+  const userBetEventsRef = useRef(new Set<string>());
 
   useEffect(() => {
     if (!socket) return;
@@ -65,6 +71,14 @@ export function useEventBetting() {
         description: `Vencedor: ${resultLabel}${winners.length > 0 ? ` — ${winners.length} vencedor(es)` : ""}`,
       });
 
+      // Play win/loss sound if the user bet on this event
+      const uid = userIdRef.current;
+      if (uid && userBetEventsRef.current.has(eventId)) {
+        const won = winners.some((w) => w.userId === uid);
+        useSoundStore.getState().playSound(won ? "bet_win" : "bet_lost");
+        userBetEventsRef.current.delete(eventId);
+      }
+
       // Update event in state
       setEvents((prev) =>
         prev.map((e) =>
@@ -100,6 +114,8 @@ export function useEventBetting() {
       return;
     }
     socket.emit("event:place_bet", { eventId, option, amount });
+    useSoundStore.getState().playSound("bet_placed");
+    userBetEventsRef.current.add(eventId);
 
     // Optimistically invalidate my bets query to refetch after bet is placed
     queryClient.invalidateQueries({ queryKey: ["event-betting-my-bets"] });
