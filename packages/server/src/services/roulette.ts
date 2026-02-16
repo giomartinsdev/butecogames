@@ -336,7 +336,7 @@ export async function initRouletteEngine(socketIo: TypedIO) {
     const bets = await RouletteBet.find({ roundId: round._id });
     for (const bet of bets) {
       // Refund the bet amount back to the user
-      await creditWallet(bet.userId, bet.amount, "bet_won", {
+      await creditWallet(bet.userId, bet.amount, "bet_refund", {
         gameId: "roulette",
         roundId: round._id.toString(),
       });

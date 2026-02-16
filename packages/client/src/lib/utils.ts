@@ -45,6 +45,7 @@ const transactionTypeLabels: Record<TransactionType, string> = {
   daily_reward: "Recompensa diária",
   bet_placed: "Aposta",
   bet_won: "Ganho",
+  bet_refund: "Reembolso",
   achievement_reward: "Conquista",
   transfer_sent: "Transferência enviada",
   transfer_received: "Transferência recebida",

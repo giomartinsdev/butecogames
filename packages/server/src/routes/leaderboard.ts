@@ -34,24 +34,34 @@ async function getLeaderboardData() {
   const profiles = await UserProfile.find({ userId: { $in: allUserIds } }).lean();
   const profileMap = new Map(profiles.map((p) => [p.userId, p]));
 
-  const enrichCoins = coinLeaders.map((w, i) => ({
-    rank: i + 1,
+  function assignRanks<T>(items: T[], getValue: (item: T) => number) {
+    let rank = 1;
+    return items.map((item, i) => {
+      if (i > 0 && getValue(item) < getValue(items[i - 1])) {
+        rank = i + 1;
+      }
+      return { item, rank };
+    });
+  }
+
+  const enrichCoins = assignRanks(coinLeaders, (w) => w.balance).map(({ item: w, rank }) => ({
+    rank,
     userId: w.userId,
     displayName: profileMap.get(w.userId)?.displayName ?? "Unknown",
     level: profileMap.get(w.userId)?.level ?? 1,
     value: w.balance,
   }));
 
-  const enrichXp = xpLeaders.map((u, i) => ({
-    rank: i + 1,
+  const enrichXp = assignRanks(xpLeaders, (u) => u.xp).map(({ item: u, rank }) => ({
+    rank,
     userId: u.userId,
     displayName: u.displayName,
     level: u.level,
     value: u.xp,
   }));
 
-  const enrichWins = wageredLeaders.map((w, i) => ({
-    rank: i + 1,
+  const enrichWins = assignRanks(wageredLeaders, (w) => w.totalWon).map(({ item: w, rank }) => ({
+    rank,
     userId: w.userId,
     displayName: profileMap.get(w.userId)?.displayName ?? "Unknown",
     level: profileMap.get(w.userId)?.level ?? 1,

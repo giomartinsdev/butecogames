@@ -13,6 +13,7 @@ export type TransactionType =
   | "daily_reward"
   | "bet_placed"
   | "bet_won"
+  | "bet_refund"
   | "achievement_reward"
   | "transfer_sent"
   | "transfer_received";
