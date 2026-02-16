@@ -9,7 +9,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: url("/bg.png") center / cover no-repeat;
+  /* background: url("/bg.png") center / cover no-repeat; */
   opacity: 0.1;
   z-index: -1;
   pointer-events: none;

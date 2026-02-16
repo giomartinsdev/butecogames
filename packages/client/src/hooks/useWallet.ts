@@ -24,6 +24,7 @@ export function useClaimDailyReward() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
   });
 }
