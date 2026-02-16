@@ -19,6 +19,23 @@ async function checkGuildMembership(accessToken: string): Promise<boolean> {
   }
 }
 
+async function fetchGuildDisplayName(accessToken: string): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://discord.com/api/v10/users/@me/guilds/${env.DISCORD_GUILD_ID}/member`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    if (!res.ok) return null;
+    const member = (await res.json()) as {
+      nick?: string | null;
+      user?: { global_name?: string | null; username?: string };
+    };
+    return member.nick ?? member.user?.global_name ?? member.user?.username ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function createAuth() {
   if (authInstance) return authInstance;
 
@@ -32,7 +49,7 @@ export function createAuth() {
       discord: {
         clientId: env.DISCORD_CLIENT_ID,
         clientSecret: env.DISCORD_CLIENT_SECRET,
-        scope: ["identify", "email", "guilds"],
+        scope: ["identify", "email", "guilds", "guilds.members.read"],
       },
     },
     session: {
@@ -70,10 +87,24 @@ export function createAuth() {
         });
         if (!account?.accessToken) return;
 
-        const isMember = await checkGuildMembership(
-          account.accessToken as string,
-        );
-        if (isMember) return;
+        const accessToken = account.accessToken as string;
+        const isMember = await checkGuildMembership(accessToken);
+        if (isMember) {
+          // Update display name from guild nickname
+          const displayName = await fetchGuildDisplayName(accessToken);
+          if (displayName) {
+            const { UserProfile } = await import("../models/UserProfile.js");
+            await UserProfile.findOneAndUpdate(
+              { userId },
+              { $set: { displayName } },
+            );
+            await db.collection("user").updateOne(
+              { $or: [{ id: userId }, { _id: userId }] },
+              { $set: { name: displayName } },
+            );
+          }
+          return;
+        }
 
         // Not a guild member — revoke session and redirect to login with error
         await db.collection("session").deleteOne({ token: sessionToken });
