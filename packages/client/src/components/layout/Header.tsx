@@ -5,11 +5,14 @@ import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { formatCoins } from "@/lib/utils.js";
 import { Link } from "react-router-dom";
 import { TransferModal } from "@/components/wallet/TransferModal.js";
+import { OnlineUsers } from "./OnlineUsers.js";
+import { useOnlineUsersStore } from "@/stores/onlineUsersStore.js";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const { data: wallet } = useWallet();
   const { isAdmin } = useUserProfile();
+  const onlineUsers = useOnlineUsersStore((s) => s.users);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -65,6 +68,8 @@ export function Header() {
         <div className="flex items-center gap-4">
           {user && (
             <div className="flex items-center gap-3">
+              <OnlineUsers users={onlineUsers} />
+
               {wallet && (
                 <div className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-accent">
                   {formatCoins(wallet.balance)} coins

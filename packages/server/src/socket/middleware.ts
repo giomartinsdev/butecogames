@@ -7,6 +7,7 @@ export interface AuthenticatedSocket extends Socket {
   data: {
     userId: string;
     displayName: string;
+    image: string;
   };
 }
 
@@ -44,6 +45,7 @@ export async function socketAuthMiddleware(socket: Socket, next: (err?: Error) =
 
     socket.data.userId = session.user.id;
     socket.data.displayName = profile.displayName;
+    socket.data.image = session.user.image ?? "";
     next();
   } catch {
     next(new Error("Authentication failed"));

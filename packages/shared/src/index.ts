@@ -1,5 +1,5 @@
 // Types
-export type { UserProfile, PublicPlayer } from "./types/user.js";
+export type { UserProfile, PublicPlayer, OnlineUser } from "./types/user.js";
 export type { GameId, GameInfo } from "./types/game.js";
 export type { Wallet, Transaction, TransactionType } from "./types/wallet.js";
 export type {

@@ -1,5 +1,6 @@
 import type { RouletteBetDisplay, RouletteBetType, RouletteWinner } from "./roulette.js";
 import type { BetOption, EventBettingEvent, EventOdds } from "./event-betting.js";
+import type { OnlineUser } from "./user.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
@@ -72,4 +73,7 @@ export interface ServerToClientEvents {
   "event:error": (data: { message: string }) => void;
   "settings:cursor_size": (data: { cursorSize: number }) => void;
   "wallet:updated": (data: { balance: number }) => void;
+  "presence:online_users": (data: { users: OnlineUser[] }) => void;
+  "presence:user_joined": (data: { user: OnlineUser }) => void;
+  "presence:user_left": (data: { userId: string }) => void;
 }

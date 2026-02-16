@@ -9,6 +9,7 @@ import { initRouletteEngine } from "../services/roulette.js";
 import { setEventBettingIO } from "../services/event-betting.js";
 import { env } from "../config/env.js";
 import { setIO } from "./io-store.js";
+import { userConnected, userDisconnected, getOnlineUsers } from "../services/presence.js";
 
 export async function setupSocket(httpServer: http.Server) {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
@@ -26,16 +27,30 @@ export async function setupSocket(httpServer: http.Server) {
   setEventBettingIO(io);
 
   io.on("connection", (socket) => {
-    console.log(`[Socket] Connected: ${socket.data.displayName} (${socket.data.userId})`);
+    const { userId, displayName, image } = socket.data;
+    console.log(`[Socket] Connected: ${displayName} (${userId})`);
 
     // Join a user-specific room for targeted events (e.g. wallet updates)
-    socket.join(`user:${socket.data.userId}`);
+    socket.join(`user:${userId}`);
+
+    // Presence tracking
+    const isNewUser = userConnected(userId, displayName, image);
+    socket.emit("presence:online_users", { users: getOnlineUsers() });
+    if (isNewUser) {
+      socket.broadcast.emit("presence:user_joined", {
+        user: { userId, displayName, avatar: image },
+      });
+    }
 
     registerRouletteHandlers(io, socket);
     registerChatHandlers(io, socket);
 
     socket.on("disconnect", () => {
-      console.log(`[Socket] Disconnected: ${socket.data.displayName}`);
+      console.log(`[Socket] Disconnected: ${displayName}`);
+      const isFullyOffline = userDisconnected(userId);
+      if (isFullyOffline) {
+        io.emit("presence:user_left", { userId });
+      }
     });
   });
 

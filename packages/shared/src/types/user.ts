@@ -19,3 +19,9 @@ export interface PublicPlayer {
   avatar: string;
   level: number;
 }
+
+export interface OnlineUser {
+  userId: string;
+  displayName: string;
+  avatar: string;
+}

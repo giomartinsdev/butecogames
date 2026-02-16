@@ -4,10 +4,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Header } from "./Header.js";
 import { useSocket } from "@/hooks/useSocket.js";
 import { useCursorEffect } from "@/hooks/useCursorEffect.js";
+import { useOnlineUsers } from "@/hooks/useOnlineUsers.js";
 
 export function Layout() {
   const { socket } = useSocket();
   useCursorEffect();
+  useOnlineUsers();
   const queryClient = useQueryClient();
 
   useEffect(() => {
