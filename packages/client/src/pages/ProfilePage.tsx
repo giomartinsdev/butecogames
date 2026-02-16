@@ -77,7 +77,7 @@ export function ProfilePage() {
                     {formatCoins(tx.balanceAfter)}
                   </td>
                   <td className="px-4 py-2 text-right text-muted-foreground">
-                    {new Date(tx.createdAt).toLocaleDateString("pt-BR")}
+                    {new Date(tx.createdAt).toLocaleString("pt-BR")}
                   </td>
                 </tr>
               ))}
