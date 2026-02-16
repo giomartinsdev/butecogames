@@ -4,10 +4,11 @@ import { HandCoins } from "lucide-react";
 
 interface OnlineUsersProps {
   users: OnlineUser[];
+  currentUserId?: string;
   onTransferClick: (user: OnlineUser) => void;
 }
 
-export function OnlineUsers({ users, onTransferClick }: OnlineUsersProps) {
+export function OnlineUsers({ users, currentUserId, onTransferClick }: OnlineUsersProps) {
   const [open, setOpen] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -65,16 +66,18 @@ export function OnlineUsers({ users, onTransferClick }: OnlineUsersProps) {
                 <span className="min-w-0 flex-1 truncate text-sm text-card-foreground">
                   {user.displayName}
                 </span>
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    onTransferClick(user);
-                  }}
-                  className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-accent transition-colors"
-                  title={`Transferir coins para ${user.displayName}`}
-                >
-                  <HandCoins size={16} />
-                </button>
+                {user.userId !== currentUserId && (
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      onTransferClick(user);
+                    }}
+                    className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-accent transition-colors"
+                    title={`Transferir coins para ${user.displayName}`}
+                  >
+                    <HandCoins size={16} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
