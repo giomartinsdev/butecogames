@@ -32,6 +32,7 @@ export function createApp() {
 
   // API routes
   app.use("/api/users", usersRouter);
+  app.use("/api/user-settings", userSettingsRouter);
   app.use("/api/wallet", walletRouter);
   app.use("/api/games", gamesRouter);
   app.use("/api/leaderboard", leaderboardRouter);

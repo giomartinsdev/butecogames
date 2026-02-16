@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils.js";
 interface BettingBoardProps {
   onBet: (betType: RouletteBetType) => void;
   disabled: boolean;
+  selectedBet: RouletteBetType | null;
+  placedBets: Map<RouletteBetType, number>;
 }
 
 const colorMap = {
@@ -13,7 +15,29 @@ const colorMap = {
   green: "bg-roulette-green hover:bg-roulette-green/80",
 };
 
-export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
+function CoinChips({ count }: { count: number }) {
+  if (count <= 0) return null;
+  return (
+    <>
+      {Array.from({ length: count }, (_, i) => (
+        <img
+          key={i}
+          src="/coin_tilted.png"
+          alt=""
+          className="absolute -top-2 z-10 h-6 w-6 pointer-events-none drop-shadow-lg"
+          style={{ right: `${-0.5 + i * 0.5}rem` }}
+        />
+      ))}
+    </>
+  );
+}
+
+export function BettingBoard({ onBet, disabled, selectedBet, placedBets }: BettingBoardProps) {
+  const coinCount = (betType: RouletteBetType) => {
+    const placed = placedBets.get(betType) ?? 0;
+    const selecting = selectedBet === betType ? 1 : 0;
+    return placed + selecting;
+  };
   return (
     <div className="flex">
       {/* Zero */}
@@ -22,11 +46,12 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
           onClick={() => onBet("number:0")}
           disabled={disabled}
           className={cn(
-            "grow-1 rounded text-sm font-bold text-white transition-colors disabled:opacity-40",
+            "relative grow-1 rounded text-sm font-bold text-white transition-colors disabled:opacity-40",
             colorMap.green,
           )}
         >
           0
+          <CoinChips count={coinCount("number:0")} />
         </button>
       </div>
 
@@ -43,11 +68,12 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                   onClick={() => onBet(`number:${n}` as RouletteBetType)}
                   disabled={disabled}
                   className={cn(
-                    "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
+                    "relative h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
                     colorMap[color],
                   )}
                 >
                   {n}
+                  <CoinChips count={coinCount(`number:${n}`)} />
                 </button>
               );
             })}
@@ -62,11 +88,12 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                   onClick={() => onBet(`number:${n}` as RouletteBetType)}
                   disabled={disabled}
                   className={cn(
-                    "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
+                    "relative h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
                     colorMap[color],
                   )}
                 >
                   {n}
+                  <CoinChips count={coinCount(`number:${n}`)} />
                 </button>
               );
             })}
@@ -81,11 +108,12 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
                   onClick={() => onBet(`number:${n}` as RouletteBetType)}
                   disabled={disabled}
                   className={cn(
-                    "h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
+                    "relative h-10 rounded text-xs font-bold text-white transition-colors disabled:opacity-40 cursor-pointer",
                     colorMap[color],
                   )}
                 >
                   {n}
+                  <CoinChips count={coinCount(`number:${n}`)} />
                 </button>
               );
             })}
@@ -97,23 +125,26 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
           <button
             onClick={() => onBet("dozen:1")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             1-12
+            <CoinChips count={coinCount("dozen:1")} />
           </button>
           <button
             onClick={() => onBet("dozen:2")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             13-24
+            <CoinChips count={coinCount("dozen:2")} />
           </button>
           <button
             onClick={() => onBet("dozen:3")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             25-36
+            <CoinChips count={coinCount("dozen:3")} />
           </button>
         </div>
 
@@ -121,44 +152,50 @@ export function BettingBoard({ onBet, disabled }: BettingBoardProps) {
           <button
             onClick={() => onBet("low")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             1-18
+            <CoinChips count={coinCount("low")} />
           </button>
           <button
             onClick={() => onBet("even")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             Par
+            <CoinChips count={coinCount("even")} />
           </button>
           <button
             onClick={() => onBet("red")}
             disabled={disabled}
-            className="rounded bg-roulette-red px-2 py-2 text-sm font-medium text-white hover:bg-roulette-red/80 transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded bg-roulette-red px-2 py-2 text-sm font-medium text-white hover:bg-roulette-red/80 transition-colors disabled:opacity-40 cursor-pointer"
           >
             Verm.
+            <CoinChips count={coinCount("red")} />
           </button>
           <button
             onClick={() => onBet("black")}
             disabled={disabled}
-            className="rounded bg-roulette-black border border-gray-600 px-2 py-2 text-sm font-medium text-white hover:bg-roulette-black/80 transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded bg-roulette-black border border-gray-600 px-2 py-2 text-sm font-medium text-white hover:bg-roulette-black/80 transition-colors disabled:opacity-40 cursor-pointer"
           >
             Preto
+            <CoinChips count={coinCount("black")} />
           </button>
           <button
             onClick={() => onBet("odd")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             Impar
+            <CoinChips count={coinCount("odd")} />
           </button>
           <button
             onClick={() => onBet("high")}
             disabled={disabled}
-            className="rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
+            className="relative rounded border border-border bg-card px-2 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-40 cursor-pointer"
           >
             19-36
+            <CoinChips count={coinCount("high")} />
           </button>
         </div>
       </div>

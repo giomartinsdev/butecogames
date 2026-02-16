@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { RouletteBetType } from "@butecogames/shared";
 import { useRoulette } from "@/hooks/useRoulette.js";
+import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { RouletteWheel } from "./RouletteWheel.js";
 import { BettingBoard } from "./BettingBoard.js";
 import { BetControls } from "./BetControls.js";
@@ -10,10 +11,28 @@ import { cn, translateBetType } from "@/lib/utils.js";
 
 export function RouletteGame() {
   const roulette = useRoulette();
+  const { user } = useUserProfile();
   const [selectedBet, setSelectedBet] = useState<RouletteBetType | null>(null);
+
+  const myBetCounts = useMemo(() => {
+    const counts = new Map<RouletteBetType, number>();
+    if (!user) return counts;
+    for (const b of roulette.currentBets) {
+      if (b.userId === user.id) {
+        counts.set(b.betType, (counts.get(b.betType) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [roulette.currentBets, user]);
+
+  const myBetCount = useMemo(() => {
+    if (!user) return 0;
+    return roulette.currentBets.filter((b) => b.userId === user.id).length;
+  }, [roulette.currentBets, user]);
 
   const isBettingOpen = roulette.status === "betting";
   const isSpinning = roulette.status === "spinning";
+  const maxBetsReached = myBetCount >= roulette.maxBetsPerRound;
 
   const handleBoardClick = useCallback((betType: RouletteBetType) => {
     setSelectedBet(betType);
@@ -87,7 +106,7 @@ export function RouletteGame() {
         )}
 
         {/* Betting board */}
-        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen} />
+        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen || maxBetsReached} selectedBet={selectedBet} placedBets={myBetCounts} />
 
         {/* Round history */}
         <RoundHistory results={roulette.recentResults} />

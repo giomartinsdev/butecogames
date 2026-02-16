@@ -72,7 +72,8 @@ export function Header() {
 
               {wallet && (
                 <div className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-accent">
-                  {formatCoins(wallet.balance)} coins
+                  <img src="/coin.png" alt="Coins" className="inline-block h-4 w-4 mr-1" />
+                  {formatCoins(wallet.balance)}
                 </div>
               )}
 
