@@ -17,7 +17,8 @@
       "Bash(pnpm run build:*)",
       "WebFetch(domain:discord.com)",
       "WebFetch(domain:docs.discord.com)",
-      "WebFetch(domain:www.better-auth.com)"
+      "WebFetch(domain:www.better-auth.com)",
+      "Bash(mongosh:*)"
     ]
   }
 }

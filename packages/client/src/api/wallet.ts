@@ -38,9 +38,24 @@ interface TransferResponse {
   wallet: Wallet;
 }
 
-export function transferCoins(recipientName: string, amount: number) {
+export function transferCoins(recipientId: string, amount: number) {
   return apiFetch<TransferResponse>("/api/wallet/transfer", {
     method: "POST",
-    body: JSON.stringify({ recipientName, amount }),
+    body: JSON.stringify({ recipientId, amount }),
   });
+}
+
+export interface SearchUser {
+  id: string;
+  name: string;
+  image: string | null;
+  discordId: string | null;
+}
+
+interface SearchUsersResponse {
+  users: SearchUser[];
+}
+
+export function searchUsers(query: string) {
+  return apiFetch<SearchUsersResponse>(`/api/wallet/search-users?q=${encodeURIComponent(query)}`);
 }

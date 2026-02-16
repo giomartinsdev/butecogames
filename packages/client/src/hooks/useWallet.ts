@@ -33,8 +33,8 @@ export function useTransferCoins() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ recipientName, amount }: { recipientName: string; amount: number }) =>
-      transferCoins(recipientName, amount),
+    mutationFn: ({ recipientId, amount }: { recipientId: string; amount: number }) =>
+      transferCoins(recipientId, amount),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
