@@ -19,7 +19,7 @@ const transactionSchema = new Schema<ITransaction>(
     type: {
       type: String,
       required: true,
-      enum: ["initial_balance", "daily_reward", "bet_placed", "bet_won", "achievement_reward", "transfer_sent", "transfer_received"],
+      enum: ["initial_balance", "daily_reward", "bet_placed", "bet_won", "achievement_reward", "transfer_sent", "transfer_received", "presence_reward"],
     },
     amount: { type: Number, required: true },
     balanceAfter: { type: Number, required: true },
