@@ -22,7 +22,7 @@ function CoinChips({ count }: { count: number }) {
       {Array.from({ length: count }, (_, i) => (
         <img
           key={i}
-          src="/coin_tilted.png"
+          src="/imgs/coin_tilted.png"
           alt=""
           className="absolute -top-2 z-10 h-6 w-6 pointer-events-none drop-shadow-lg"
           style={{ right: `${-0.5 + i * 0.5}rem` }}

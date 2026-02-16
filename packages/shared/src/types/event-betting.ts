@@ -3,9 +3,9 @@ export type BetOption = "option1" | "option2" | "draw";
 export type EventStatus = "upcoming" | "in_progress" | "completed" | "cancelled";
 
 export type EventCategory =
+  | "ufc"
   | "sports"
   | "esports"
-  | "politics"
   | "entertainment"
   | "other";
 

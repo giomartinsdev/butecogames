@@ -25,6 +25,7 @@ export type {
 } from "./types/event-betting.js";
 export type {
   RouletteSettings,
+  EventBettingSettings,
   GeneralSettings,
   AppSettings,
 } from "./types/settings.js";
@@ -51,10 +52,10 @@ export {
   DEFAULT_MAX_BETS_PER_ROUND,
 } from "./constants/roulette.js";
 export {
-  EVENT_BETTING_HOUSE_EDGE,
-  EVENT_BETTING_MIN_BET,
-  EVENT_BETTING_MAX_BET,
-  EVENT_BETTING_MAX_BETS_PER_EVENT,
+  DEFAULT_EVENT_BETTING_HOUSE_EDGE,
+  DEFAULT_EVENT_BETTING_MIN_BET,
+  DEFAULT_EVENT_BETTING_MAX_BET,
+  DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
   EVENT_CATEGORIES,
 } from "./constants/event-betting.js";
 export {

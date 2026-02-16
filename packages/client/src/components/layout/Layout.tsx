@@ -27,16 +27,6 @@ export function Layout() {
 
   return (
     <div className="relative min-h-screen">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 h-full w-full object-cover -z-10 opacity-10"
-      >
-        <source src="/bg-animated.mp4" type="video/mp4" />
-      </video>
-      <div className="fixed inset-0 bg-background/100 -z-10" />
       <Header />
       <main className="mx-auto max-w-7xl px-6 py-8">
         <Outlet />

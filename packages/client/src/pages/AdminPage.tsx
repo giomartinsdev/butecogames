@@ -46,13 +46,13 @@ export function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-card-foreground mb-2">
           Painel de Administração
         </h1>
         <p className="text-muted-foreground">
-          Bem-vindo, {profile?.displayName}! Gerencie a plataforma usando as ferramentas abaixo.
+          Gerencie a plataforma usando as ferramentas abaixo.
         </p>
       </div>
 

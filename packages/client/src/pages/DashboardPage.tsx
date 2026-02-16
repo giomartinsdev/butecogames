@@ -6,22 +6,28 @@ export function DashboardPage() {
   const { user } = useAuth();
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-card-foreground">
-          Bem-vindo, {user?.name}!
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          Escolha um jogo para comecar a jogar
-        </p>
+    <>
+      <div className="flex space-y-8">
+        <div className="me-8">
+          <WalletDisplay />
+        </div>
+
+        <div>
+          <h1 className="text-2xl font-bold text-card-foreground">
+            Fala, {user?.name}!
+          </h1>
+          <p className="mt-1 text-muted-foreground">
+            Escolha um jogo para comecar a jogar
+          </p>
+        </div>
       </div>
 
-      <WalletDisplay />
-
-      <div>
-        <h2 className="text-xl font-semibold text-card-foreground mb-4">Jogos</h2>
-        <GameList />
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold text-card-foreground mb-4">Jogos</h2>
+          <GameList />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

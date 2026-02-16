@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEventBetting } from "@/hooks/useEventBetting.js";
+import { useSettings } from "@/hooks/useSettings.js";
 import { EventCard } from "@/components/event-betting/EventCard.js";
 import { ActiveBets } from "@/components/event-betting/ActiveBets.js";
 import { EventHistory } from "@/components/event-betting/EventHistory.js";
 import { apiClient } from "@/api/client.js";
+import {
+  DEFAULT_EVENT_BETTING_MIN_BET,
+  DEFAULT_EVENT_BETTING_MAX_BET,
+} from "@butecogames/shared";
 
 type FilterTab = "upcoming" | "in_progress" | "completed";
 
 export function EventBettingPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>("upcoming");
   const { events, placeBet } = useEventBetting();
+  const { data: settings } = useSettings();
+  const minBet = settings?.eventBetting?.minBet ?? DEFAULT_EVENT_BETTING_MIN_BET;
+  const maxBet = settings?.eventBetting?.maxBet ?? DEFAULT_EVENT_BETTING_MAX_BET;
 
   // Fetch user's bets
   const { data: myBetsData } = useQuery({
@@ -92,6 +100,8 @@ export function EventBettingPage() {
                   key={event._id}
                   event={event}
                   onPlaceBet={placeBet}
+                  minBet={minBet}
+                  maxBet={maxBet}
                 />
               ))
             )}

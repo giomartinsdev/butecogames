@@ -50,6 +50,47 @@ export function RouletteGame() {
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Main area */}
       <div className="lg:col-span-2 space-y-6">
+        {/* Error display */}
+        {roulette.error && (
+          <div className="rounded-lg bg-destructive/20 px-4 py-2 text-sm text-destructive">
+            {roulette.error}
+          </div>
+        )}
+
+        <div className="flex justify-between items-center">
+          <div className="w-110">
+            {/* Round history */}
+            <RoundHistory results={roulette.recentResults} />
+          </div>
+
+          {/* Wheel */}
+          <div className="flex justify-center grow-1">
+            <RouletteWheel
+              result={roulette.lastResult?.result ?? null}
+              spinning={isSpinning}
+            />
+          </div>
+        </div>
+
+        {/* Betting board */}
+        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen || maxBetsReached} selectedBet={selectedBet} placedBets={myBetCounts} />
+
+        <div className="flex grow justify-center">
+          <div className="w-100">
+            {/* Bet controls */}
+            <BetControls
+              onPlaceBet={handlePlaceBet}
+              selectedBet={selectedBet}
+              disabled={!isBettingOpen}
+              minBet={roulette.minBet}
+              maxBet={roulette.maxBet}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div>
         {/* Status bar */}
         <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
           {/* <div>
@@ -73,21 +114,6 @@ export function RouletteGame() {
           </div>
         </div>
 
-        {/* Error display */}
-        {roulette.error && (
-          <div className="rounded-lg bg-destructive/20 px-4 py-2 text-sm text-destructive">
-            {roulette.error}
-          </div>
-        )}
-
-        {/* Wheel */}
-        <div className="flex justify-center py-2">
-          <RouletteWheel
-            result={roulette.lastResult?.result ?? null}
-            spinning={isSpinning}
-          />
-        </div>
-
         {/* Winners display */}
         {roulette.lastResult && roulette.lastResult.winners.length > 0 && (
           <div className="rounded-xl border border-accent/50 bg-accent/10 p-4">
@@ -104,23 +130,6 @@ export function RouletteGame() {
             </div>
           </div>
         )}
-
-        {/* Betting board */}
-        <BettingBoard onBet={handleBoardClick} disabled={!isBettingOpen || maxBetsReached} selectedBet={selectedBet} placedBets={myBetCounts} />
-
-        {/* Round history */}
-        <RoundHistory results={roulette.recentResults} />
-      </div>
-
-      {/* Sidebar */}
-      <div className="space-y-6">
-        <BetControls
-          onPlaceBet={handlePlaceBet}
-          selectedBet={selectedBet}
-          disabled={!isBettingOpen}
-          minBet={roulette.minBet}
-          maxBet={roulette.maxBet}
-        />
 
         {/* Current bets */}
         <div className="rounded-xl border border-border bg-card p-4">

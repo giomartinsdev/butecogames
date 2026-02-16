@@ -6,7 +6,7 @@ const eventBettingEventSchema = new Schema(
     description: { type: String, default: null },
     category: {
       type: String,
-      enum: ["sports", "esports", "politics", "entertainment", "other"],
+      enum: ["ufc", "sports", "esports", "entertainment", "other"],
       required: true,
     },
     option1: { type: String, required: true },

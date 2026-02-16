@@ -18,6 +18,13 @@ export function AdminSettingsPage() {
     maxBetsPerRound: 5,
   });
 
+  const [eventBetting, setEventBetting] = useState({
+    houseEdge: 0.05,
+    minBet: 10,
+    maxBet: 10000,
+    maxBetsPerEvent: 3,
+  });
+
   const [general, setGeneral] = useState({
     cursorSize: 32,
   });
@@ -25,6 +32,9 @@ export function AdminSettingsPage() {
   useEffect(() => {
     if (settings) {
       setRoulette(settings.roulette);
+      if (settings.eventBetting) {
+        setEventBetting(settings.eventBetting);
+      }
       if (settings.general) {
         setGeneral(settings.general);
       }
@@ -45,7 +55,7 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette, general },
+      { roulette, eventBetting, general },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
@@ -67,8 +77,36 @@ export function AdminSettingsPage() {
         </h1>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
         <h2 className="text-xl font-bold text-card-foreground mb-4">
+          Geral
+        </h2>
+
+        <h3 className="text-sm font-semibold text-card-foreground mb-2">Cursor</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tamanho do cursor (px)
+            </label>
+            <input
+              type="number"
+              min={16}
+              max={128}
+              value={general.cursorSize}
+              onChange={(e) =>
+                setGeneral((prev) => ({
+                  ...prev,
+                  cursorSize: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
+        <h2 className="text-xl font-bold text-card-foreground">
           Roleta
         </h2>
         <p className="text-sm text-muted-foreground mb-6">
@@ -192,42 +230,102 @@ export function AdminSettingsPage() {
             />
           </div>
         </div>
+      </div>
 
-        <h2 className="text-xl font-bold text-card-foreground mt-8 mb-4">
-          Geral
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
+        <h2 className="text-xl font-bold text-card-foreground mb-4">
+          Eventos
         </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Configure os limites e taxa da casa para apostas em eventos.
+        </p>
 
-        <h3 className="text-sm font-semibold text-card-foreground mb-2">Cursor</h3>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="block text-sm font-medium text-card-foreground mb-1">
-              Tamanho do cursor (px)
+              Taxa da casa (%)
             </label>
             <input
               type="number"
-              min={16}
-              max={128}
-              value={general.cursorSize}
+              min={0}
+              max={50}
+              step={1}
+              value={Math.round(eventBetting.houseEdge * 100)}
               onChange={(e) =>
-                setGeneral((prev) => ({
+                setEventBetting((prev) => ({
                   ...prev,
-                  cursorSize: parseInt(e.target.value, 10) || 0,
+                  houseEdge: (parseInt(e.target.value, 10) || 0) / 100,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta mínima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={eventBetting.minBet}
+              onChange={(e) =>
+                setEventBetting((prev) => ({
+                  ...prev,
+                  minBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta máxima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={eventBetting.maxBet}
+              onChange={(e) =>
+                setEventBetting((prev) => ({
+                  ...prev,
+                  maxBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Max apostas por evento
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={eventBetting.maxBetsPerEvent}
+              onChange={(e) =>
+                setEventBetting((prev) => ({
+                  ...prev,
+                  maxBetsPerEvent: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
             />
           </div>
         </div>
+      </div>
 
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleSave}
-            disabled={updateMutation.isPending}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
-          >
-            {updateMutation.isPending ? "Salvando..." : "Salvar"}
-          </button>
-        </div>
+      <div className="mt-6 flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={updateMutation.isPending}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+        >
+          {updateMutation.isPending ? "Salvando..." : "Salvar"}
+        </button>
       </div>
     </div>
   );

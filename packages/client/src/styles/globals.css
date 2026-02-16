@@ -3,21 +3,22 @@
 body {
   position: relative;
   background-color: #030712;
+  font-family: "Outfit", sans-serif;
 }
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  /* background: url("/bg.png") center / cover no-repeat; */
-  opacity: 0.1;
+  background: url("/imgs/bg.png") center / cover no-repeat;
+  opacity: 0.05;
   z-index: -1;
   pointer-events: none;
 }
 
 @theme {
-  --color-primary: #7c3aed;
-  --color-primary-foreground: #ffffff;
+  --color-primary: #FFB522;
+  --color-primary-foreground: #2A0C0D;
   --color-secondary: #1e1b4b;
   --color-secondary-foreground: #e0e7ff;
   --color-accent: #f59e0b;

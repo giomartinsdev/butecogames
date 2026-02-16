@@ -4,15 +4,10 @@ import type {
   EventOdds,
   EventBettingEvent as IEventBettingEvent,
 } from "@butecogames/shared";
-import {
-  EVENT_BETTING_HOUSE_EDGE,
-  EVENT_BETTING_MIN_BET,
-  EVENT_BETTING_MAX_BET,
-  EVENT_BETTING_MAX_BETS_PER_EVENT,
-} from "@butecogames/shared";
 import { EventBettingEvent } from "../models/EventBettingEvent.js";
 import { EventBettingBet } from "../models/EventBettingBet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
+import { getSettings } from "./settings.js";
 import { UserProfile } from "../models/UserProfile.js";
 
 let io: SocketIOServer | null = null;
@@ -43,7 +38,8 @@ export async function broadcastEventsUpdate(): Promise<void> {
 export function calculateOdds(
   event: IEventBettingEvent | (IEventBettingEvent & { _id: any })
 ): EventOdds {
-  const payoutPool = event.totalPool * (1 - EVENT_BETTING_HOUSE_EDGE);
+  const { houseEdge } = getSettings().eventBetting;
+  const payoutPool = event.totalPool * (1 - houseEdge);
 
   const option1Odds =
     event.option1Pool > 0 ? payoutPool / event.option1Pool : 1.01;
@@ -74,9 +70,10 @@ export async function placeEventBet(
   amount: number
 ): Promise<void> {
   // Validate amount
-  if (amount < EVENT_BETTING_MIN_BET || amount > EVENT_BETTING_MAX_BET) {
+  const { minBet, maxBet, maxBetsPerEvent } = getSettings().eventBetting;
+  if (amount < minBet || amount > maxBet) {
     throw new Error(
-      `Valor da aposta deve estar entre ${EVENT_BETTING_MIN_BET} e ${EVENT_BETTING_MAX_BET} coins`
+      `Valor da aposta deve estar entre ${minBet} e ${maxBet} coins`
     );
   }
 
@@ -106,9 +103,9 @@ export async function placeEventBet(
     eventId,
     userId,
   });
-  if (userBetCount >= EVENT_BETTING_MAX_BETS_PER_EVENT) {
+  if (userBetCount >= maxBetsPerEvent) {
     throw new Error(
-      `Você atingiu o limite de ${EVENT_BETTING_MAX_BETS_PER_EVENT} apostas por evento`
+      `Você atingiu o limite de ${maxBetsPerEvent} apostas por evento`
     );
   }
 

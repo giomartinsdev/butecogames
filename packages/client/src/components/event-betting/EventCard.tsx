@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { EventBettingEvent, EventOdds, BetOption } from "@butecogames/shared";
-import { EVENT_CATEGORIES, EVENT_BETTING_MIN_BET, EVENT_BETTING_MAX_BET } from "@butecogames/shared";
+import { EVENT_CATEGORIES } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 import { cn } from "@/lib/utils.js";
 import { BetAmountInput } from "@/components/ui/BetAmountInput.js";
@@ -9,9 +9,11 @@ interface EventCardProps {
   event: EventBettingEvent & { odds: EventOdds };
   onPlaceBet: (eventId: string, option: BetOption, amount: number) => void;
   disabled?: boolean;
+  minBet: number;
+  maxBet: number;
 }
 
-export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProps) {
+export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet }: EventCardProps) {
   const [selectedOption, setSelectedOption] = useState<BetOption | null>(null);
   const [resetTrigger, setResetTrigger] = useState(0);
 
@@ -162,8 +164,8 @@ export function EventCard({ event, onPlaceBet, disabled = false }: EventCardProp
           )}
 
           <BetAmountInput
-            minBet={EVENT_BETTING_MIN_BET}
-            maxBet={EVENT_BETTING_MAX_BET}
+            minBet={minBet}
+            maxBet={maxBet}
             disabled={!canBet}
             hasSelection={!!selectedOption}
             onPlaceBet={handlePlaceBet}

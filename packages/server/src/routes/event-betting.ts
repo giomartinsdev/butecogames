@@ -98,7 +98,7 @@ router.post("/events", requireAuth, requireAdmin, async (req, res) => {
     }
 
     // Validate category
-    const validCategories = ["sports", "esports", "politics", "entertainment", "other"];
+    const validCategories = ["ufc", "sports", "esports", "entertainment", "other"];
     if (!validCategories.includes(category)) {
       return res.status(400).json({ error: "Categoria inválida" });
     }

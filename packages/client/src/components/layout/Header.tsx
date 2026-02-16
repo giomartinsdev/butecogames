@@ -42,7 +42,7 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
-            src="/logo-buteco.png"
+            src="/imgs/logo-buteco.png"
             alt="Buteco Games"
             className="h-10"
           />
@@ -72,7 +72,7 @@ export function Header() {
 
               {wallet && (
                 <div className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-accent">
-                  <img src="/coin.png" alt="Coins" className="inline-block h-4 w-4 mr-1" />
+                  <img src="/imgs/coin.png" alt="Coins" className="inline-block h-4 w-4 mr-1" />
                   {formatCoins(wallet.balance)}
                 </div>
               )}

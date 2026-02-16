@@ -4,10 +4,12 @@ import type { GameInfo } from "@butecogames/shared";
 export function GameCard({ game }: { game: GameInfo }) {
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden transition-transform hover:scale-[1.02]">
-      <div className="aspect-video bg-secondary flex items-center justify-center">
-        <span className="text-4xl">
-          {game.id === "roulette" ? "\u{1F3B0}" : "\u{26BD}"}
-        </span>
+      <div className="aspect-video bg-secondary">
+        <img
+          src={game.thumbnail}
+          alt={game.name}
+          className="h-full w-full object-cover"
+        />
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold text-card-foreground">{game.name}</h3>

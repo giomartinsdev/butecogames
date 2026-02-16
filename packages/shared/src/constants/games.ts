@@ -10,7 +10,7 @@ export const GAMES: GameInfo[] = [
     maxPlayers: 100,
     available: true,
     requiresRoom: false,
-    thumbnail: "/images/roulette.png",
+    thumbnail: "/imgs/games/roulette.png",
   },
   {
     id: "event-betting",
@@ -21,7 +21,7 @@ export const GAMES: GameInfo[] = [
     maxPlayers: 100,
     available: true,
     requiresRoom: false,
-    thumbnail: "/images/event-betting.png",
+    thumbnail: "/imgs/games/event-betting.png",
   },
 ];
 

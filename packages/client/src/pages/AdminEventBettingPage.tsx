@@ -297,7 +297,6 @@ export function AdminEventBettingPage() {
 
       {/* Events list */}
       <div className="space-y-4">
-        <h2 className="text-xl font-bold text-card-foreground">Eventos</h2>
         {events.length === 0 ? (
           <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
             Nenhum evento criado

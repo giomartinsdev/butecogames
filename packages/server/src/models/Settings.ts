@@ -4,6 +4,10 @@ import {
   DEFAULT_MAX_BET,
   DEFAULT_MAX_BETS_PER_ROUND,
   DEFAULT_CURSOR_SIZE,
+  DEFAULT_EVENT_BETTING_HOUSE_EDGE,
+  DEFAULT_EVENT_BETTING_MIN_BET,
+  DEFAULT_EVENT_BETTING_MAX_BET,
+  DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -15,6 +19,12 @@ export interface ISettings {
     minBet: number;
     maxBet: number;
     maxBetsPerRound: number;
+  };
+  eventBetting: {
+    houseEdge: number;
+    minBet: number;
+    maxBet: number;
+    maxBetsPerEvent: number;
   };
   general: {
     cursorSize: number;
@@ -33,6 +43,12 @@ const settingsSchema = new Schema(
       minBet: { type: Number, default: DEFAULT_MIN_BET },
       maxBet: { type: Number, default: DEFAULT_MAX_BET },
       maxBetsPerRound: { type: Number, default: DEFAULT_MAX_BETS_PER_ROUND },
+    },
+    eventBetting: {
+      houseEdge: { type: Number, default: DEFAULT_EVENT_BETTING_HOUSE_EDGE },
+      minBet: { type: Number, default: DEFAULT_EVENT_BETTING_MIN_BET },
+      maxBet: { type: Number, default: DEFAULT_EVENT_BETTING_MAX_BET },
+      maxBetsPerEvent: { type: Number, default: DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT },
     },
     general: {
       cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },

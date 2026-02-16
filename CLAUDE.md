@@ -124,7 +124,6 @@ App models:
 
 - Bet on any category of events
 - Rooms created by admins only
-- Status: Not yet implemented
 
 ## Currency System
 

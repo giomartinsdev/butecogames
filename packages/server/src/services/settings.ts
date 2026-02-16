@@ -4,6 +4,10 @@ import {
   DEFAULT_MAX_BET,
   DEFAULT_MAX_BETS_PER_ROUND,
   DEFAULT_CURSOR_SIZE,
+  DEFAULT_EVENT_BETTING_HOUSE_EDGE,
+  DEFAULT_EVENT_BETTING_MIN_BET,
+  DEFAULT_EVENT_BETTING_MAX_BET,
+  DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -38,6 +42,12 @@ export async function updateSettings(
     }
   }
 
+  if (partial.eventBetting) {
+    for (const [key, value] of Object.entries(partial.eventBetting)) {
+      update[`eventBetting.${key}`] = value;
+    }
+  }
+
   if (partial.general) {
     for (const [key, value] of Object.entries(partial.general)) {
       update[`general.${key}`] = value;
@@ -67,6 +77,12 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       minBet: doc.roulette.minBet ?? DEFAULT_MIN_BET,
       maxBet: doc.roulette.maxBet ?? DEFAULT_MAX_BET,
       maxBetsPerRound: doc.roulette.maxBetsPerRound ?? DEFAULT_MAX_BETS_PER_ROUND,
+    },
+    eventBetting: {
+      houseEdge: doc.eventBetting?.houseEdge ?? DEFAULT_EVENT_BETTING_HOUSE_EDGE,
+      minBet: doc.eventBetting?.minBet ?? DEFAULT_EVENT_BETTING_MIN_BET,
+      maxBet: doc.eventBetting?.maxBet ?? DEFAULT_EVENT_BETTING_MAX_BET,
+      maxBetsPerEvent: doc.eventBetting?.maxBetsPerEvent ?? DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
     },
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,
