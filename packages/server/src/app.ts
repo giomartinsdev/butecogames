@@ -38,7 +38,6 @@ export function createApp() {
   app.use("/api/event-betting", eventBettingRouter);
   app.use("/api/settings", settingsRouter);
   app.use("/api/admin", adminUsersRouter);
-  app.use("/api/user-settings", userSettingsRouter);
 
   // Health check
   app.get("/api/health", (_req, res) => {

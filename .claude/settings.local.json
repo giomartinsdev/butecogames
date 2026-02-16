@@ -14,7 +14,10 @@
       "Bash(chmod:*)",
       "Bash(pnpm run docker:push:server:*)",
       "Bash(pnpm run docker:push:client:*)",
-      "Bash(pnpm run build:*)"
+      "Bash(pnpm run build:*)",
+      "WebFetch(domain:discord.com)",
+      "WebFetch(domain:docs.discord.com)",
+      "WebFetch(domain:www.better-auth.com)"
     ]
   }
 }

@@ -24,4 +24,5 @@ export const env = {
   DISCORD_CLIENT_ID: requireEnv("DISCORD_CLIENT_ID"),
   DISCORD_CLIENT_SECRET: requireEnv("DISCORD_CLIENT_SECRET"),
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
+  DISCORD_GUILD_ID: requireEnv("DISCORD_GUILD_ID"),
 } as const;
