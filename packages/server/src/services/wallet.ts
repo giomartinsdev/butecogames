@@ -2,6 +2,7 @@ import { Wallet, type IWallet } from "../models/Wallet.js";
 import { Transaction } from "../models/Transaction.js";
 import { INITIAL_BALANCE, DAILY_REWARD_AMOUNT, DAILY_REWARD_COOLDOWN_MS } from "@butecogames/shared";
 import type { TransactionType } from "@butecogames/shared";
+import { invalidateLeaderboardCache } from "../routes/leaderboard.js";
 
 export async function getOrCreateWallet(userId: string): Promise<IWallet> {
   const existing = await Wallet.findOne({ userId });
@@ -116,6 +117,8 @@ export async function transferCoins(
 
   // Credit recipient
   await creditWallet(recipientId, amount, "transfer_received");
+
+  invalidateLeaderboardCache();
 
   return senderWallet;
 }

@@ -87,4 +87,8 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
+export function invalidateLeaderboardCache() {
+  cache.expiry = 0;
+}
+
 export default router;
