@@ -92,7 +92,7 @@ export function RouletteGame() {
       {/* Sidebar */}
       <div>
         {/* Status bar */}
-        <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4 mb-4">
           {/* <div>
             <span className="text-sm text-muted-foreground">Rodada </span>
             <span className="font-bold text-card-foreground">#{roulette.roundNumber}</span>
@@ -116,7 +116,7 @@ export function RouletteGame() {
 
         {/* Winners display */}
         {roulette.lastResult && roulette.lastResult.winners.length > 0 && (
-          <div className="rounded-xl border border-accent/50 bg-accent/10 p-4">
+          <div className="rounded-xl border border-accent/50 bg-accent/10 p-4 mb-4">
             <h3 className="text-sm font-medium text-accent mb-2">Vencedores</h3>
             <div className="space-y-1">
               {roulette.lastResult.winners.map((w, i) => (
@@ -132,7 +132,7 @@ export function RouletteGame() {
         )}
 
         {/* Current bets */}
-        <div className="rounded-xl border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4 mb-4">
           <h3 className="text-sm font-medium text-muted-foreground mb-3">
             Apostas desta rodada
           </h3>
@@ -151,7 +151,9 @@ export function RouletteGame() {
           </div>
         </div>
 
-        <ChatBox />
+        <div className="mb-4">
+          <ChatBox />
+        </div>
       </div>
     </div>
   );
