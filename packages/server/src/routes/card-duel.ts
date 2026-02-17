@@ -1,4 +1,5 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 import { requireAuth } from "../middleware/auth.js";
 import { CardDuelRoom } from "../models/CardDuelRoom.js";
 
@@ -94,6 +95,69 @@ router.get("/stats", requireAuth, async (req, res) => {
     res.json({
       stats: { wins, losses, draws, total: wins + losses + draws },
     });
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Erro interno";
+    res.status(500).json({ error: message });
+  }
+});
+
+/**
+ * GET /api/card-duel/recent
+ * Latest 15 completed matches (for lobby display)
+ */
+router.get("/recent", requireAuth, async (_req, res) => {
+  try {
+    const matches = await CardDuelRoom.find({
+      status: { $in: ["finished", "revenge_declined"] },
+    })
+      .sort({ completedAt: -1 })
+      .limit(15)
+      .lean();
+
+    // Collect unique player IDs to look up avatars
+    const playerIds = new Set<string>();
+    for (const m of matches) {
+      if (m.player1Id) playerIds.add(m.player1Id);
+      if (m.player2Id && !(m.isBot)) playerIds.add(m.player2Id);
+    }
+
+    // Look up avatars from Better Auth's user collection
+    const avatarMap = new Map<string, string | null>();
+    if (playerIds.size > 0) {
+      const ids = [...playerIds];
+      const objectIds = ids.map((id) => new mongoose.Types.ObjectId(id));
+      const userCol = mongoose.connection.db!.collection("user");
+      const users = await userCol
+        .find({ _id: { $in: objectIds } }, { projection: { _id: 1, image: 1 } })
+        .toArray();
+      for (const u of users) {
+        avatarMap.set(String(u._id), (u.image as string) ?? null);
+      }
+    }
+
+    const recent = matches.map((m) => ({
+      _id: m._id.toString(),
+      gameType: m.gameType,
+      betAmount: m.betAmount,
+      isBot: m.isBot ?? false,
+      player1: {
+        userId: m.player1Id,
+        displayName: m.player1Name,
+        avatar: avatarMap.get(m.player1Id) ?? null,
+      },
+      player2: {
+        userId: m.player2Id ?? "",
+        displayName: m.player2Name ?? "",
+        avatar: m.isBot ? null : avatarMap.get(m.player2Id ?? "") ?? null,
+      },
+      rounds: m.rounds,
+      result: m.result,
+      winnerId: m.winnerId,
+      completedAt: m.completedAt?.toISOString() ?? m.createdAt.toISOString(),
+    }));
+
+    res.json({ matches: recent });
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Erro interno";
