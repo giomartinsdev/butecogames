@@ -96,6 +96,11 @@ export interface ServerToClientEvents {
     winners: Array<{ userId: string; displayName: string; payout: number }>;
   }) => void;
   "event:error": (data: { message: string }) => void;
+  "notification:global": (data: {
+    type: "info" | "success" | "warning" | "error" | "announcement";
+    title: string;
+    message?: string;
+  }) => void;
   "settings:cursor_size": (data: { cursorSize: number }) => void;
   "wallet:updated": (data: { balance: number }) => void;
   "presence:online_users": (data: { users: OnlineUser[] }) => void;

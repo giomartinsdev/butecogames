@@ -6,12 +6,14 @@ import { useSocket } from "@/hooks/useSocket.js";
 import { useCursorEffect } from "@/hooks/useCursorEffect.js";
 import { useOnlineUsers } from "@/hooks/useOnlineUsers.js";
 import { useGamificationEvents } from "@/hooks/useGamificationEvents.js";
+import { useNotificationEvents } from "@/hooks/useNotificationEvents.js";
 
 export function Layout() {
   const { socket } = useSocket();
   useCursorEffect();
   useOnlineUsers();
   useGamificationEvents();
+  useNotificationEvents();
   const queryClient = useQueryClient();
 
   useEffect(() => {

@@ -27,6 +27,12 @@ const adminActions: AdminAction[] = [
     path: "/admin/settings",
     icon: "⚙️",
   },
+  {
+    title: "Notificações",
+    description: "Enviar notificações globais para todos os usuários",
+    path: "/admin/notifications",
+    icon: "📢",
+  },
 ];
 
 export function AdminPage() {
