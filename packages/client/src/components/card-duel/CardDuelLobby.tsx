@@ -213,8 +213,8 @@ function AvatarWithCrown({
 }
 
 function RecentResultRow({ match }: { match: RecentMatch }) {
-  const winnerIsP1 = match.winnerId === match.player1.userId;
-  const winnerIsP2 = match.winnerId === match.player2.userId;
+  const winnerIsP1 = match.result === "player1";
+  const winnerIsP2 = match.result === "player2";
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-zinc-800/50 bg-zinc-900/30 px-3 py-2.5">
