@@ -155,7 +155,7 @@ router.put("/events/:eventId/status", requireAuth, requireAdmin, async (req, res
       });
     }
 
-    // If startTime is provided, validate and update it
+    // Update startTime: set if provided, clear if not
     if (startTime) {
       const newStartTime = new Date(startTime);
 
@@ -167,6 +167,8 @@ router.put("/events/:eventId/status", requireAuth, requireAdmin, async (req, res
       }
 
       event.startTime = newStartTime;
+    } else {
+      event.startTime = null;
     }
 
     event.status = status as any;
