@@ -603,7 +603,7 @@ export function AdminEventBettingPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-4 mb-2">

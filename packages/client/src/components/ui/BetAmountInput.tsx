@@ -68,7 +68,7 @@ export function BetAmountInput({
         {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
       </div>
 
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap items-center gap-1">
         {QUICK_AMOUNTS.map((v) => (
           <button
             key={v}
@@ -79,6 +79,13 @@ export function BetAmountInput({
             +{formatCoins(v)}
           </button>
         ))}
+        <button
+          onClick={() => { setAmount(minBet); setError(""); }}
+          disabled={disabled}
+          className="ml-auto rounded bg-muted px-2 py-1 text-xs font-medium text-muted-foreground hover:text-card-foreground hover:bg-muted/80 transition-colors disabled:opacity-40"
+        >
+          Limpar
+        </button>
       </div>
 
       <button

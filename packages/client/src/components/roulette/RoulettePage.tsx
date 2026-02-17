@@ -49,7 +49,7 @@ export function RouletteGame() {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Main area */}
-      <div className="lg:col-span-2 space-y-6">
+      <div className="lg:col-span-2 space-y-6 select-none">
         {/* Error display */}
         {roulette.error && (
           <div className="rounded-lg bg-destructive/20 px-4 py-2 text-sm text-destructive">

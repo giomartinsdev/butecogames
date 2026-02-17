@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEventBetting } from "@/hooks/useEventBetting.js";
-import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { useSettings } from "@/hooks/useSettings.js";
 import { EventCard } from "@/components/event-betting/EventCard.js";
 import { ActiveBets } from "@/components/event-betting/ActiveBets.js";
@@ -16,8 +15,7 @@ type FilterTab = "upcoming" | "in_progress" | "completed";
 
 export function EventBettingPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>("upcoming");
-  const { user } = useUserProfile();
-  const { events, placeBet } = useEventBetting(user?.id);
+  const { events, placeBet } = useEventBetting();
   const { data: settings } = useSettings();
   const minBet = settings?.eventBetting?.minBet ?? DEFAULT_EVENT_BETTING_MIN_BET;
   const maxBet = settings?.eventBetting?.maxBet ?? DEFAULT_EVENT_BETTING_MAX_BET;
