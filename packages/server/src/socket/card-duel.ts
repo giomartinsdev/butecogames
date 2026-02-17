@@ -96,6 +96,8 @@ export function registerCardDuelHandlers(io: TypedIO, socket: Socket) {
       if (roomId) {
         await leaveRoom(userId);
         socket.leave(`card-duel:room:${roomId}`);
+        socket.emit("card-duel:room_closed", { reason: "Você saiu da sala" });
+        socket.join("card-duel:lobby");
       }
     } catch (err) {
       socket.emit("card-duel:error", {

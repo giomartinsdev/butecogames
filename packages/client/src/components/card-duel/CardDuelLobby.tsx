@@ -294,6 +294,7 @@ export function CardDuelLobby({
   onPlayBot,
 }: CardDuelLobbyProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showBotPicker, setShowBotPicker] = useState(false);
 
   const { data: recentData } = useQuery({
     queryKey: ["card-duel-recent"],
@@ -304,7 +305,7 @@ export function CardDuelLobby({
   return (
     <div className="flex flex-col gap-6">
       {/* Actions */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={() => setShowCreateModal(true)}
           className="rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white transition hover:bg-blue-700"
@@ -317,6 +318,35 @@ export function CardDuelLobby({
         >
           Buscar por Partida
         </button>
+        {showBotPicker ? (
+          <div className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 p-1.5">
+            <button
+              onClick={() => { setShowBotPicker(false); onPlayBot("classic"); }}
+              className="rounded-md bg-purple-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-purple-700"
+            >
+              Classico
+            </button>
+            <button
+              onClick={() => { setShowBotPicker(false); onPlayBot("best_of_3"); }}
+              className="rounded-md bg-purple-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-purple-700"
+            >
+              Melhor de 3
+            </button>
+            <button
+              onClick={() => setShowBotPicker(false)}
+              className="rounded-md px-2 py-1.5 text-sm text-zinc-400 transition hover:text-zinc-200"
+            >
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowBotPicker(true)}
+            className="rounded-lg bg-purple-600 px-5 py-2.5 font-medium text-white transition hover:bg-purple-700"
+          >
+            Jogar com Bot
+          </button>
+        )}
       </div>
 
       {/* Room cards */}
