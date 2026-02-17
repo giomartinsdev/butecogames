@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { CircleCheck, CircleX, TriangleAlert, Info } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth.js";
 import { Layout } from "@/components/layout/Layout.js";
 import { LoginPage } from "@/pages/LoginPage.js";
@@ -103,7 +104,16 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AppRoutes />
-        <Toaster position="top-right" richColors />
+        <Toaster
+          position="top-center"
+          offset={75}
+          icons={{
+            success: <CircleCheck size={24} />,
+            error: <CircleX size={24} />,
+            warning: <TriangleAlert size={24} />,
+            info: <Info size={24} />,
+          }}
+        />
       </BrowserRouter>
     </QueryClientProvider>
   );

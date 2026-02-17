@@ -162,16 +162,16 @@ function RoomCard({
         <img
           src={room.owner.avatar}
           alt=""
-          className="h-24 w-24 rounded-full"
+          className="h-16 w-16 rounded-full"
         />
       ) : (
-        <PlayerAvatar name={room.owner.displayName} className="h-24 w-24 text-xl" />
+        <PlayerAvatar name={room.owner.displayName} className="h-16 w-16 text-xl" />
       )}
       <p className="text-sm font-medium text-zinc-200">
         {room.owner.displayName}
       </p>
-      <p className="text-xs text-muted-foreground">{gameTypeLabel(room.gameType)}</p>
-      <span className="text-sm font-bold text-yellow-400">
+      <p className="text-sm text-muted-foreground">{gameTypeLabel(room.gameType)}</p>
+      <span className="text-md font-bold text-yellow-400">
         {formatCoins(room.betAmount)} coins
       </span>
       <button

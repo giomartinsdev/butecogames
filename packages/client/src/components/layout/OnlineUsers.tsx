@@ -51,7 +51,7 @@ export function OnlineUsers({ users, currentUserId, onTransferClick }: OnlineUse
     >
       <div className="flex items-center gap-1 cursor-pointer">
         <div className="h-2 w-2 rounded-full bg-green-500" />
-        <span className="text-xs text-muted-foreground">{users.length} online</span>
+        <span className="text-sm text-muted-foreground">{users.length} online</span>
       </div>
 
       {open && (

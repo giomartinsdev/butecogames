@@ -68,17 +68,17 @@ export function Header() {
         </Link>
 
         <nav className="flex items-center gap-6">
-          <Link to="/games" className="text-sm text-muted-foreground hover:text-card-foreground transition-colors">
+          <Link to="/games" className="text-lg text-muted-foreground hover:text-card-foreground transition-colors">
             Jogos
           </Link>
-          <Link to="/leaderboard" className="text-sm text-muted-foreground hover:text-card-foreground transition-colors">
+          <Link to="/leaderboard" className="text-lg text-muted-foreground hover:text-card-foreground transition-colors">
             Ranking
           </Link>
-          <Link to="/profile" className="text-sm text-muted-foreground hover:text-card-foreground transition-colors">
+          <Link to="/profile" className="text-lg text-muted-foreground hover:text-card-foreground transition-colors">
             Perfil
           </Link>
           {isAdmin && (
-            <Link to="/admin" className="text-sm text-accent hover:text-accent/80 transition-colors font-medium">
+            <Link to="/admin" className="text-lg text-accent hover:text-accent/80 transition-colors font-medium">
               Admin
             </Link>
           )}
@@ -90,7 +90,7 @@ export function Header() {
               <OnlineUsers users={onlineUsers} currentUserId={user.id} onTransferClick={handleTransferFromOnline} />
 
               {wallet && (
-                <div className="rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-accent">
+                <div className="rounded-lg bg-secondary px-3 py-1.5 text-md font-medium text-accent">
                   <img src="/imgs/coin.png" alt="Coins" className="inline-block h-4 w-4 mr-1" />
                   {formatCoins(wallet.balance)}
                 </div>
@@ -109,11 +109,11 @@ export function Header() {
                       className="h-8 w-8 rounded-full"
                     />
                   )}
-                  <span className="text-sm">{user.name}</span>
+                  <span className="text-md">{user.name}</span>
                 </div>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-3 w-48 rounded-lg border border-border bg-card shadow-lg z-50">
+                  <div className="absolute -right-10 top-full mt-3 w-48 rounded-lg border border-border bg-card shadow-lg z-50">
                     <div className="py-1">
                       <button
                         onClick={() => {
