@@ -481,14 +481,15 @@ export async function startMatch(userId: string): Promise<void> {
   const p2Id = room.player2.userId;
   const bet = room.betAmount;
 
-  // Debit both players atomically
+  // Debit both players atomically — cancel room if either can't afford
   try {
     await debitWallet(p1Id, bet, "bet_placed", {
       gameId: "card-duel",
       matchId: roomId,
     });
   } catch {
-    throw new Error("Jogador 1 não possui coins suficientes");
+    await closeRoom(roomId, "cancelled", `${room.player1!.displayName} não possui coins suficientes`);
+    return;
   }
 
   try {
@@ -504,7 +505,8 @@ export async function startMatch(userId: string): Promise<void> {
     });
     const w1 = await Wallet.findOne({ userId: p1Id });
     if (w1) emitWalletUpdate(p1Id, w1.balance);
-    throw new Error("Jogador 2 não possui coins suficientes");
+    await closeRoom(roomId, "cancelled", `${room.player2!.displayName} não possui coins suficientes`);
+    return;
   }
 
   // Emit wallet updates

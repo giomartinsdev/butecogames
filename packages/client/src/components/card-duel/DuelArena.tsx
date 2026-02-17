@@ -73,13 +73,24 @@ export function DuelArena({ roomState, userId, cardRevealCountdown }: DuelArenaP
       )}
 
       {/* Duel area */}
-      <div className="flex items-center gap-8">
-        {/* Player 1 card */}
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            {player1?.displayName ?? "Jogador 1"}
-            {isPlayer1 && " (Você)"}
-          </span>
+      <div className="flex items-center gap-6">
+        {/* Player 1: avatar + name on the left, card on the right */}
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center gap-1">
+            {player1?.avatar ? (
+              <img src={player1.avatar} alt="" className="h-12 w-12 rounded-full" />
+            ) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-700 text-lg font-bold text-zinc-300">
+                {(player1?.displayName ?? "J").charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="max-w-20 truncate text-xs font-medium text-muted-foreground">
+              {player1?.displayName ?? "Jogador 1"}
+            </span>
+            {isPlayer1 && (
+              <span className="text-[10px] text-blue-400">(Você)</span>
+            )}
+          </div>
           <CardDisplay
             card={lastRound?.player1Card ?? null}
             faceDown={!lastRound || isCountingDown}
@@ -90,16 +101,10 @@ export function DuelArena({ roomState, userId, cardRevealCountdown }: DuelArenaP
         </div>
 
         {/* VS */}
-        <div className="flex flex-col items-center">
-          <span className="text-3xl font-black text-zinc-500">VS</span>
-        </div>
+        <span className="text-3xl font-black text-zinc-500">VS</span>
 
-        {/* Player 2 card */}
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            {player2?.displayName ?? "Jogador 2"}
-            {!isPlayer1 && player2 && " (Você)"}
-          </span>
+        {/* Player 2: card on the left, avatar + name on the right */}
+        <div className="flex items-center gap-3">
           <CardDisplay
             card={lastRound?.player2Card ?? null}
             faceDown={!lastRound || isCountingDown}
@@ -107,6 +112,21 @@ export function DuelArena({ roomState, userId, cardRevealCountdown }: DuelArenaP
             size="lg"
             animate={showCards}
           />
+          <div className="flex flex-col items-center gap-1">
+            {player2?.avatar ? (
+              <img src={player2.avatar} alt="" className="h-12 w-12 rounded-full" />
+            ) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-700 text-lg font-bold text-zinc-300">
+                {roomState.isBot ? "B" : (player2?.displayName ?? "J").charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="max-w-20 truncate text-xs font-medium text-muted-foreground">
+              {player2?.displayName ?? "Jogador 2"}
+            </span>
+            {!isPlayer1 && player2 && (
+              <span className="text-[10px] text-blue-400">(Você)</span>
+            )}
+          </div>
         </div>
       </div>
 
