@@ -69,6 +69,9 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                 <tr key={match._id} className="text-zinc-300">
                   <td className="px-3 py-2 font-medium">
                     {opponent.displayName}
+                    {match.isBot && (
+                      <span className="ml-1 text-xs text-zinc-500">(Bot)</span>
+                    )}
                   </td>
                   <td className="px-3 py-2 text-xs text-muted-foreground">
                     {gameTypeLabel(match.gameType)}

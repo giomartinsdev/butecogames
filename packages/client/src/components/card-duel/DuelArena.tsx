@@ -5,9 +5,10 @@ import type {
 import { CardDisplay } from "./CardDisplay.js";
 import { cn } from "@/lib/utils.js";
 
-interface DuelArenaProps {
+export interface DuelArenaProps {
   roomState: CardDuelRoomState;
   userId: string;
+  cardRevealCountdown: number;
 }
 
 function getCardHighlight(
@@ -19,7 +20,7 @@ function getCardHighlight(
   return "lose";
 }
 
-export function DuelArena({ roomState, userId }: DuelArenaProps) {
+export function DuelArena({ roomState, userId, cardRevealCountdown }: DuelArenaProps) {
   const {
     player1,
     player2,
@@ -35,6 +36,7 @@ export function DuelArena({ roomState, userId }: DuelArenaProps) {
   const lastRound = rounds.length > 0 ? rounds[rounds.length - 1] : null;
   const maxRounds = gameType === "classic" ? 1 : 3;
   const showCards = status === "in_progress" || status === "finished" || status === "revenge_pending";
+  const isCountingDown = cardRevealCountdown > 0 && status === "in_progress";
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -54,7 +56,19 @@ export function DuelArena({ roomState, userId }: DuelArenaProps) {
       {/* Round indicator */}
       {gameType === "best_of_3" && showCards && (
         <div className="text-sm text-muted-foreground">
-          Rodada {Math.min(currentRound, maxRounds)} de {maxRounds}
+          Rodada {Math.min(currentRound || 1, maxRounds)} de {maxRounds}
+        </div>
+      )}
+
+      {/* Card reveal countdown */}
+      {isCountingDown && (
+        <div className="flex flex-col items-center gap-2">
+          <div className="animate-pulse text-6xl font-black text-yellow-400">
+            {cardRevealCountdown}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Revelando cartas...
+          </p>
         </div>
       )}
 
@@ -68,9 +82,10 @@ export function DuelArena({ roomState, userId }: DuelArenaProps) {
           </span>
           <CardDisplay
             card={lastRound?.player1Card ?? null}
-            faceDown={!lastRound}
-            highlight={lastRound ? getCardHighlight(lastRound, "player1") : null}
+            faceDown={!lastRound || isCountingDown}
+            highlight={lastRound && !isCountingDown ? getCardHighlight(lastRound, "player1") : null}
             size="lg"
+            animate={showCards}
           />
         </div>
 
@@ -87,9 +102,10 @@ export function DuelArena({ roomState, userId }: DuelArenaProps) {
           </span>
           <CardDisplay
             card={lastRound?.player2Card ?? null}
-            faceDown={!lastRound}
-            highlight={lastRound ? getCardHighlight(lastRound, "player2") : null}
+            faceDown={!lastRound || isCountingDown}
+            highlight={lastRound && !isCountingDown ? getCardHighlight(lastRound, "player2") : null}
             size="lg"
+            animate={showCards}
           />
         </div>
       </div>

@@ -10,6 +10,7 @@ export interface ICardDuelRoom extends Document {
   gameType: CardDuelGameType;
   betAmount: number;
   status: CardDuelRoomStatus;
+  isBot: boolean;
   player1Id: string;
   player1Name: string;
   player2Id: string | null;
@@ -31,6 +32,7 @@ const cardDuelRoomSchema = new Schema<ICardDuelRoom>(
       required: true,
     },
     betAmount: { type: Number, required: true, min: 1 },
+    isBot: { type: Boolean, default: false },
     status: {
       type: String,
       enum: [

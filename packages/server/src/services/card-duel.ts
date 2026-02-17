@@ -18,6 +18,7 @@ import type {
 import {
   CARD_DUEL_ROUND_REVEAL_DELAY,
   CARD_DUEL_RESULT_DISPLAY_DURATION,
+  CARD_DUEL_CARD_REVEAL_DELAY,
 } from "@butecogames/shared";
 import { CardDuelRoom } from "../models/CardDuelRoom.js";
 import { Wallet } from "../models/Wallet.js";
@@ -35,6 +36,7 @@ interface ActiveRoom {
   gameType: CardDuelGameType;
   betAmount: number;
   status: CardDuelRoomStatus;
+  isBot: boolean;
 
   player1: CardDuelPlayer | null;
   player2: CardDuelPlayer | null;
@@ -49,8 +51,10 @@ interface ActiveRoom {
   player1Score: number;
   player2Score: number;
   matchResult: CardDuelMatchResult | null;
+  cardRevealCountdown: number;
 
   roundTimer: ReturnType<typeof setTimeout> | null;
+  countdownInterval: ReturnType<typeof setInterval> | null;
   revengeTimer: ReturnType<typeof setInterval> | null;
   revengeCountdown: number;
   revengeAccepted: Map<string, boolean>;
@@ -102,6 +106,10 @@ function clearRoomTimers(room: ActiveRoom) {
     clearTimeout(room.roundTimer);
     room.roundTimer = null;
   }
+  if (room.countdownInterval) {
+    clearInterval(room.countdownInterval);
+    room.countdownInterval = null;
+  }
   if (room.revengeTimer) {
     clearInterval(room.revengeTimer);
     room.revengeTimer = null;
@@ -135,6 +143,7 @@ function toRoomState(room: ActiveRoom): CardDuelRoomState {
     gameType: room.gameType,
     betAmount: room.betAmount,
     status: room.status,
+    isBot: room.isBot,
     player1: room.player1,
     player2: room.player2,
     currentRound: room.currentRound,
@@ -142,6 +151,7 @@ function toRoomState(room: ActiveRoom): CardDuelRoomState {
     player1Score: room.player1Score,
     player2Score: room.player2Score,
     matchResult: room.matchResult,
+    cardRevealCountdown: room.cardRevealCountdown,
     revengeCountdown: room.revengeCountdown,
     revengeAccepted: accepted,
     disconnectedPlayer: room.disconnectedPlayer,
@@ -245,6 +255,7 @@ export async function createRoom(
     gameType,
     betAmount,
     status: "waiting",
+    isBot: false,
     player1: { userId, displayName, avatar, isReady: true },
     player2: null,
     player1SocketId: socketId,
@@ -256,7 +267,9 @@ export async function createRoom(
     player1Score: 0,
     player2Score: 0,
     matchResult: null,
+    cardRevealCountdown: 0,
     roundTimer: null,
+    countdownInterval: null,
     revengeTimer: null,
     revengeCountdown: 0,
     revengeAccepted: new Map(),
@@ -523,8 +536,37 @@ export async function startMatch(userId: string): Promise<void> {
 
   broadcastLobbyUpdate();
 
-  // Play first round after a short delay
-  room.roundTimer = setTimeout(() => playRound(roomId), CARD_DUEL_ROUND_REVEAL_DELAY);
+  // Start card reveal countdown before first round
+  startCardRevealCountdown(roomId);
+}
+
+function startCardRevealCountdown(roomId: string): void {
+  const room = rooms.get(roomId);
+  if (!room || room.status !== "in_progress") return;
+
+  const settings = getSettings();
+  const delay = settings.cardDuel.cardRevealDelay ?? CARD_DUEL_CARD_REVEAL_DELAY;
+  room.cardRevealCountdown = delay;
+
+  io.to(roomSocketName(roomId)).emit("card-duel:card_reveal_countdown", {
+    countdown: room.cardRevealCountdown,
+  });
+
+  room.countdownInterval = setInterval(() => {
+    room.cardRevealCountdown--;
+
+    io.to(roomSocketName(roomId)).emit("card-duel:card_reveal_countdown", {
+      countdown: room.cardRevealCountdown,
+    });
+
+    if (room.cardRevealCountdown <= 0) {
+      if (room.countdownInterval) {
+        clearInterval(room.countdownInterval);
+        room.countdownInterval = null;
+      }
+      playRound(roomId);
+    }
+  }, 1000);
 }
 
 function playRound(roomId: string): void {
@@ -575,8 +617,9 @@ function playRound(roomId: string): void {
       CARD_DUEL_RESULT_DISPLAY_DURATION,
     );
   } else {
+    // Wait between rounds then start next card reveal countdown
     room.roundTimer = setTimeout(
-      () => playRound(roomId),
+      () => startCardRevealCountdown(roomId),
       CARD_DUEL_ROUND_REVEAL_DELAY,
     );
   }
@@ -604,43 +647,71 @@ async function resolveMatch(roomId: string): Promise<void> {
   let winnerName: string | null = null;
   let payout = 0;
 
-  if (matchResult === "player1") {
-    winnerId = p1Id;
-    winnerName = room.player1!.displayName;
-    payout = pot;
-    await creditWallet(p1Id, pot, "bet_won", {
-      gameId: "card-duel",
-      matchId: roomId,
-    });
-    const w = await Wallet.findOne({ userId: p1Id });
-    if (w) emitWalletUpdate(p1Id, w.balance);
-  } else if (matchResult === "player2") {
-    winnerId = p2Id;
-    winnerName = room.player2!.displayName;
-    payout = pot;
-    await creditWallet(p2Id, pot, "bet_won", {
-      gameId: "card-duel",
-      matchId: roomId,
-    });
-    const w = await Wallet.findOne({ userId: p2Id });
-    if (w) emitWalletUpdate(p2Id, w.balance);
-  } else {
-    // Draw — refund both
-    payout = 0;
-    await creditWallet(p1Id, bet, "bet_refund", {
-      gameId: "card-duel",
-      matchId: roomId,
-    });
-    await creditWallet(p2Id, bet, "bet_refund", {
-      gameId: "card-duel",
-      matchId: roomId,
-    });
-    const [w1, w2] = await Promise.all([
-      Wallet.findOne({ userId: p1Id }),
-      Wallet.findOne({ userId: p2Id }),
-    ]);
+  if (room.isBot) {
+    // Bot match: only human (player1) has a wallet
+    if (matchResult === "player1") {
+      winnerId = p1Id;
+      winnerName = room.player1!.displayName;
+      payout = pot;
+      await creditWallet(p1Id, pot, "bet_won", {
+        gameId: "card-duel",
+        matchId: roomId,
+      });
+    } else if (matchResult === "player2") {
+      winnerId = p2Id;
+      winnerName = room.player2!.displayName;
+      payout = bet;
+      // Human loses — their bet is gone, no credit needed
+    } else {
+      // Draw — refund human
+      payout = 0;
+      await creditWallet(p1Id, bet, "bet_refund", {
+        gameId: "card-duel",
+        matchId: roomId,
+      });
+    }
+    const w1 = await Wallet.findOne({ userId: p1Id });
     if (w1) emitWalletUpdate(p1Id, w1.balance);
-    if (w2) emitWalletUpdate(p2Id, w2.balance);
+  } else {
+    // PvP match
+    if (matchResult === "player1") {
+      winnerId = p1Id;
+      winnerName = room.player1!.displayName;
+      payout = pot;
+      await creditWallet(p1Id, pot, "bet_won", {
+        gameId: "card-duel",
+        matchId: roomId,
+      });
+      const w = await Wallet.findOne({ userId: p1Id });
+      if (w) emitWalletUpdate(p1Id, w.balance);
+    } else if (matchResult === "player2") {
+      winnerId = p2Id;
+      winnerName = room.player2!.displayName;
+      payout = pot;
+      await creditWallet(p2Id, pot, "bet_won", {
+        gameId: "card-duel",
+        matchId: roomId,
+      });
+      const w = await Wallet.findOne({ userId: p2Id });
+      if (w) emitWalletUpdate(p2Id, w.balance);
+    } else {
+      // Draw — refund both
+      payout = 0;
+      await creditWallet(p1Id, bet, "bet_refund", {
+        gameId: "card-duel",
+        matchId: roomId,
+      });
+      await creditWallet(p2Id, bet, "bet_refund", {
+        gameId: "card-duel",
+        matchId: roomId,
+      });
+      const [w1, w2] = await Promise.all([
+        Wallet.findOne({ userId: p1Id }),
+        Wallet.findOne({ userId: p2Id }),
+      ]);
+      if (w1) emitWalletUpdate(p1Id, w1.balance);
+      if (w2) emitWalletUpdate(p2Id, w2.balance);
+    }
   }
 
   // Update DB
@@ -659,6 +730,17 @@ async function resolveMatch(roomId: string): Promise<void> {
     winnerName,
     payout,
   });
+
+  // Bot matches: skip revenge, close room after result display
+  if (room.isBot) {
+    room.roundTimer = setTimeout(async () => {
+      io.to(roomSocketName(roomId)).emit("card-duel:room_closed", {
+        reason: "Partida contra bot encerrada",
+      });
+      removeRoom(roomId);
+    }, CARD_DUEL_RESULT_DISPLAY_DURATION);
+    return;
+  }
 
   // Start revenge flow after display duration
   room.roundTimer = setTimeout(
@@ -866,7 +948,7 @@ async function startMatchInternal(roomId: string): Promise<void> {
     roomState: toRoomState(room),
   });
 
-  room.roundTimer = setTimeout(() => playRound(roomId), CARD_DUEL_ROUND_REVEAL_DELAY);
+  startCardRevealCountdown(roomId);
 }
 
 // ---------------------------------------------------------------------------
@@ -1047,6 +1129,108 @@ async function closeRoom(
   io.to(roomSocketName(roomId)).emit("card-duel:room_closed", { reason });
   removeRoom(roomId);
   broadcastLobbyUpdate();
+}
+
+// ---------------------------------------------------------------------------
+// Bot play
+// ---------------------------------------------------------------------------
+
+export async function createBotRoom(
+  userId: string,
+  displayName: string,
+  avatar: string,
+  socketId: string,
+  gameType: CardDuelGameType,
+): Promise<string> {
+  if (playerRoomMap.has(userId)) {
+    throw new Error("Você já está em uma sala");
+  }
+
+  const settings = getSettings();
+  const betAmount = settings.cardDuel.botBetAmount;
+
+  // Check balance
+  const wallet = await Wallet.findOne({ userId });
+  if (!wallet || wallet.balance < betAmount) {
+    throw new Error("Você não possui coins suficientes");
+  }
+
+  // Create DB record
+  const dbRoom = await CardDuelRoom.create({
+    gameType,
+    betAmount,
+    status: "in_progress",
+    isBot: true,
+    player1Id: userId,
+    player1Name: displayName,
+    player2Id: `bot_${Date.now()}`,
+    player2Name: "Bot",
+  });
+
+  const roomId = dbRoom._id.toString();
+
+  const activeRoom: ActiveRoom = {
+    dbId: roomId,
+    gameType,
+    betAmount,
+    status: "in_progress",
+    isBot: true,
+    player1: { userId, displayName, avatar, isReady: true },
+    player2: {
+      userId: `bot_${Date.now()}`,
+      displayName: "Bot",
+      avatar: "",
+      isReady: true,
+    },
+    player1SocketId: socketId,
+    player2SocketId: null,
+    deck: [],
+    deckIndex: 0,
+    currentRound: 0,
+    rounds: [],
+    player1Score: 0,
+    player2Score: 0,
+    matchResult: null,
+    cardRevealCountdown: 0,
+    roundTimer: null,
+    countdownInterval: null,
+    revengeTimer: null,
+    revengeCountdown: 0,
+    revengeAccepted: new Map(),
+    disconnectTimer: null,
+    disconnectedPlayer: null,
+    disconnectCountdown: 0,
+    disconnectInterval: null,
+  };
+
+  rooms.set(roomId, activeRoom);
+  playerRoomMap.set(userId, roomId);
+
+  // Debit only the human player
+  await debitWallet(userId, betAmount, "bet_placed", {
+    gameId: "card-duel",
+    matchId: roomId,
+  });
+
+  const w = await Wallet.findOne({ userId });
+  if (w) emitWalletUpdate(userId, w.balance);
+
+  // Setup match
+  activeRoom.deck = generateDeck();
+
+  await CardDuelRoom.findByIdAndUpdate(roomId, {
+    status: "in_progress",
+    startedAt: new Date(),
+  });
+
+  io.to(roomSocketName(roomId)).emit("card-duel:match_start", {
+    roomState: toRoomState(activeRoom),
+  });
+
+  // Start card reveal countdown
+  startCardRevealCountdown(roomId);
+
+  return roomId;
 }
 
 // ---------------------------------------------------------------------------

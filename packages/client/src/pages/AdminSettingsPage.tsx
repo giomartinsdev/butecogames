@@ -30,6 +30,8 @@ export function AdminSettingsPage() {
     maxBet: 10000,
     revengeTimeout: 15,
     disconnectGrace: 60,
+    cardRevealDelay: 3,
+    botBetAmount: 100,
   });
 
   const [general, setGeneral] = useState({
@@ -405,6 +407,43 @@ export function AdminSettingsPage() {
                 setCardDuel((prev) => ({
                   ...prev,
                   disconnectGrace: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Contagem regressiva das cartas (segundos)
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={10}
+              value={cardDuel.cardRevealDelay}
+              onChange={(e) =>
+                setCardDuel((prev) => ({
+                  ...prev,
+                  cardRevealDelay: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta do bot (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={cardDuel.botBetAmount}
+              onChange={(e) =>
+                setCardDuel((prev) => ({
+                  ...prev,
+                  botBetAmount: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

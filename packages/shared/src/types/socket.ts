@@ -35,6 +35,8 @@ export interface ClientToServerEvents {
   "card-duel:revenge_accept": () => void;
   "card-duel:revenge_decline": () => void;
   "card-duel:reconnect": (data: { roomId: string }) => void;
+  "card-duel:play_bot": (data: { gameType: CardDuelGameType }) => void;
+  "card-duel:cancel_search": () => void;
 }
 
 // Server → Client events
@@ -104,6 +106,7 @@ export interface ServerToClientEvents {
   "card-duel:player_left": (data: { userId: string }) => void;
   "card-duel:player_ready": (data: { userId: string }) => void;
   "card-duel:match_start": (data: { roomState: CardDuelRoomState }) => void;
+  "card-duel:card_reveal_countdown": (data: { countdown: number }) => void;
   "card-duel:round_result": (data: {
     round: CardDuelRoundData;
     player1Score: number;

@@ -7,6 +7,7 @@ import { DisconnectOverlay } from "./DisconnectOverlay.js";
 interface CardDuelRoomProps {
   roomState: CardDuelRoomState;
   userId: string;
+  cardRevealCountdown: number;
   onLeave: () => void;
   onCancel: () => void;
   onReady: () => void;
@@ -22,6 +23,7 @@ function gameTypeLabel(type: string): string {
 export function CardDuelRoom({
   roomState,
   userId,
+  cardRevealCountdown,
   onLeave,
   onCancel,
   onReady,
@@ -115,14 +117,14 @@ export function CardDuelRoom({
               isCurrentUser={roomState.disconnectedPlayer === userId}
             />
           )}
-          <DuelArena roomState={roomState} userId={userId} />
+          <DuelArena roomState={roomState} userId={userId} cardRevealCountdown={cardRevealCountdown} />
         </div>
       )}
 
       {/* Revenge */}
       {status === "revenge_pending" && (
         <div className="flex flex-col items-center gap-6">
-          <DuelArena roomState={roomState} userId={userId} />
+          <DuelArena roomState={roomState} userId={userId} cardRevealCountdown={cardRevealCountdown} />
           <RevengePrompt
             roomState={roomState}
             userId={userId}

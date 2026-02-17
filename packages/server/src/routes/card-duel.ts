@@ -42,6 +42,7 @@ router.get("/history", requireAuth, async (req, res) => {
       rounds: m.rounds,
       result: m.result,
       winnerId: m.winnerId,
+      isBot: m.isBot ?? false,
       createdAt: m.createdAt.toISOString(),
     }));
 

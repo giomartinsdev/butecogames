@@ -54,6 +54,7 @@ export interface CardDuelRoomState {
   gameType: CardDuelGameType;
   betAmount: number;
   status: CardDuelRoomStatus;
+  isBot: boolean;
   player1: CardDuelPlayer | null;
   player2: CardDuelPlayer | null;
   currentRound: number;
@@ -65,6 +66,7 @@ export interface CardDuelRoomState {
   revengeAccepted: Record<string, boolean>;
   disconnectedPlayer: string | null;
   disconnectCountdown: number;
+  cardRevealCountdown: number;
 }
 
 // Match history record (for profile)
@@ -73,6 +75,7 @@ export interface CardDuelMatchHistory {
   roomId: string;
   gameType: CardDuelGameType;
   betAmount: number;
+  isBot: boolean;
   player1: { userId: string; displayName: string };
   player2: { userId: string; displayName: string };
   rounds: CardDuelRoundData[];

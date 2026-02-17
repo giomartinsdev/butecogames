@@ -18,6 +18,7 @@ import {
   getLobbyRooms,
   getPlayerRoom,
   getRoomState,
+  createBotRoom,
 } from "../services/card-duel.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
@@ -157,6 +158,31 @@ export function registerCardDuelHandlers(io: TypedIO, socket: Socket) {
         message: err instanceof Error ? err.message : "Erro",
       });
     }
+  });
+
+  socket.on("card-duel:play_bot", async ({ gameType }) => {
+    try {
+      const roomId = await createBotRoom(
+        userId,
+        displayName,
+        image,
+        socket.id,
+        gameType,
+      );
+      socket.join(`card-duel:room:${roomId}`);
+      socket.leave("card-duel:lobby");
+      const state = getRoomState(roomId);
+      socket.emit("card-duel:room_joined", { roomState: state });
+    } catch (err) {
+      socket.emit("card-duel:error", {
+        message:
+          err instanceof Error ? err.message : "Erro ao criar partida contra bot",
+      });
+    }
+  });
+
+  socket.on("card-duel:cancel_search", () => {
+    // Client-side only state; nothing to do server-side
   });
 
   socket.on("card-duel:reconnect", async ({ roomId }) => {

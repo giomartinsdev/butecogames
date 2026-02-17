@@ -16,6 +16,10 @@ export function useCardDuel(userId?: string) {
     setRoomState,
     isInLobby,
     setIsInLobby,
+    isSearching,
+    setIsSearching,
+    cardRevealCountdown,
+    setCardRevealCountdown,
     reset,
   } = useCardDuelStore();
   const userIdRef = useRef(userId);
@@ -42,6 +46,7 @@ export function useCardDuel(userId?: string) {
     socket.on("card-duel:room_joined", ({ roomState: state }) => {
       setRoomState(state);
       setIsInLobby(false);
+      setIsSearching(false);
     });
     socket.on("card-duel:room_state", ({ roomState: state }) => {
       setRoomState(state);
@@ -76,6 +81,10 @@ export function useCardDuel(userId?: string) {
     // Match events
     socket.on("card-duel:match_start", ({ roomState: state }) => {
       setRoomState(state);
+      setCardRevealCountdown(0);
+    });
+    socket.on("card-duel:card_reveal_countdown", ({ countdown }) => {
+      setCardRevealCountdown(countdown);
     });
     socket.on(
       "card-duel:round_result",
@@ -189,6 +198,8 @@ export function useCardDuel(userId?: string) {
     socket.on("card-duel:room_closed", ({ reason }) => {
       setRoomState(null);
       setIsInLobby(true);
+      setIsSearching(false);
+      setCardRevealCountdown(0);
       socket.emit("card-duel:join_lobby");
       toast.info(reason);
     });
@@ -222,6 +233,7 @@ export function useCardDuel(userId?: string) {
       socket.off("card-duel:player_reconnected");
       socket.off("card-duel:forfeit");
       socket.off("card-duel:room_closed");
+      socket.off("card-duel:card_reveal_countdown");
       socket.off("card-duel:error");
       reset();
     };
@@ -243,8 +255,21 @@ export function useCardDuel(userId?: string) {
   );
 
   const quickMatchAction = useCallback(() => {
+    setIsSearching(true);
     socket?.emit("card-duel:quick_match");
   }, [socket]);
+
+  const cancelSearch = useCallback(() => {
+    setIsSearching(false);
+  }, []);
+
+  const playBot = useCallback(
+    (gameType: CardDuelGameType) => {
+      setIsSearching(false);
+      socket?.emit("card-duel:play_bot", { gameType });
+    },
+    [socket],
+  );
 
   const leaveRoom = useCallback(() => {
     socket?.emit("card-duel:leave_room");
@@ -274,9 +299,13 @@ export function useCardDuel(userId?: string) {
     lobbyRooms,
     roomState,
     isInLobby,
+    isSearching,
+    cardRevealCountdown,
     createRoom,
     joinRoom,
     quickMatch: quickMatchAction,
+    cancelSearch,
+    playBot,
     leaveRoom,
     cancelRoom: cancelRoomAction,
     setReady,

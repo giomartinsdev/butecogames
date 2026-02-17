@@ -12,6 +12,8 @@ import {
   DEFAULT_CARD_DUEL_MAX_BET,
   CARD_DUEL_REVENGE_TIMEOUT,
   CARD_DUEL_DISCONNECT_GRACE,
+  CARD_DUEL_CARD_REVEAL_DELAY,
+  DEFAULT_CARD_DUEL_BOT_BET,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -35,6 +37,8 @@ export interface ISettings {
     maxBet: number;
     revengeTimeout: number;
     disconnectGrace: number;
+    cardRevealDelay: number;
+    botBetAmount: number;
   };
   general: {
     cursorSize: number;
@@ -65,6 +69,8 @@ const settingsSchema = new Schema(
       maxBet: { type: Number, default: DEFAULT_CARD_DUEL_MAX_BET },
       revengeTimeout: { type: Number, default: CARD_DUEL_REVENGE_TIMEOUT },
       disconnectGrace: { type: Number, default: CARD_DUEL_DISCONNECT_GRACE },
+      cardRevealDelay: { type: Number, default: CARD_DUEL_CARD_REVEAL_DELAY },
+      botBetAmount: { type: Number, default: DEFAULT_CARD_DUEL_BOT_BET },
     },
     general: {
       cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },

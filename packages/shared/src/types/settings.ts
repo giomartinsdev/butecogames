@@ -23,6 +23,8 @@ export interface CardDuelSettings {
   maxBet: number;
   revengeTimeout: number;
   disconnectGrace: number;
+  cardRevealDelay: number;
+  botBetAmount: number;
 }
 
 export interface AppSettings {

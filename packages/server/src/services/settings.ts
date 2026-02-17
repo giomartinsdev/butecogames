@@ -12,6 +12,8 @@ import {
   DEFAULT_CARD_DUEL_MAX_BET,
   CARD_DUEL_REVENGE_TIMEOUT,
   CARD_DUEL_DISCONNECT_GRACE,
+  CARD_DUEL_CARD_REVEAL_DELAY,
+  DEFAULT_CARD_DUEL_BOT_BET,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -99,6 +101,8 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       maxBet: doc.cardDuel?.maxBet ?? DEFAULT_CARD_DUEL_MAX_BET,
       revengeTimeout: doc.cardDuel?.revengeTimeout ?? CARD_DUEL_REVENGE_TIMEOUT,
       disconnectGrace: doc.cardDuel?.disconnectGrace ?? CARD_DUEL_DISCONNECT_GRACE,
+      cardRevealDelay: doc.cardDuel?.cardRevealDelay ?? CARD_DUEL_CARD_REVEAL_DELAY,
+      botBetAmount: doc.cardDuel?.botBetAmount ?? DEFAULT_CARD_DUEL_BOT_BET,
     },
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,

@@ -37,5 +37,7 @@ export const DEFAULT_CARD_DUEL_MIN_BET = 10;
 export const DEFAULT_CARD_DUEL_MAX_BET = 10_000;
 export const CARD_DUEL_REVENGE_TIMEOUT = 15; // seconds
 export const CARD_DUEL_DISCONNECT_GRACE = 60; // seconds
+export const CARD_DUEL_CARD_REVEAL_DELAY = 3; // seconds countdown before cards are shown
 export const CARD_DUEL_ROUND_REVEAL_DELAY = 2_000; // ms between rounds in best-of-3
 export const CARD_DUEL_RESULT_DISPLAY_DURATION = 5_000; // ms to show result before revenge
+export const DEFAULT_CARD_DUEL_BOT_BET = 100; // coins for bot matches

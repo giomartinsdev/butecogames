@@ -13,9 +13,13 @@ export function CardDuelPage() {
     lobbyRooms,
     roomState,
     isInLobby,
+    isSearching,
+    cardRevealCountdown,
     createRoom,
     joinRoom,
     quickMatch,
+    cancelSearch,
+    playBot,
     leaveRoom,
     cancelRoom,
     setReady,
@@ -45,14 +49,18 @@ export function CardDuelPage() {
           balance={balance}
           minBet={minBet}
           maxBet={maxBet}
+          isSearching={isSearching}
           onCreateRoom={createRoom}
           onJoinRoom={joinRoom}
           onQuickMatch={quickMatch}
+          onCancelSearch={cancelSearch}
+          onPlayBot={playBot}
         />
       ) : (
         <CardDuelRoom
           roomState={roomState}
           userId={user?.id ?? ""}
+          cardRevealCountdown={cardRevealCountdown}
           onLeave={leaveRoom}
           onCancel={cancelRoom}
           onReady={setReady}
