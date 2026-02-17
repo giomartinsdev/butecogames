@@ -73,6 +73,9 @@ export interface ServerToClientEvents {
   }) => void;
   "user:level_up": (data: { level: number; xp: number }) => void;
   "user:achievement": (data: { achievementId: string; name: string; reward: number }) => void;
+  "user:xp_gained": (data: { xpGained: number; totalXp: number; level: number; leveledUp: boolean }) => void;
+  "user:challenge_completed": (data: { challengeId: string; name: string; rewardCoins: number; rewardXp: number }) => void;
+  "user:challenge_progress": (data: { challengeId: string; progress: number; target: number }) => void;
   "event:events_update": (data: { events: EventBettingEvent[] }) => void;
   "event:odds_update": (data: {
     eventId: string;

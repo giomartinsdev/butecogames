@@ -24,6 +24,7 @@ import { CardDuelRoom } from "../models/CardDuelRoom.js";
 import { Wallet } from "../models/Wallet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
 import { getSettings } from "./settings.js";
+import { processAction } from "./gamification.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -509,6 +510,9 @@ export async function startMatch(userId: string): Promise<void> {
     return;
   }
 
+  processAction(p1Id, "bet_placed", { gameId: "card-duel", betAmount: bet, matchId: roomId });
+  processAction(p2Id, "bet_placed", { gameId: "card-duel", betAmount: bet, matchId: roomId });
+
   // Emit wallet updates
   const [w1, w2] = await Promise.all([
     Wallet.findOne({ userId: p1Id }),
@@ -659,6 +663,7 @@ async function resolveMatch(roomId: string): Promise<void> {
         gameId: "card-duel",
         matchId: roomId,
       });
+      processAction(p1Id, "bet_won", { gameId: "card-duel", betAmount: bet, payout: pot, matchId: roomId });
     } else if (matchResult === "player2") {
       winnerId = p2Id;
       winnerName = room.player2!.displayName;
@@ -684,6 +689,7 @@ async function resolveMatch(roomId: string): Promise<void> {
         gameId: "card-duel",
         matchId: roomId,
       });
+      processAction(p1Id, "bet_won", { gameId: "card-duel", betAmount: bet, payout: pot, matchId: roomId });
       const w = await Wallet.findOne({ userId: p1Id });
       if (w) emitWalletUpdate(p1Id, w.balance);
     } else if (matchResult === "player2") {
@@ -694,6 +700,7 @@ async function resolveMatch(roomId: string): Promise<void> {
         gameId: "card-duel",
         matchId: roomId,
       });
+      processAction(p2Id, "bet_won", { gameId: "card-duel", betAmount: bet, payout: pot, matchId: roomId });
       const w = await Wallet.findOne({ userId: p2Id });
       if (w) emitWalletUpdate(p2Id, w.balance);
     } else {
@@ -923,6 +930,9 @@ async function startMatchInternal(roomId: string): Promise<void> {
     return;
   }
 
+  processAction(p1Id, "bet_placed", { gameId: "card-duel", betAmount: bet, matchId: roomId });
+  processAction(p2Id, "bet_placed", { gameId: "card-duel", betAmount: bet, matchId: roomId });
+
   // Emit wallet updates
   const [w1, w2] = await Promise.all([
     Wallet.findOne({ userId: p1Id }),
@@ -1010,6 +1020,7 @@ async function handleForfeit(roomId: string, loserId: string): Promise<void> {
     gameId: "card-duel",
     matchId: roomId,
   });
+  processAction(winnerId, "bet_won", { gameId: "card-duel", betAmount: room.betAmount, payout: pot, matchId: roomId });
   const w = await Wallet.findOne({ userId: winnerId });
   if (w) emitWalletUpdate(winnerId, w.balance);
 
@@ -1213,6 +1224,7 @@ export async function createBotRoom(
     gameId: "card-duel",
     matchId: roomId,
   });
+  processAction(userId, "bet_placed", { gameId: "card-duel", betAmount, matchId: roomId });
 
   const w = await Wallet.findOne({ userId });
   if (w) emitWalletUpdate(userId, w.balance);

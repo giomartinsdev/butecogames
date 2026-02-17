@@ -97,4 +97,17 @@ body::before {
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
+
+  --animate-xp-float: xp-float 1.5s ease-out forwards;
+}
+
+@keyframes xp-float {
+  0%, 33% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -28px);
+  }
 }

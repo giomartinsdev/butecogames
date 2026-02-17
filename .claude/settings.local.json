@@ -19,7 +19,8 @@
       "WebFetch(domain:docs.discord.com)",
       "WebFetch(domain:www.better-auth.com)",
       "Bash(mongosh:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(pnpm --filter @butecogames/client run build)"
     ]
   }
 }

@@ -21,7 +21,7 @@ const transactionSchema = new Schema<ITransaction>(
     type: {
       type: String,
       required: true,
-      enum: ["initial_balance", "daily_reward", "bet_placed", "bet_won", "bet_refund", "achievement_reward", "transfer_sent", "transfer_received", "presence_reward"],
+      enum: ["initial_balance", "daily_reward", "bet_placed", "bet_won", "bet_refund", "achievement_reward", "challenge_reward", "transfer_sent", "transfer_received", "presence_reward"],
     },
     amount: { type: Number, required: true },
     balanceAfter: { type: Number, required: true },

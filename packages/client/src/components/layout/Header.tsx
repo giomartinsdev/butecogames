@@ -12,6 +12,7 @@ import type { OnlineUser } from "@butecogames/shared";
 import { HandCoins, Settings, LogOut, Volume2, VolumeOff } from "lucide-react";
 import { useSoundStore } from "@/stores/soundStore.js";
 import { useUpdateUserSettings } from "@/hooks/useUserSettings.js";
+import { XpBar } from "@/components/gamification/XpBar.js";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -101,6 +102,8 @@ export function Header() {
           {user && (
             <div className="flex items-center gap-3">
               <OnlineUsers users={onlineUsers} currentUserId={user.id} onTransferClick={handleTransferFromOnline} />
+
+              <XpBar />
 
               {wallet && (
                 <div className="rounded-lg bg-secondary px-3 py-1.5 text-md font-medium text-accent">

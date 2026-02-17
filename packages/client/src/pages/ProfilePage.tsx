@@ -3,12 +3,16 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { Transaction } from "@butecogames/shared";
 import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet, useTransactions } from "@/hooks/useWallet.js";
+import { useLevelInfo } from "@/hooks/useGamification.js";
 import { formatCoins, translateTransactionType, translateGameId } from "@/lib/utils.js";
 import { DataTable } from "@/components/ui/DataTable.js";
+import { ChallengesPanel } from "@/components/gamification/ChallengesPanel.js";
+import { AchievementsGallery } from "@/components/gamification/AchievementsGallery.js";
 
 export function ProfilePage() {
   const { user } = useAuth();
   const { data: wallet } = useWallet();
+  const { data: levelInfo } = useLevelInfo();
   const [page, setPage] = useState(1);
   const { data: txData, isLoading: txLoading } = useTransactions(page);
 
@@ -96,26 +100,49 @@ export function ProfilePage() {
       </div>
 
       {/* Stats */}
-      {wallet && (
-        <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {wallet && (
+          <>
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-sm text-muted-foreground">Saldo</p>
+              <p className="text-2xl font-bold text-accent">{formatCoins(wallet.balance)}</p>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-sm text-muted-foreground">Total apostado</p>
+              <p className="text-2xl font-bold text-card-foreground">
+                {formatCoins(wallet.totalWagered)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-sm text-muted-foreground">Total ganho</p>
+              <p className="text-2xl font-bold text-green-400">
+                {formatCoins(wallet.totalWon)}
+              </p>
+            </div>
+          </>
+        )}
+        {levelInfo && (
           <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">Saldo</p>
-            <p className="text-2xl font-bold text-accent">{formatCoins(wallet.balance)}</p>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">Total apostado</p>
-            <p className="text-2xl font-bold text-card-foreground">
-              {formatCoins(wallet.totalWagered)}
+            <p className="text-sm text-muted-foreground">Nível</p>
+            <p className="text-2xl font-bold text-accent">Lv. {levelInfo.level}</p>
+            <div className="mt-2 h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className="h-full rounded-full bg-accent transition-all duration-500"
+                style={{ width: `${Math.round(levelInfo.progress * 100)}%` }}
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {levelInfo.currentXp} / {levelInfo.xpForNextLevel} XP
             </p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">Total ganho</p>
-            <p className="text-2xl font-bold text-green-400">
-              {formatCoins(wallet.totalWon)}
-            </p>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* Challenges */}
+      <ChallengesPanel />
+
+      {/* Achievements */}
+      <AchievementsGallery />
 
       {/* Transaction history */}
       <div>

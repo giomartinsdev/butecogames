@@ -9,6 +9,7 @@ import { EventBettingBet } from "../models/EventBettingBet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
 import { getSettings } from "./settings.js";
 import { UserProfile } from "../models/UserProfile.js";
+import { processAction } from "./gamification.js";
 
 let io: SocketIOServer | null = null;
 
@@ -153,6 +154,8 @@ export async function placeEventBet(
     potentialPayout,
   });
 
+  processAction(userId, "bet_placed", { gameId: "event-betting", betAmount: amount, eventId });
+
   // Broadcast odds and pool update
   if (io) {
     io.to("event-betting").emit("event:odds_update", {
@@ -220,6 +223,13 @@ export async function resolveEvent(
     await creditWallet(bet.userId, actualPayout, "bet_won", {
       gameId: "event-betting",
       eventId: eventId,
+    });
+
+    processAction(bet.userId, "bet_won", {
+      gameId: "event-betting",
+      betAmount: bet.amount,
+      payout: actualPayout,
+      eventId,
     });
 
     // Get user display name

@@ -9,6 +9,7 @@ import { RouletteRound, type IRouletteRound } from "../models/RouletteRound.js";
 import { RouletteBet } from "../models/RouletteBet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
 import { getSettings } from "./settings.js";
+import { processAction } from "./gamification.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -208,6 +209,14 @@ async function resolveRound() {
         roundId: roundId.toString(),
       });
 
+      processAction(bet.userId, "bet_won", {
+        gameId: "roulette",
+        betAmount: bet.amount,
+        payout,
+        betType: bet.betType.startsWith("number:") ? "number" : undefined,
+        roundId: roundId.toString(),
+      });
+
       // Find display name for the winner
       const betDisplay = state.currentBets.find(
         (b) => b.userId === bet.userId,
@@ -301,6 +310,8 @@ export async function placeBet(
   state.currentBets.push(betDisplay);
 
   io.to("roulette").emit("roulette:bet_placed", betDisplay);
+
+  processAction(userId, "bet_placed", { gameId: "roulette", betAmount: amount });
 }
 
 export function getRouletteState() {

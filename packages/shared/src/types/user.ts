@@ -8,6 +8,12 @@ export interface UserProfile {
   banned: boolean;
   bannedAt: string | null;
   achievements: string[];
+  totalBets: number;
+  totalWins: number;
+  totalTransfers: number;
+  totalDailyRewards: number;
+  totalChallengesCompleted: number;
+  gamesPlayed: string[];
   lastDailyReward: string | null;
   createdAt: string;
   updatedAt: string;

@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import type { ClientToServerEvents, ServerToClientEvents } from "@butecogames/shared";
 import type { AuthenticatedSocket } from "./middleware.js";
+import { processAction } from "../services/gamification.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -26,5 +27,7 @@ export function registerChatHandlers(io: TypedIO, socket: Socket) {
       message: message.trim().slice(0, 500),
       timestamp: new Date().toISOString(),
     });
+
+    processAction(authSocket.data.userId, "chat_message");
   });
 }

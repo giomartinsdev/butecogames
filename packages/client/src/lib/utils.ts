@@ -49,7 +49,8 @@ const transactionTypeLabels: Record<TransactionType, string> = {
   achievement_reward: "Conquista",
   transfer_sent: "Transferência enviada",
   transfer_received: "Transferência recebida",
-  presence_reward: "Recompensa de presença"
+  presence_reward: "Recompensa de presença",
+  challenge_reward: "Desafio completo"
 };
 
 export function translateTransactionType(type: TransactionType): string {

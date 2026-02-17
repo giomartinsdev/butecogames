@@ -17,7 +17,8 @@ export type TransactionType =
   | "achievement_reward"
   | "transfer_sent"
   | "transfer_received"
-  | "presence_reward";
+  | "presence_reward"
+  | "challenge_reward";
 
 export interface Transaction {
   _id: string;

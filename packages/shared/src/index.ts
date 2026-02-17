@@ -32,6 +32,18 @@ export type {
 } from "./types/settings.js";
 export type { UserSettings } from "./types/user-settings.js";
 export type {
+  XpConfig,
+  LevelInfo,
+  AchievementCategory,
+  AchievementDefinition,
+  ChallengeType,
+  ChallengePeriod,
+  ChallengeTemplate,
+  ActiveChallenge,
+  GamificationAction,
+  GamificationActionMeta,
+} from "./types/gamification.js";
+export type {
   Card,
   CardSuit,
   CardRank,
@@ -93,3 +105,16 @@ export {
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
 } from "./constants/card-duel.js";
+export {
+  XP_CONFIG,
+  MAX_CHAT_XP_PER_DAY,
+  xpForLevel,
+  cumulativeXpForLevel,
+  levelFromXp,
+  getLevelInfo,
+  calculateWinXp,
+  ACHIEVEMENTS,
+  CHALLENGE_TEMPLATES,
+  DAILY_CHALLENGES_COUNT,
+  WEEKLY_CHALLENGES_COUNT,
+} from "./constants/gamification.js";

@@ -3,6 +3,7 @@ import { Transaction } from "../models/Transaction.js";
 import { INITIAL_BALANCE, DAILY_REWARD_AMOUNT, DAILY_REWARD_COOLDOWN_MS } from "@butecogames/shared";
 import type { TransactionType } from "@butecogames/shared";
 import { invalidateLeaderboardCache } from "../routes/leaderboard.js";
+import { processAction } from "./gamification.js";
 
 export async function getOrCreateWallet(userId: string): Promise<IWallet> {
   const existing = await Wallet.findOne({ userId });
@@ -120,6 +121,7 @@ export async function transferCoins(
   // Credit recipient
   await creditWallet(recipientId, amount, "transfer_received", { relatedUserId: senderId });
 
+  processAction(senderId, "transfer_sent");
   invalidateLeaderboardCache();
 
   return senderWallet;
@@ -146,5 +148,6 @@ export async function claimDailyReward(
   await profile.save();
 
   const wallet = await creditWallet(userId, DAILY_REWARD_AMOUNT, "daily_reward");
+  processAction(userId, "daily_reward");
   return { wallet, claimed: true };
 }
