@@ -13,6 +13,7 @@ import { HandCoins, Settings, LogOut, Volume2, VolumeOff } from "lucide-react";
 import { useSoundStore } from "@/stores/soundStore.js";
 import { useUpdateUserSettings } from "@/hooks/useUserSettings.js";
 import { XpBar } from "@/components/gamification/XpBar.js";
+import { NotificationBell } from "./NotificationBell.js";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -111,6 +112,8 @@ export function Header() {
                   {formatCoins(wallet.balance)}
                 </div>
               )}
+
+              <NotificationBell />
 
               <div
                 className="relative"

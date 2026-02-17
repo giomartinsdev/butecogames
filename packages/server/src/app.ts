@@ -14,6 +14,7 @@ import userSettingsRouter from "./routes/user-settings.js";
 import cardDuelRouter from "./routes/card-duel.js";
 import gamificationRouter from "./routes/gamification.js";
 import notificationsRouter from "./routes/notifications.js";
+import userNotificationsRouter from "./routes/user-notifications.js";
 import { env } from "./config/env.js";
 
 export function createApp() {
@@ -45,6 +46,7 @@ export function createApp() {
   app.use("/api/admin", adminUsersRouter);
   app.use("/api/gamification", gamificationRouter);
   app.use("/api/admin/notifications", notificationsRouter);
+  app.use("/api/notifications", userNotificationsRouter);
 
   // Health check
   app.get("/api/health", (_req, res) => {

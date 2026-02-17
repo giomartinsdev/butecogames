@@ -1,10 +1,11 @@
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSocketStore } from "@/stores/socketStore.js";
 import { useSoundStore } from "@/stores/soundStore.js";
-import { toast } from "sonner";
 
 export function useNotificationEvents() {
   const socket = useSocketStore((s) => s.socket);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!socket) return;
@@ -14,20 +15,24 @@ export function useNotificationEvents() {
       title: string;
       message?: string;
     }) => {
-      const toastType = data.type === "announcement" ? "success" : data.type;
-      toast[toastType](data.title, {
-        description: data.message,
-        duration: data.type === "announcement" ? 10000 : 5000,
-      });
-
       if (data.type === "announcement") {
         useSoundStore.getState().playSound("bet_win");
       }
+
+      // Refresh notification bell data
+      queryClient.invalidateQueries({ queryKey: ["recent-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification-unread-count"] });
+    };
+
+    const handleUnreadCount = (data: { count: number }) => {
+      queryClient.setQueryData(["notification-unread-count"], { count: data.count });
     };
 
     socket.on("notification:global", handleGlobal);
+    socket.on("notification:unread_count", handleUnreadCount);
     return () => {
       socket.off("notification:global", handleGlobal);
+      socket.off("notification:unread_count", handleUnreadCount);
     };
-  }, [socket]);
+  }, [socket, queryClient]);
 }

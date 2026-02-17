@@ -101,6 +101,7 @@ export interface ServerToClientEvents {
     title: string;
     message?: string;
   }) => void;
+  "notification:unread_count": (data: { count: number }) => void;
   "settings:cursor_size": (data: { cursorSize: number }) => void;
   "wallet:updated": (data: { balance: number }) => void;
   "presence:online_users": (data: { users: OnlineUser[] }) => void;
