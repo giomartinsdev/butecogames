@@ -125,6 +125,7 @@ export function useCardDuel(userId?: string) {
           }
         }
         queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        queryClient.invalidateQueries({ queryKey: ["card-duel-recent"] });
       },
     );
 
@@ -191,6 +192,7 @@ export function useCardDuel(userId?: string) {
           toast.error("Você perdeu por desconexão");
         }
         queryClient.invalidateQueries({ queryKey: ["wallet"] });
+        queryClient.invalidateQueries({ queryKey: ["card-duel-recent"] });
       },
     );
 
