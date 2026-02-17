@@ -23,6 +23,17 @@ export const GAMES: GameInfo[] = [
     requiresRoom: false,
     thumbnail: "/imgs/games/event-betting.png",
   },
+  {
+    id: "card-duel",
+    name: "Duelo de Cartas",
+    description:
+      "Desafie outro jogador em um duelo de cartas! A carta mais alta vence o pote.",
+    minPlayers: 2,
+    maxPlayers: 2,
+    available: true,
+    requiresRoom: true,
+    thumbnail: "/imgs/games/card-duel.png",
+  },
 ];
 
 export const INITIAL_BALANCE = 1000;

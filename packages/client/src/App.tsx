@@ -15,6 +15,7 @@ import { AdminUsersPage } from "@/pages/AdminUsersPage.js";
 import { ProfilePage } from "@/pages/ProfilePage.js";
 import { LeaderboardPage } from "@/pages/LeaderboardPage.js";
 import { SettingsPage } from "@/pages/SettingsPage.js";
+import { CardDuelPage } from "@/pages/CardDuelPage.js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +84,7 @@ function AppRoutes() {
         <Route path="/games" element={<GamesPage />} />
         <Route path="/games/roulette" element={<RoulettePage />} />
         <Route path="/games/event-betting" element={<EventBettingPage />} />
+        <Route path="/games/card-duel" element={<CardDuelPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/event-betting" element={<AdminEventBettingPage />} />
         <Route path="/admin/settings" element={<AdminSettingsPage />} />

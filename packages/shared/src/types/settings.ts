@@ -18,8 +18,16 @@ export interface GeneralSettings {
   cursorSize: number;
 }
 
+export interface CardDuelSettings {
+  minBet: number;
+  maxBet: number;
+  revengeTimeout: number;
+  disconnectGrace: number;
+}
+
 export interface AppSettings {
   roulette: RouletteSettings;
   eventBetting: EventBettingSettings;
+  cardDuel: CardDuelSettings;
   general: GeneralSettings;
 }

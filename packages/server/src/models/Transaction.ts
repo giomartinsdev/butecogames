@@ -9,6 +9,7 @@ export interface ITransaction extends Document {
   gameId?: string;
   roundId?: string;
   eventId?: string;
+  matchId?: string;
   achievementId?: string;
   relatedUserId?: string;
   createdAt: Date;
@@ -27,6 +28,7 @@ const transactionSchema = new Schema<ITransaction>(
     gameId: String,
     roundId: String,
     eventId: String,
+    matchId: String,
     achievementId: String,
     relatedUserId: String,
   },

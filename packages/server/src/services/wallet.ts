@@ -29,6 +29,7 @@ interface TransactionFields {
   gameId?: string;
   roundId?: string;
   eventId?: string;
+  matchId?: string;
   achievementId?: string;
   relatedUserId?: string;
 }

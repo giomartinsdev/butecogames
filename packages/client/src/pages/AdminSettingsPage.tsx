@@ -25,6 +25,13 @@ export function AdminSettingsPage() {
     maxBetsPerEvent: 3,
   });
 
+  const [cardDuel, setCardDuel] = useState({
+    minBet: 10,
+    maxBet: 10000,
+    revengeTimeout: 15,
+    disconnectGrace: 60,
+  });
+
   const [general, setGeneral] = useState({
     cursorSize: 32,
   });
@@ -34,6 +41,9 @@ export function AdminSettingsPage() {
       setRoulette(settings.roulette);
       if (settings.eventBetting) {
         setEventBetting(settings.eventBetting);
+      }
+      if (settings.cardDuel) {
+        setCardDuel(settings.cardDuel);
       }
       if (settings.general) {
         setGeneral(settings.general);
@@ -55,7 +65,7 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette, eventBetting, general },
+      { roulette, eventBetting, cardDuel, general },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
@@ -310,6 +320,91 @@ export function AdminSettingsPage() {
                 setEventBetting((prev) => ({
                   ...prev,
                   maxBetsPerEvent: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
+        <h2 className="text-xl font-bold text-card-foreground mb-4">
+          Duelo de Cartas
+        </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Configure os limites e tempos do duelo de cartas.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta minima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={cardDuel.minBet}
+              onChange={(e) =>
+                setCardDuel((prev) => ({
+                  ...prev,
+                  minBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta maxima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={cardDuel.maxBet}
+              onChange={(e) =>
+                setCardDuel((prev) => ({
+                  ...prev,
+                  maxBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tempo de revanche (segundos)
+            </label>
+            <input
+              type="number"
+              min={5}
+              max={60}
+              value={cardDuel.revengeTimeout}
+              onChange={(e) =>
+                setCardDuel((prev) => ({
+                  ...prev,
+                  revengeTimeout: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tempo de reconexão (segundos)
+            </label>
+            <input
+              type="number"
+              min={10}
+              max={300}
+              value={cardDuel.disconnectGrace}
+              onChange={(e) =>
+                setCardDuel((prev) => ({
+                  ...prev,
+                  disconnectGrace: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

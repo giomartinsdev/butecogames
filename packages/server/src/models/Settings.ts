@@ -8,6 +8,10 @@ import {
   DEFAULT_EVENT_BETTING_MIN_BET,
   DEFAULT_EVENT_BETTING_MAX_BET,
   DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
+  DEFAULT_CARD_DUEL_MIN_BET,
+  DEFAULT_CARD_DUEL_MAX_BET,
+  CARD_DUEL_REVENGE_TIMEOUT,
+  CARD_DUEL_DISCONNECT_GRACE,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -25,6 +29,12 @@ export interface ISettings {
     minBet: number;
     maxBet: number;
     maxBetsPerEvent: number;
+  };
+  cardDuel: {
+    minBet: number;
+    maxBet: number;
+    revengeTimeout: number;
+    disconnectGrace: number;
   };
   general: {
     cursorSize: number;
@@ -49,6 +59,12 @@ const settingsSchema = new Schema(
       minBet: { type: Number, default: DEFAULT_EVENT_BETTING_MIN_BET },
       maxBet: { type: Number, default: DEFAULT_EVENT_BETTING_MAX_BET },
       maxBetsPerEvent: { type: Number, default: DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT },
+    },
+    cardDuel: {
+      minBet: { type: Number, default: DEFAULT_CARD_DUEL_MIN_BET },
+      maxBet: { type: Number, default: DEFAULT_CARD_DUEL_MAX_BET },
+      revengeTimeout: { type: Number, default: CARD_DUEL_REVENGE_TIMEOUT },
+      disconnectGrace: { type: Number, default: CARD_DUEL_DISCONNECT_GRACE },
     },
     general: {
       cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },

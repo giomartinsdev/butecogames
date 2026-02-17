@@ -1,6 +1,14 @@
 import type { RouletteBetDisplay, RouletteBetType, RouletteWinner } from "./roulette.js";
 import type { BetOption, EventBettingEvent, EventOdds } from "./event-betting.js";
 import type { OnlineUser } from "./user.js";
+import type {
+  CardDuelGameType,
+  CardDuelMatchResult,
+  CardDuelPlayer,
+  CardDuelRoomInfo,
+  CardDuelRoomState,
+  CardDuelRoundData,
+} from "./card-duel.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
@@ -15,6 +23,18 @@ export interface ClientToServerEvents {
     option: BetOption;
     amount: number;
   }) => void;
+  "card-duel:join_lobby": () => void;
+  "card-duel:leave_lobby": () => void;
+  "card-duel:create_room": (data: { betAmount: number; gameType: CardDuelGameType }) => void;
+  "card-duel:join_room": (data: { roomId: string }) => void;
+  "card-duel:quick_match": () => void;
+  "card-duel:leave_room": () => void;
+  "card-duel:cancel_room": () => void;
+  "card-duel:player_ready": () => void;
+  "card-duel:start_match": () => void;
+  "card-duel:revenge_accept": () => void;
+  "card-duel:revenge_decline": () => void;
+  "card-duel:reconnect": (data: { roomId: string }) => void;
 }
 
 // Server → Client events
@@ -76,4 +96,43 @@ export interface ServerToClientEvents {
   "presence:online_users": (data: { users: OnlineUser[] }) => void;
   "presence:user_joined": (data: { user: OnlineUser }) => void;
   "presence:user_left": (data: { userId: string }) => void;
+  "card-duel:lobby_state": (data: { rooms: CardDuelRoomInfo[] }) => void;
+  "card-duel:lobby_update": (data: { rooms: CardDuelRoomInfo[] }) => void;
+  "card-duel:room_joined": (data: { roomState: CardDuelRoomState }) => void;
+  "card-duel:room_state": (data: { roomState: CardDuelRoomState }) => void;
+  "card-duel:player_joined": (data: { player: CardDuelPlayer }) => void;
+  "card-duel:player_left": (data: { userId: string }) => void;
+  "card-duel:player_ready": (data: { userId: string }) => void;
+  "card-duel:match_start": (data: { roomState: CardDuelRoomState }) => void;
+  "card-duel:round_result": (data: {
+    round: CardDuelRoundData;
+    player1Score: number;
+    player2Score: number;
+    isLastRound: boolean;
+  }) => void;
+  "card-duel:match_result": (data: {
+    result: CardDuelMatchResult;
+    winnerId: string | null;
+    winnerName: string | null;
+    payout: number;
+  }) => void;
+  "card-duel:revenge_offer": (data: {
+    countdown: number;
+    canAccept: boolean;
+  }) => void;
+  "card-duel:revenge_countdown": (data: { countdown: number }) => void;
+  "card-duel:revenge_accepted": () => void;
+  "card-duel:room_closed": (data: { reason: string }) => void;
+  "card-duel:player_disconnected": (data: {
+    userId: string;
+    countdown: number;
+  }) => void;
+  "card-duel:player_reconnected": (data: { userId: string }) => void;
+  "card-duel:forfeit": (data: {
+    loserId: string;
+    winnerId: string;
+    winnerName: string;
+    payout: number;
+  }) => void;
+  "card-duel:error": (data: { message: string }) => void;
 }

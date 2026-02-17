@@ -11,6 +11,7 @@ import eventBettingRouter from "./routes/event-betting.js";
 import settingsRouter from "./routes/settings.js";
 import adminUsersRouter from "./routes/admin-users.js";
 import userSettingsRouter from "./routes/user-settings.js";
+import cardDuelRouter from "./routes/card-duel.js";
 import { env } from "./config/env.js";
 
 export function createApp() {
@@ -38,6 +39,7 @@ export function createApp() {
   app.use("/api/leaderboard", leaderboardRouter);
   app.use("/api/event-betting", eventBettingRouter);
   app.use("/api/settings", settingsRouter);
+  app.use("/api/card-duel", cardDuelRouter);
   app.use("/api/admin", adminUsersRouter);
 
   // Health check

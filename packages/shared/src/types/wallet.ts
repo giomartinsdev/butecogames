@@ -28,6 +28,7 @@ export interface Transaction {
   gameId?: string;
   roundId?: string;
   eventId?: string;
+  matchId?: string;
   achievementId?: string;
   relatedUserId?: string;
   relatedUserName?: string;

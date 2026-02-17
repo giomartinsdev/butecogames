@@ -8,6 +8,10 @@ import {
   DEFAULT_EVENT_BETTING_MIN_BET,
   DEFAULT_EVENT_BETTING_MAX_BET,
   DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
+  DEFAULT_CARD_DUEL_MIN_BET,
+  DEFAULT_CARD_DUEL_MAX_BET,
+  CARD_DUEL_REVENGE_TIMEOUT,
+  CARD_DUEL_DISCONNECT_GRACE,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -48,6 +52,12 @@ export async function updateSettings(
     }
   }
 
+  if (partial.cardDuel) {
+    for (const [key, value] of Object.entries(partial.cardDuel)) {
+      update[`cardDuel.${key}`] = value;
+    }
+  }
+
   if (partial.general) {
     for (const [key, value] of Object.entries(partial.general)) {
       update[`general.${key}`] = value;
@@ -83,6 +93,12 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       minBet: doc.eventBetting?.minBet ?? DEFAULT_EVENT_BETTING_MIN_BET,
       maxBet: doc.eventBetting?.maxBet ?? DEFAULT_EVENT_BETTING_MAX_BET,
       maxBetsPerEvent: doc.eventBetting?.maxBetsPerEvent ?? DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
+    },
+    cardDuel: {
+      minBet: doc.cardDuel?.minBet ?? DEFAULT_CARD_DUEL_MIN_BET,
+      maxBet: doc.cardDuel?.maxBet ?? DEFAULT_CARD_DUEL_MAX_BET,
+      revengeTimeout: doc.cardDuel?.revengeTimeout ?? CARD_DUEL_REVENGE_TIMEOUT,
+      disconnectGrace: doc.cardDuel?.disconnectGrace ?? CARD_DUEL_DISCONNECT_GRACE,
     },
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,

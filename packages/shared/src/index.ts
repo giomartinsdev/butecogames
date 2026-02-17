@@ -26,10 +26,25 @@ export type {
 export type {
   RouletteSettings,
   EventBettingSettings,
+  CardDuelSettings,
   GeneralSettings,
   AppSettings,
 } from "./types/settings.js";
 export type { UserSettings } from "./types/user-settings.js";
+export type {
+  Card,
+  CardSuit,
+  CardRank,
+  CardDuelGameType,
+  CardDuelRoomStatus,
+  CardDuelRoundResult,
+  CardDuelMatchResult,
+  CardDuelRoundData,
+  CardDuelPlayer,
+  CardDuelRoomInfo,
+  CardDuelRoomState,
+  CardDuelMatchHistory,
+} from "./types/card-duel.js";
 
 // Constants
 export {
@@ -64,3 +79,15 @@ export {
   DEFAULT_CURSOR_SIZE,
   type CursorSet,
 } from "./constants/cursors.js";
+export {
+  CARD_RANKS,
+  RANK_NAMES,
+  SUIT_NAMES,
+  SUIT_SYMBOLS,
+  DEFAULT_CARD_DUEL_MIN_BET,
+  DEFAULT_CARD_DUEL_MAX_BET,
+  CARD_DUEL_REVENGE_TIMEOUT,
+  CARD_DUEL_DISCONNECT_GRACE,
+  CARD_DUEL_ROUND_REVEAL_DELAY,
+  CARD_DUEL_RESULT_DISPLAY_DURATION,
+} from "./constants/card-duel.js";
