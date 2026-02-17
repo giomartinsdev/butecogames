@@ -29,5 +29,7 @@ export interface Transaction {
   roundId?: string;
   eventId?: string;
   achievementId?: string;
+  relatedUserId?: string;
+  relatedUserName?: string;
   createdAt: string;
 }

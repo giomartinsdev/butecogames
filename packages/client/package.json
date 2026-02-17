@@ -12,6 +12,7 @@
   "dependencies": {
     "@butecogames/shared": "workspace:*",
     "@tanstack/react-query": "^5.62.0",
+    "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

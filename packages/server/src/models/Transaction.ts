@@ -10,6 +10,7 @@ export interface ITransaction extends Document {
   roundId?: string;
   eventId?: string;
   achievementId?: string;
+  relatedUserId?: string;
   createdAt: Date;
 }
 
@@ -27,6 +28,7 @@ const transactionSchema = new Schema<ITransaction>(
     roundId: String,
     eventId: String,
     achievementId: String,
+    relatedUserId: String,
   },
   { timestamps: true },
 );

@@ -1,11 +1,86 @@
+import { useState, useMemo } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { Transaction } from "@butecogames/shared";
 import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet, useTransactions } from "@/hooks/useWallet.js";
 import { formatCoins, translateTransactionType, translateGameId } from "@/lib/utils.js";
+import { DataTable } from "@/components/ui/DataTable.js";
 
 export function ProfilePage() {
   const { user } = useAuth();
   const { data: wallet } = useWallet();
-  const { data: txData } = useTransactions();
+  const [page, setPage] = useState(1);
+  const { data: txData, isLoading: txLoading } = useTransactions(page);
+
+  const columns = useMemo<ColumnDef<Transaction, any>[]>(
+    () => [
+      {
+        accessorKey: "type",
+        header: "Tipo",
+        cell: ({ getValue }) => (
+          <span className="text-card-foreground">
+            {translateTransactionType(getValue())}
+          </span>
+        ),
+      },
+      {
+        id: "detail",
+        header: "Detalhe",
+        cell: ({ row }) => {
+          const tx = row.original;
+          if (tx.relatedUserName) {
+            return (
+              <span className="text-muted-foreground">
+                {tx.relatedUserName}
+              </span>
+            );
+          }
+          return (
+            <span className="text-muted-foreground">
+              {translateGameId(tx.gameId) ?? "—"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "amount",
+        header: "Valor",
+        cell: ({ getValue }) => {
+          const amount = getValue<number>();
+          return (
+            <span
+              className={`font-medium ${amount > 0 ? "text-green-400" : "text-red-400"}`}
+            >
+              {amount > 0 ? "+" : ""}
+              {formatCoins(amount)}
+            </span>
+          );
+        },
+        meta: { textAlign: "right" } as any,
+      },
+      {
+        accessorKey: "balanceAfter",
+        header: "Saldo",
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">
+            {formatCoins(getValue<number>())}
+          </span>
+        ),
+        meta: { textAlign: "right" } as any,
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Data",
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">
+            {new Date(getValue<string>()).toLocaleString("pt-BR")}
+          </span>
+        ),
+        meta: { textAlign: "right" } as any,
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="space-y-8">
@@ -47,48 +122,14 @@ export function ProfilePage() {
         <h2 className="text-xl font-semibold text-card-foreground mb-4">
           Historico de transacoes
         </h2>
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border bg-muted">
-              <tr>
-                <th className="px-4 py-2 text-left text-muted-foreground font-medium">Tipo</th>
-                <th className="px-4 py-2 text-left text-muted-foreground font-medium">Jogo</th>
-                <th className="px-4 py-2 text-right text-muted-foreground font-medium">Valor</th>
-                <th className="px-4 py-2 text-right text-muted-foreground font-medium">Saldo</th>
-                <th className="px-4 py-2 text-right text-muted-foreground font-medium">Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {txData?.transactions.map((tx) => (
-                <tr key={tx._id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-2 text-card-foreground">{translateTransactionType(tx.type)}</td>
-                  <td className="px-4 py-2 text-muted-foreground">
-                    {translateGameId(tx.gameId) ?? "—"}
-                  </td>
-                  <td
-                    className={`px-4 py-2 text-right font-medium ${
-                      tx.amount > 0 ? "text-green-400" : "text-red-400"
-                    }`}
-                  >
-                    {tx.amount > 0 ? "+" : ""}
-                    {formatCoins(tx.amount)}
-                  </td>
-                  <td className="px-4 py-2 text-right text-muted-foreground">
-                    {formatCoins(tx.balanceAfter)}
-                  </td>
-                  <td className="px-4 py-2 text-right text-muted-foreground">
-                    {new Date(tx.createdAt).toLocaleString("pt-BR")}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {(!txData || txData.transactions.length === 0) && (
-            <p className="p-4 text-center text-muted-foreground">
-              Nenhuma transacao encontrada
-            </p>
-          )}
-        </div>
+        <DataTable
+          columns={columns}
+          data={txData?.transactions ?? []}
+          pagination={txData?.pagination}
+          onPageChange={setPage}
+          isLoading={txLoading}
+          emptyMessage="Nenhuma transacao encontrada"
+        />
       </div>
     </div>
   );

@@ -30,6 +30,7 @@ interface TransactionFields {
   roundId?: string;
   eventId?: string;
   achievementId?: string;
+  relatedUserId?: string;
 }
 
 export async function creditWallet(
@@ -113,10 +114,10 @@ export async function transferCoins(
   await getOrCreateWallet(recipientId);
 
   // Debit sender
-  const senderWallet = await debitWallet(senderId, amount, "transfer_sent");
+  const senderWallet = await debitWallet(senderId, amount, "transfer_sent", { relatedUserId: recipientId });
 
   // Credit recipient
-  await creditWallet(recipientId, amount, "transfer_received");
+  await creditWallet(recipientId, amount, "transfer_received", { relatedUserId: senderId });
 
   invalidateLeaderboardCache();
 

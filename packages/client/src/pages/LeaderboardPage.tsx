@@ -1,9 +1,19 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import type { ColumnDef } from "@tanstack/react-table";
 import { fetchLeaderboard } from "@/api/leaderboard.js";
 import { formatCoins, cn } from "@/lib/utils.js";
+import { DataTable } from "@/components/ui/DataTable.js";
 
 type LeaderboardType = "coins" | "xp" | "wins";
+
+interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  displayName: string;
+  level: number;
+  value: number;
+}
 
 const tabs: { key: LeaderboardType; label: string }[] = [
   { key: "coins", label: "Coins" },
@@ -11,12 +21,56 @@ const tabs: { key: LeaderboardType; label: string }[] = [
   { key: "wins", label: "Ganhos" },
 ];
 
+const valueHeader: Record<LeaderboardType, string> = {
+  coins: "Coins",
+  xp: "XP",
+  wins: "Total ganho",
+};
+
 export function LeaderboardPage() {
   const [type, setType] = useState<LeaderboardType>("coins");
   const { data, isLoading } = useQuery({
     queryKey: ["leaderboard", type],
     queryFn: () => fetchLeaderboard(type),
   });
+
+  const columns = useMemo<ColumnDef<LeaderboardEntry, any>[]>(
+    () => [
+      {
+        accessorKey: "rank",
+        header: "#",
+        cell: ({ getValue }) => (
+          <span className="font-bold text-accent">{getValue<number>()}</span>
+        ),
+      },
+      {
+        accessorKey: "displayName",
+        header: "Jogador",
+        cell: ({ getValue }) => (
+          <span className="text-card-foreground">{getValue<string>()}</span>
+        ),
+      },
+      {
+        accessorKey: "level",
+        header: "Level",
+        cell: ({ getValue }) => (
+          <span className="text-muted-foreground">{getValue<number>()}</span>
+        ),
+        meta: { textAlign: "center" } as any,
+      },
+      {
+        accessorKey: "value",
+        header: valueHeader[type],
+        cell: ({ getValue }) => (
+          <span className="font-medium text-card-foreground">
+            {formatCoins(getValue<number>())}
+          </span>
+        ),
+        meta: { textAlign: "right" } as any,
+      },
+    ],
+    [type],
+  );
 
   return (
     <div className="space-y-6">
@@ -45,48 +99,13 @@ export function LeaderboardPage() {
         ))}
       </div>
 
-      {/* Table */}
-      {isLoading ? (
-        <div className="text-muted-foreground">Carregando ranking...</div>
-      ) : (
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border bg-muted">
-              <tr>
-                <th className="px-4 py-2 text-left text-muted-foreground font-medium">#</th>
-                <th className="px-4 py-2 text-left text-muted-foreground font-medium">
-                  Jogador
-                </th>
-                <th className="px-4 py-2 text-center text-muted-foreground font-medium">
-                  Level
-                </th>
-                <th className="px-4 py-2 text-right text-muted-foreground font-medium">
-                  {type === "coins" ? "Coins" : type === "xp" ? "XP" : "Total ganho"}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.leaderboard.map((entry) => (
-                <tr key={entry.userId} className="border-b border-border last:border-0">
-                  <td className="px-4 py-2 font-bold text-accent">{entry.rank}</td>
-                  <td className="px-4 py-2 text-card-foreground">{entry.displayName}</td>
-                  <td className="px-4 py-2 text-center text-muted-foreground">
-                    {entry.level}
-                  </td>
-                  <td className="px-4 py-2 text-right font-medium text-card-foreground">
-                    {formatCoins(entry.value)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {(!data || data.leaderboard.length === 0) && (
-            <p className="p-4 text-center text-muted-foreground">
-              Nenhum jogador no ranking ainda
-            </p>
-          )}
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={data?.leaderboard ?? []}
+        pageSize={10}
+        isLoading={isLoading}
+        emptyMessage="Nenhum jogador no ranking ainda"
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { ObjectId } from "mongodb";
 import { requireAuth } from "../middleware/auth.js";
 import { Transaction } from "../models/Transaction.js";
 import { UserProfile } from "../models/UserProfile.js";
@@ -30,12 +31,41 @@ router.get("/transactions", requireAuth, async (req, res) => {
       Transaction.find({ userId: req.user!.id })
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       Transaction.countDocuments({ userId: req.user!.id }),
     ]);
 
+    // Resolve display names for transfer transactions
+    const relatedUserIds = [
+      ...new Set(
+        transactions
+          .filter((tx) => tx.relatedUserId)
+          .map((tx) => tx.relatedUserId!),
+      ),
+    ];
+
+    let nameMap = new Map<string, string>();
+    if (relatedUserIds.length > 0) {
+      const db = getMongoDb();
+      const objectIds = relatedUserIds.map((id) => new ObjectId(id));
+      const users = await db
+        .collection("user")
+        .find({ _id: { $in: objectIds } })
+        .project({ _id: 1, name: 1 })
+        .toArray();
+      for (const u of users) {
+        if (u.name) nameMap.set(u._id.toString(), u.name as string);
+      }
+    }
+
+    const enriched = transactions.map((tx) => ({
+      ...tx,
+      relatedUserName: tx.relatedUserId ? nameMap.get(tx.relatedUserId) ?? undefined : undefined,
+    }));
+
     res.json({
-      transactions,
+      transactions: enriched,
       pagination: {
         page,
         limit,
