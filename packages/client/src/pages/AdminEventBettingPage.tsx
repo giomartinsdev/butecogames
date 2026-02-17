@@ -613,7 +613,7 @@ export function AdminEventBettingPage() {
             >
               ← Voltar
             </Link>
-            <h1 className="text-3xl font-bold text-card-foreground">Eventos</h1>
+            <h1 className="text-2xl font-bold text-card-foreground">Eventos</h1>
           </div>
           <p className="text-muted-foreground">
             Gerenciar eventos e resultados

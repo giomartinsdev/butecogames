@@ -48,7 +48,7 @@ export function AdminPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-card-foreground mb-2">
+        <h1 className="text-2xl font-bold text-card-foreground mb-2">
           Painel de Administração
         </h1>
         <p className="text-muted-foreground">

@@ -4,6 +4,7 @@ interface LeaderboardEntry {
   rank: number;
   userId: string;
   displayName: string;
+  image: string | null;
   level: number;
   value: number;
 }

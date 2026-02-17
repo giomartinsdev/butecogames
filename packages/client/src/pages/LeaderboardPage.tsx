@@ -11,6 +11,7 @@ interface LeaderboardEntry {
   rank: number;
   userId: string;
   displayName: string;
+  image: string | null;
   level: number;
   value: number;
 }
@@ -46,8 +47,21 @@ export function LeaderboardPage() {
       {
         accessorKey: "displayName",
         header: "Jogador",
-        cell: ({ getValue }) => (
-          <span className="text-card-foreground">{getValue<string>()}</span>
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            {row.original.image ? (
+              <img
+                src={row.original.image}
+                alt=""
+                className="h-7 w-7 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold text-zinc-300">
+                {row.original.displayName.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="text-card-foreground">{row.original.displayName}</span>
+          </div>
         ),
       },
       {

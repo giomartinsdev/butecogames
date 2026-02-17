@@ -84,7 +84,7 @@ export function AdminSettingsPage() {
         >
           ← Voltar
         </Link>
-        <h1 className="text-3xl font-bold text-card-foreground">
+        <h1 className="text-2xl font-bold text-card-foreground">
           Configurações
         </h1>
       </div>

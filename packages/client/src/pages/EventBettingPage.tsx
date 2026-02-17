@@ -35,9 +35,9 @@ export function EventBettingPage() {
   ) || [];
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-card-foreground mb-2">
+        <h1 className="text-2xl font-bold text-card-foreground mb-2">
           Eventos
         </h1>
         <p className="text-muted-foreground"></p>

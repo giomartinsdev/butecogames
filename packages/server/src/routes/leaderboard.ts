@@ -2,6 +2,8 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/auth.js";
 import { Wallet } from "../models/Wallet.js";
 import { UserProfile } from "../models/UserProfile.js";
+import { getMongoDb } from "../db/connection.js";
+import { ObjectId } from "mongodb";
 
 const router = Router();
 
@@ -34,6 +36,15 @@ async function getLeaderboardData() {
   const profiles = await UserProfile.find({ userId: { $in: allUserIds } }).lean();
   const profileMap = new Map(profiles.map((p) => [p.userId, p]));
 
+  // Fetch avatars from Better Auth user collection
+  const db = getMongoDb();
+  const objectIds = allUserIds.map((id) => new ObjectId(id));
+  const users = await db
+    .collection("user")
+    .find({ _id: { $in: objectIds } }, { projection: { _id: 1, image: 1 } })
+    .toArray();
+  const avatarMap = new Map(users.map((u) => [String(u._id), (u.image as string) ?? null]));
+
   function assignRanks<T>(items: T[], getValue: (item: T) => number) {
     let rank = 1;
     return items.map((item, i) => {
@@ -48,6 +59,7 @@ async function getLeaderboardData() {
     rank,
     userId: w.userId,
     displayName: profileMap.get(w.userId)?.displayName ?? "Unknown",
+    image: avatarMap.get(w.userId) ?? null,
     level: profileMap.get(w.userId)?.level ?? 1,
     value: w.balance,
   }));
@@ -56,6 +68,7 @@ async function getLeaderboardData() {
     rank,
     userId: u.userId,
     displayName: u.displayName,
+    image: avatarMap.get(u.userId) ?? null,
     level: u.level,
     value: u.xp,
   }));
@@ -64,6 +77,7 @@ async function getLeaderboardData() {
     rank,
     userId: w.userId,
     displayName: profileMap.get(w.userId)?.displayName ?? "Unknown",
+    image: avatarMap.get(w.userId) ?? null,
     level: profileMap.get(w.userId)?.level ?? 1,
     value: w.totalWon,
   }));
