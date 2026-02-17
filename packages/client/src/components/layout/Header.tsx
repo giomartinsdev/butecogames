@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth.js";
 import { useWallet } from "@/hooks/useWallet.js";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { formatCoins } from "@/lib/utils.js";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TransferModal } from "@/components/wallet/TransferModal.js";
 import type { SearchUser } from "@/api/wallet.js";
 import { OnlineUsers } from "./OnlineUsers.js";
@@ -25,6 +25,7 @@ export function Header() {
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferUser, setTransferUser] = useState<SearchUser | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { pathname } = useLocation();
 
   const handleTransferFromOnline = useCallback((onlineUser: OnlineUser) => {
     setTransferUser({
@@ -61,24 +62,36 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
-            src="/imgs/logo-buteco.png"
+            src="/imgs/logo_buteco.png"
             alt="Buteco Games"
             className="h-10"
           />
         </Link>
 
         <nav className="flex items-center gap-6">
-          <Link to="/games" className="text-lg text-muted-foreground hover:text-card-foreground transition-colors">
+          <Link
+            to="/games"
+            className={`text-lg transition-colors ${pathname === "/games" || pathname.startsWith("/games/") ? "text-card-foreground font-semibold" : "text-muted-foreground hover:text-card-foreground"}`}
+          >
             Jogos
           </Link>
-          <Link to="/leaderboard" className="text-lg text-muted-foreground hover:text-card-foreground transition-colors">
+          <Link
+            to="/leaderboard"
+            className={`text-lg transition-colors ${pathname === "/leaderboard" ? "text-card-foreground font-semibold" : "text-muted-foreground hover:text-card-foreground"}`}
+          >
             Ranking
           </Link>
-          <Link to="/profile" className="text-lg text-muted-foreground hover:text-card-foreground transition-colors">
+          <Link
+            to="/profile"
+            className={`text-lg transition-colors ${pathname === "/profile" ? "text-card-foreground font-semibold" : "text-muted-foreground hover:text-card-foreground"}`}
+          >
             Perfil
           </Link>
           {isAdmin && (
-            <Link to="/admin" className="text-lg text-accent hover:text-accent/80 transition-colors font-medium">
+            <Link
+              to="/admin"
+              className={`text-lg transition-colors font-medium ${pathname === "/admin" || pathname.startsWith("/admin/") ? "text-accent" : "text-accent/70 hover:text-accent"}`}
+            >
               Admin
             </Link>
           )}

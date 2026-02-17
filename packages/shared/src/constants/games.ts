@@ -21,7 +21,7 @@ export const GAMES: GameInfo[] = [
     maxPlayers: 100,
     available: true,
     requiresRoom: false,
-    thumbnail: "/imgs/games/event-betting.png",
+    thumbnail: "/imgs/games/event_betting.png",
   },
   {
     id: "card-duel",
@@ -32,7 +32,7 @@ export const GAMES: GameInfo[] = [
     maxPlayers: 2,
     available: true,
     requiresRoom: true,
-    thumbnail: "/imgs/games/card-duel.png",
+    thumbnail: "/imgs/games/card_duel.png",
   },
 ];
 

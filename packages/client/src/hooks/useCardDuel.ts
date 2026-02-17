@@ -239,6 +239,17 @@ export function useCardDuel(userId?: string) {
     };
   }, [socket]);
 
+  // Retry quick match every 5s while searching
+  useEffect(() => {
+    if (!socket || !isSearching) return;
+    const interval = setInterval(() => {
+      if (useCardDuelStore.getState().isSearching) {
+        socket.emit("card-duel:quick_match");
+      }
+    }, 5_000);
+    return () => clearInterval(interval);
+  }, [socket, isSearching]);
+
   // Actions
   const createRoom = useCallback(
     (betAmount: number, gameType: CardDuelGameType) => {

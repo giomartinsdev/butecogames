@@ -14,7 +14,7 @@ interface CardDisplayProps {
 function getSuitColor(suit: string): string {
   return suit === "hearts" || suit === "diamonds"
     ? "text-red-500"
-    : "text-zinc-900 dark:text-zinc-100";
+    : "text-gray-200";
 }
 
 export function CardDisplay({
@@ -57,12 +57,15 @@ export function CardDisplay({
   const backFace = (
     <div
       className={cn(
-        "flex items-center justify-center rounded-xl border-2 border-zinc-600",
-        "bg-gradient-to-br from-blue-800 to-blue-900 shadow-lg",
+        "overflow-hidden rounded-xl border-2 border-zinc-600 shadow-lg",
         sizeClasses[size],
       )}
     >
-      <div className="text-3xl text-blue-400/50">?</div>
+      <img
+        src="/imgs/card_back_no_text.png"
+        alt="Card back"
+        className="h-full w-full object-cover"
+      />
     </div>
   );
 
@@ -78,33 +81,43 @@ export function CardDisplay({
   const frontFace = (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-xl border-2 bg-white shadow-lg dark:bg-zinc-800",
+        "relative flex flex-col items-center justify-center overflow-hidden rounded-xl border-2 shadow-lg",
         sizeClasses[size],
         highlightBorder[highlight ?? "null"],
       )}
     >
-      {/* Top-left rank + suit */}
-      <div className={cn("absolute left-1.5 top-1 text-xs font-bold", suitColor)}>
-        <div>{rankName}</div>
-        <div className="-mt-0.5">{suitSymbol}</div>
-      </div>
+      <img
+        src="/imgs/card_front_no_frame.png"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover opacity-90 "
+      />
+
+      {/* Top-left rank + suit (hidden on sm) */}
+      {size !== "sm" && (
+        <div className={cn("absolute left-3.5 top-5 z-10 text-xs font-bold text-center", suitColor)}>
+          <div>{rankName}</div>
+          <div className="-mt-0.5">{suitSymbol}</div>
+        </div>
+      )}
 
       {/* Center */}
-      <div className={cn("font-bold", suitColor)}>
+      <div className={cn("z-10 font-bold", suitColor)}>
         <span className="text-[1.5em]">{rankName}</span>
         <span className="ml-0.5">{suitSymbol}</span>
       </div>
 
-      {/* Bottom-right rank + suit (rotated) */}
-      <div
-        className={cn(
-          "absolute bottom-1 right-1.5 rotate-180 text-xs font-bold",
-          suitColor,
-        )}
-      >
-        <div>{rankName}</div>
-        <div className="-mt-0.5">{suitSymbol}</div>
-      </div>
+      {/* Bottom-right rank + suit (hidden on sm) */}
+      {size !== "sm" && (
+        <div
+          className={cn(
+            "absolute bottom-5 right-3.5 z-10 rotate-180 text-xs font-bold text-center",
+            suitColor,
+          )}
+        >
+          <div>{rankName}</div>
+          <div className="-mt-0.5">{suitSymbol}</div>
+        </div>
+      )}
     </div>
   );
 

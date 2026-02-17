@@ -75,9 +75,7 @@ export function registerCardDuelHandlers(io: TypedIO, socket: Socket) {
     try {
       const result = await quickMatch(userId, displayName, image, socket.id);
       if (!result) {
-        socket.emit("card-duel:error", {
-          message: "Nenhuma sala disponível no momento",
-        });
+        // No room found — client will retry while search overlay is open
         return;
       }
       socket.join(`card-duel:room:${result.roomId}`);

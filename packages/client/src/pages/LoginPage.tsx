@@ -9,7 +9,7 @@ export function LoginPage() {
     <div className="flex min-h-[80vh] flex-col items-center justify-center">
       <div className="flex flex-col items-center text-center">
         <img
-          src="/imgs/logo-buteco.png"
+          src="/imgs/logo_buteco.png"
           alt="Buteco Games"
           className="mx-auto mb-2 h-75"
         />
