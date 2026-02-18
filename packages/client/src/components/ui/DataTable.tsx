@@ -17,6 +17,10 @@ interface DataTableProps<TData> {
   pagination?: { page: number; pages: number; total: number };
   /** Callback for server-side page changes */
   onPageChange?: (page: number) => void;
+  /** Callback when a row is clicked */
+  onRowClick?: (row: TData) => void;
+  /** Callback when a row is hovered */
+  onRowHover?: (row: TData | null) => void;
   isLoading?: boolean;
   emptyMessage?: string;
 }
@@ -27,6 +31,8 @@ export function DataTable<TData>({
   pageSize,
   pagination: serverPagination,
   onPageChange,
+  onRowClick,
+  onRowHover,
   isLoading,
   emptyMessage = "Nenhum dado encontrado",
 }: DataTableProps<TData>) {
@@ -97,7 +103,13 @@ export function DataTable<TData>({
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="border-b border-border last:border-0">
+                <tr
+                  key={row.id}
+                  className={`border-b border-border last:border-0${onRowClick || onRowHover ? " cursor-pointer hover:bg-muted/50 transition-colors" : ""}`}
+                  onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                  onMouseEnter={onRowHover ? () => onRowHover(row.original) : undefined}
+                  onMouseLeave={onRowHover ? () => onRowHover(null) : undefined}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}

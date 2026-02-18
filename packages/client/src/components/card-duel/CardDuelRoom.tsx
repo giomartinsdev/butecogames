@@ -17,7 +17,7 @@ interface CardDuelRoomProps {
 }
 
 function gameTypeLabel(type: string): string {
-  return type === "best_of_3" ? "Melhor de 3" : "Classico";
+  return type === "best_of_3" ? "Melhor de 3" : "Clássico";
 }
 
 export function CardDuelRoom({
@@ -38,7 +38,7 @@ export function CardDuelRoom({
   return (
     <div className="flex flex-col gap-6">
       {/* Room header */}
-      <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3">
+      {/* <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3">
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium text-zinc-300">
             {gameTypeLabel(gameType)}
@@ -47,7 +47,17 @@ export function CardDuelRoom({
             {formatCoins(betAmount)} coins
           </span>
         </div>
-        {(status === "waiting" || status === "ready") && (
+      </div> */}
+
+      {/* Waiting for player 2 */}
+      {status === "waiting" && !player2 && (
+        <div className="flex flex-col items-center gap-4 py-12">
+          <HeaderGameInfo gameType={gameType} betAmount={betAmount} />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-600 border-t-blue-500" />
+          <p className="text-lg text-muted-foreground">
+            Aguardando oponente...
+          </p>
+          {(status === "waiting" || status === "ready") && (
           <button
             onClick={isOwner ? onCancel : onLeave}
             className="rounded-lg bg-zinc-700 px-4 py-1.5 text-sm font-medium text-zinc-300 transition hover:bg-zinc-600"
@@ -55,21 +65,13 @@ export function CardDuelRoom({
             {isOwner ? "Cancelar Sala" : "Sair"}
           </button>
         )}
-      </div>
-
-      {/* Waiting for player 2 */}
-      {status === "waiting" && !player2 && (
-        <div className="flex flex-col items-center gap-4 py-12">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-zinc-600 border-t-blue-500" />
-          <p className="text-lg text-muted-foreground">
-            Aguardando oponente...
-          </p>
         </div>
       )}
 
       {/* Player 2 joined but not ready */}
       {status === "waiting" && player2 && !player2.isReady && (
         <div className="flex flex-col items-center gap-4 py-8">
+          <HeaderGameInfo gameType={gameType} betAmount={betAmount} />
           <PlayersDisplay player1={player1} player2={player2} userId={userId} />
           {isPlayer2 && (
             <button
@@ -90,6 +92,7 @@ export function CardDuelRoom({
       {/* Ready — owner can start */}
       {status === "ready" && (
         <div className="flex flex-col items-center gap-4 py-8">
+          <HeaderGameInfo gameType={gameType} betAmount={betAmount} />
           <PlayersDisplay player1={player1} player2={player2} userId={userId} />
           {isOwner ? (
             <button
@@ -100,7 +103,7 @@ export function CardDuelRoom({
             </button>
           ) : (
             <p className="text-sm text-green-400">
-              Pronto! Aguardando o dono iniciar...
+              Aguardando o dono da sala iniciar...
             </p>
           )}
         </div>
@@ -137,6 +140,18 @@ export function CardDuelRoom({
   );
 }
 
+function HeaderGameInfo({gameType, betAmount }: { gameType: string; betAmount: number }) {
+  return (
+    <div className="flex items-center mb-4">
+      <span className="text-sm font-bold text-white me-6">{gameTypeLabel(gameType)}</span>
+      <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-2">
+        <span className="text-sm font-bold text-yellow-400 absolute">{formatCoins(betAmount)} coins</span>
+        <span className="text-sm font-bold text-yellow-400 animate-ping">{formatCoins(betAmount)} coins</span>
+      </div>
+    </div>
+  );
+}
+
 // Sub-component for displaying both players
 function PlayersDisplay({
   player1,
@@ -148,14 +163,16 @@ function PlayersDisplay({
   userId: string;
 }) {
   return (
-    <div className="flex items-center gap-8">
+    <div className="flex gap-8 mb-6">
       <PlayerCard
         name={player1?.displayName ?? "?"}
         avatar={player1?.avatar}
         isYou={player1?.userId === userId}
         ready={true}
       />
-      <span className="text-2xl font-black text-zinc-500">VS</span>
+      <div className="grow flex items-center justify-center">
+        <span className="text-2xl font-black text-zinc-500">VS</span>
+      </div>
       <PlayerCard
         name={player2?.displayName ?? "?"}
         avatar={player2?.avatar}
@@ -178,7 +195,7 @@ function PlayerCard({
   ready: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col grow items-center gap-2">
       {avatar ? (
         <img src={avatar} alt="" className="h-16 w-16 rounded-full" />
       ) : (
@@ -190,7 +207,7 @@ function PlayerCard({
         {name} {isYou && "(Você)"}
       </p>
       {ready && (
-        <span className="text-xs text-green-400">Pronto</span>
+        <span className="text-xs font-bold text-green-400">Pronto!</span>
       )}
     </div>
   );

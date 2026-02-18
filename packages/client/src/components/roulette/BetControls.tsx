@@ -20,11 +20,11 @@ export function BetControls({ onPlaceBet, selectedBet, disabled, minBet, maxBet 
       onPlaceBet={(amount) => onPlaceBet(selectedBet!, amount)}
       placeholderText="Selecione uma aposta"
     >
-      {selectedBet && (
+      {/* {selectedBet && (
         <p className="text-center text-xs text-muted-foreground">
           Aposta selecionada: <span className="font-medium text-card-foreground">{translateBetType(selectedBet)}</span>
         </p>
-      )}
+      )} */}
     </BetAmountInput>
   );
 }

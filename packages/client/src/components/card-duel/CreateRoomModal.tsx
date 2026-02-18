@@ -45,7 +45,7 @@ export function CreateRoomModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="mx-4 w-full max-w-md rounded-xl border border-zinc-700 bg-zinc-900 p-6 shadow-xl">
+      <div className="mx-4 w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-card-foreground">Criar Sala</h2>
           <button
@@ -63,7 +63,7 @@ export function CreateRoomModal({
 
         {/* Game type */}
         <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-zinc-300">
+          <label className="mb-2 block text-sm font-medium text-muted-foreground">
             Tipo de Jogo
           </label>
           <div className="flex gap-2">
@@ -72,8 +72,8 @@ export function CreateRoomModal({
               className={cn(
                 "flex-1 rounded-lg px-4 py-2 text-sm font-medium transition",
                 gameType === "classic"
-                  ? "bg-blue-600 text-white"
-                  : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700",
+                  ? "bg-slate-600 text-white"
+                  : "bg-slate-800 text-slate-400 hover:bg-slate-700",
               )}
             >
               Classico
@@ -83,8 +83,8 @@ export function CreateRoomModal({
               className={cn(
                 "flex-1 rounded-lg px-4 py-2 text-sm font-medium transition",
                 gameType === "best_of_3"
-                  ? "bg-blue-600 text-white"
-                  : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700",
+                  ? "bg-slate-600 text-white"
+                  : "bg-slate-800 text-slate-400 hover:bg-slate-700",
               )}
             >
               Melhor de 3
@@ -94,7 +94,7 @@ export function CreateRoomModal({
 
         {/* Bet amount */}
         <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-zinc-300">
+          <label className="mb-2 block text-sm font-medium text-muted-foreground">
             Aposta
           </label>
           <input
@@ -107,7 +107,7 @@ export function CreateRoomModal({
               setBetAmount(Math.floor(Number(e.target.value)));
               setError(null);
             }}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-sm text-card-foreground outline-none focus:ring-1 focus:ring-primary"
           />
           <div className="mt-2 flex flex-wrap gap-1.5">
             {quickAmounts
@@ -119,7 +119,7 @@ export function CreateRoomModal({
                     setBetAmount(amount);
                     setError(null);
                   }}
-                  className="rounded bg-zinc-700 px-3 py-1 text-xs text-zinc-300 transition hover:bg-zinc-600"
+                  className="rounded bg-slate-700 px-3 py-1 text-xs text-slate-300 transition hover:bg-slate-600"
                 >
                   {formatCoins(amount)}
                 </button>
@@ -132,13 +132,13 @@ export function CreateRoomModal({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg bg-zinc-700 px-4 py-2.5 font-medium text-white transition hover:bg-zinc-600"
+            className="flex-1 rounded-lg bg-slate-700 px-4 py-2.5 font-medium text-muted-foreground transition hover:bg-slate-600"
           >
             Cancelar
           </button>
           <button
             onClick={handleCreate}
-            className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700"
+            className="flex-1 rounded-lg bg-accent py-2 text-sm font-bold text-accent-foreground hover:bg-accent/90 transition-colors disabled:opacity-50"
           >
             Criar Sala
           </button>

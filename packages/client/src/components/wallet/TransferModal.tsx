@@ -3,6 +3,7 @@ import { useTransferCoins } from "@/hooks/useWallet.js";
 import { searchUsers, type SearchUser } from "@/api/wallet.js";
 import { formatCoins } from "@/lib/utils.js";
 import { toast } from "sonner";
+import { Pencil } from "lucide-react";
 
 interface TransferModalProps {
   open: boolean;
@@ -104,7 +105,7 @@ export function TransferModal({ open, onClose, preselectedUser }: TransferModalP
 
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-muted-foreground">Destinatário</label>
+            <label className="text-sm text-muted-foreground">Destinatário</label>
 
             {selectedUser ? (
               <div className="mt-1 flex items-center gap-3 rounded-lg bg-muted px-3 py-2">
@@ -118,7 +119,7 @@ export function TransferModal({ open, onClose, preselectedUser }: TransferModalP
                     {selectedUser.name}
                   </p>
                   {selectedUser.discordId && (
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="truncate text-sm text-muted-foreground">
                       #{selectedUser.discordId}
                     </p>
                   )}
@@ -128,10 +129,7 @@ export function TransferModal({ open, onClose, preselectedUser }: TransferModalP
                   className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-card hover:text-card-foreground transition-colors"
                   title="Alterar destinatário"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                    <path d="m15 5 4 4" />
-                  </svg>
+                  <Pencil size={16} />
                 </button>
               </div>
             ) : (
@@ -182,7 +180,7 @@ export function TransferModal({ open, onClose, preselectedUser }: TransferModalP
           </div>
 
           <div>
-            <label className="text-xs text-muted-foreground">Valor</label>
+            <label className="text-sm text-muted-foreground">Valor</label>
             <input
               type="number"
               value={amount}
@@ -200,7 +198,7 @@ export function TransferModal({ open, onClose, preselectedUser }: TransferModalP
         <div className="mt-5 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg bg-muted py-2 text-sm font-medium text-muted-foreground hover:bg-muted/80 transition-colors"
+            className="flex-1 rounded-lg bg-slate-700 px-4 py-2.5 font-medium text-muted-foreground transition hover:bg-slate-600"
           >
             Cancelar
           </button>

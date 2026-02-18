@@ -74,7 +74,7 @@ export function BetAmountInput({
             key={v}
             onClick={() => setAmount((prev) => (prev || 0) + v)}
             disabled={disabled}
-            className="rounded bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors disabled:opacity-40"
+            className="rounded bg-slate-700 px-2 py-1 text-xs font-medium text-slate-300 hover:bg-slate-600 transition-colors disabled:opacity-40"
           >
             +{formatCoins(v)}
           </button>
@@ -84,7 +84,7 @@ export function BetAmountInput({
           disabled={disabled}
           className="ml-auto rounded bg-muted px-2 py-1 text-xs font-medium text-muted-foreground hover:text-card-foreground hover:bg-muted/80 transition-colors disabled:opacity-40"
         >
-          Limpar
+          Redefinir
         </button>
       </div>
 

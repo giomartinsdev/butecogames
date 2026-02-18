@@ -60,7 +60,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="border-b border-border bg-card px-6 py-3 select-none">
+    <header className="sticky top-0 z-40 border-b border-border bg-card px-6 py-3 select-none">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
@@ -76,6 +76,12 @@ export function Header() {
             className={`text-lg transition-colors ${pathname === "/games" || pathname.startsWith("/games/") ? "text-card-foreground font-semibold" : "text-muted-foreground hover:text-card-foreground"}`}
           >
             Jogos
+          </Link>
+          <Link
+            to="/apps"
+            className={`text-lg transition-colors ${pathname === "/apps" || pathname.startsWith("/apps/") ? "text-card-foreground font-semibold" : "text-muted-foreground hover:text-card-foreground"}`}
+          >
+            Apps
           </Link>
           <Link
             to="/leaderboard"

@@ -76,7 +76,7 @@ export function AdminSettingsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <div>
       <div className="mb-6 flex items-center gap-4">
         <Link
           to="/admin"

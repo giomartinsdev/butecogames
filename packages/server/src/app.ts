@@ -15,6 +15,7 @@ import cardDuelRouter from "./routes/card-duel.js";
 import gamificationRouter from "./routes/gamification.js";
 import notificationsRouter from "./routes/notifications.js";
 import userNotificationsRouter from "./routes/user-notifications.js";
+import politicalCompassRouter from "./routes/political-compass.js";
 import { env } from "./config/env.js";
 
 export function createApp() {
@@ -47,6 +48,7 @@ export function createApp() {
   app.use("/api/gamification", gamificationRouter);
   app.use("/api/admin/notifications", notificationsRouter);
   app.use("/api/notifications", userNotificationsRouter);
+  app.use("/api/political-compass", politicalCompassRouter);
 
   // Health check
   app.get("/api/health", (_req, res) => {

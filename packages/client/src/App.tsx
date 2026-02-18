@@ -18,6 +18,8 @@ import { LeaderboardPage } from "@/pages/LeaderboardPage.js";
 import { SettingsPage } from "@/pages/SettingsPage.js";
 import { CardDuelPage } from "@/pages/CardDuelPage.js";
 import { AdminNotificationsPage } from "@/pages/AdminNotificationsPage.js";
+import { AppsPage } from "@/pages/AppsPage.js";
+import { PoliticalCompassPage } from "@/pages/PoliticalCompassPage.js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,6 +89,8 @@ function AppRoutes() {
         <Route path="/games/roulette" element={<RoulettePage />} />
         <Route path="/games/event-betting" element={<EventBettingPage />} />
         <Route path="/games/card-duel" element={<CardDuelPage />} />
+        <Route path="/apps" element={<AppsPage />} />
+        <Route path="/apps/political-compass" element={<PoliticalCompassPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/event-betting" element={<AdminEventBettingPage />} />
         <Route path="/admin/settings" element={<AdminSettingsPage />} />

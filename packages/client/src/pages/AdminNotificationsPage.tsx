@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
@@ -201,105 +201,121 @@ export function AdminNotificationsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-card-foreground mb-2">
-          Notificações Globais
-        </h1>
+    <div>
+      <div className="mb-6">
+        <div className="flex items-center gap-4 mb-2">
+          <Link
+            to="/admin"
+            className="text-sm text-muted-foreground hover:text-card-foreground transition-colors"
+          >
+            ← Voltar
+          </Link>
+          <h1 className="text-2xl font-bold text-card-foreground">
+            Notificações Globais
+          </h1>
+        </div>
         <p className="text-muted-foreground">
           Envie uma notificação para todos os usuários conectados.
         </p>
       </div>
 
-      {/* Type selector */}
-      <div className="space-y-3">
-        <label className="text-sm font-medium text-card-foreground">Tipo</label>
-        <div className="flex flex-wrap gap-2">
-          {MESSAGE_TYPES.map((t) => {
-            const Icon = t.icon;
-            const isActive = type === t.value;
-            return (
-              <button
-                key={t.value}
-                type="button"
-                onClick={() => setType(t.value)}
-                className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? `${t.border} ${t.color} bg-card`
-                    : "border-border text-muted-foreground hover:border-muted-foreground"
-                }`}
-              >
-                <Icon size={16} />
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Title */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-card-foreground">
-          Título <span className="text-muted-foreground">(obrigatório)</span>
-        </label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={100}
-          placeholder="Ex: Manutenção programada"
-          className="w-full rounded-lg border border-border bg-card px-4 py-2.5 text-card-foreground placeholder-muted-foreground focus:border-accent focus:outline-none"
-        />
-        <p className="text-xs text-muted-foreground text-right">{title.length}/100</p>
-      </div>
-
-      {/* Message */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-card-foreground">
-          Mensagem <span className="text-muted-foreground">(opcional)</span>
-        </label>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          maxLength={500}
-          rows={3}
-          placeholder="Detalhes adicionais..."
-          className="w-full rounded-lg border border-border bg-card px-4 py-2.5 text-card-foreground placeholder-muted-foreground focus:border-accent focus:outline-none resize-none"
-        />
-        <p className="text-xs text-muted-foreground text-right">{message.length}/500</p>
-      </div>
-
-      {/* Preview */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-card-foreground">Preview</label>
-        <div className={`rounded-lg border-l-4 ${selected.border} bg-card p-4`}>
-          <div className={`flex items-center gap-2 ${selected.color}`}>
-            <selected.icon size={18} />
-            <span className="font-semibold">{title || "Título da notificação"}</span>
+      {/* Send notification card */}
+      <div className="rounded-lg border border-border bg-card p-6 mb-6">
+        <h2 className="text-xl font-bold text-card-foreground mb-4">
+          Nova Notificação
+        </h2>
+        <div className="space-y-4">
+          {/* Type selector */}
+          <div>
+            <label className="text-sm text-muted-foreground">Tipo</label>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {MESSAGE_TYPES.map((t) => {
+                const Icon = t.icon;
+                const isActive = type === t.value;
+                return (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => setType(t.value)}
+                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                      isActive
+                        ? `${t.border} ${t.color} bg-muted`
+                        : "border-border text-muted-foreground hover:border-muted-foreground"
+                    }`}
+                  >
+                    <Icon size={16} />
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          {(message || !title) && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {message || "Mensagem opcional aparecerá aqui."}
-            </p>
-          )}
+
+          {/* Title */}
+          <div>
+            <label className="text-sm text-muted-foreground">
+              Título
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={100}
+              placeholder="Ex: Manutenção programada"
+              className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground placeholder-muted-foreground outline-none focus:ring-1 focus:ring-primary"
+            />
+            <p className="text-xs text-muted-foreground text-right mt-1">{title.length}/100</p>
+          </div>
+
+          {/* Message */}
+          <div>
+            <label className="text-sm text-muted-foreground">
+              Mensagem (opcional)
+            </label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              maxLength={500}
+              rows={3}
+              placeholder="Detalhes adicionais..."
+              className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground placeholder-muted-foreground outline-none focus:ring-1 focus:ring-primary resize-none"
+            />
+            <p className="text-xs text-muted-foreground text-right mt-1">{message.length}/500</p>
+          </div>
+
+          {/* Preview */}
+          <div>
+            <label className="text-sm text-muted-foreground">Preview</label>
+            <div className={`mt-1 rounded-lg border-l-4 ${selected.border} bg-muted p-4`}>
+              <div className={`flex items-center gap-2 ${selected.color}`}>
+                <selected.icon size={18} />
+                <span className="font-semibold">{title || "Título da notificação"}</span>
+              </div>
+              {(message || !title) && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {message || "Mensagem opcional aparecerá aqui."}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Send button */}
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={sending || !title.trim()}
+            className="w-full rounded-lg bg-accent py-3 text-sm font-bold text-accent-foreground hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Send size={16} className="inline mr-2" />
+            {sending ? "Enviando..." : "Enviar notificação"}
+          </button>
         </div>
       </div>
-
-      {/* Send button */}
-      <button
-        type="button"
-        onClick={handleSend}
-        disabled={sending || !title.trim()}
-        className="flex items-center gap-2 rounded-lg bg-accent px-6 py-2.5 font-semibold text-accent-foreground transition-colors hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <Send size={16} />
-        {sending ? "Enviando..." : "Enviar notificação"}
-      </button>
 
       {/* History */}
-      <div className="space-y-4 pt-4 border-t border-border">
+      <div className="space-y-4">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold text-card-foreground">Histórico</h2>
+          <h2 className="text-lg font-semibold text-card-foreground">Histórico</h2>
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <div className="relative">
               <Search
@@ -311,7 +327,7 @@ export function AdminNotificationsPage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Buscar..."
-                className="rounded-lg border border-border bg-card pl-9 pr-3 py-1.5 text-sm text-card-foreground placeholder-muted-foreground focus:border-accent focus:outline-none w-48"
+                className="rounded-lg bg-muted pl-9 pr-3 py-1.5 text-sm text-card-foreground placeholder-muted-foreground outline-none focus:ring-1 focus:ring-primary w-48"
               />
             </div>
             <button

@@ -118,3 +118,19 @@ export {
   DAILY_CHALLENGES_COUNT,
   WEEKLY_CHALLENGES_COUNT,
 } from "./constants/gamification.js";
+
+// Political Compass
+export type {
+  PoliticalAxis,
+  LikertAnswer,
+  PoliticalCompassQuestion,
+  PoliticalCompassAnswer,
+  PoliticalCompassResult,
+  PoliticalCompassPage,
+} from "./political-compass/index.js";
+export {
+  LIKERT_OPTIONS,
+  POLITICAL_COMPASS_QUESTIONS,
+  POLITICAL_COMPASS_PAGES,
+  calculatePoliticalCompass,
+} from "./political-compass/index.js";
