@@ -4,6 +4,7 @@ import { apiFetch } from "./client.js";
 export interface UserSettingsResponse {
   settings: UserSettings;
   cursorSize: number;
+  awayTimeout: number;
 }
 
 export function fetchUserSettings() {

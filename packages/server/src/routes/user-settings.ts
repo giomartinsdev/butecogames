@@ -12,7 +12,7 @@ router.get("/", requireAuth, async (req, res) => {
   try {
     const settings = await getOrCreateUserSettings(req.user!.id);
     const { general } = getSettings();
-    res.json({ settings, cursorSize: general.cursorSize });
+    res.json({ settings, cursorSize: general.cursorSize, awayTimeout: general.awayTimeout });
   } catch (err) {
     res.status(500).json({ error: "Erro ao buscar configurações" });
   }
@@ -23,7 +23,7 @@ router.put("/", requireAuth, async (req, res) => {
     const { cursorSetId, soundEnabled } = req.body;
     const settings = await updateUserSettings(req.user!.id, { cursorSetId, soundEnabled });
     const { general } = getSettings();
-    res.json({ settings, cursorSize: general.cursorSize });
+    res.json({ settings, cursorSize: general.cursorSize, awayTimeout: general.awayTimeout });
   } catch (err: unknown) {
     if (err instanceof Error && err.message === "Cursor inválido") {
       res.status(400).json({ error: err.message });
