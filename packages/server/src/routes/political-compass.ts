@@ -6,6 +6,7 @@ import {
   calculatePoliticalCompass,
 } from "@butecogames/shared";
 import type { PoliticalCompassAnswer } from "@butecogames/shared";
+import { processAction } from "../services/gamification.js";
 
 const router = Router();
 
@@ -92,6 +93,9 @@ router.post("/submit", requireAuth, async (req, res) => {
       },
       { upsert: true, new: true, setDefaultsOnInsert: true },
     );
+
+    // Award XP (+ achievement on first completion) — non-blocking
+    processAction(req.user!.id, "political_compass_completed");
 
     res.json({ result: result.toObject() });
   } catch (error: any) {

@@ -106,15 +106,15 @@ export function PoliticalCompassResultsTable({ results, isLoading, onUserClick, 
           );
         },
       },
-      {
-        accessorKey: "updatedAt",
-        header: "Data",
-        cell: ({ getValue }) => (
-          <span className="text-sm text-muted-foreground">
-            {formatDate(getValue<string>())}
-          </span>
-        ),
-      },
+      // {
+      //   accessorKey: "updatedAt",
+      //   header: "Data",
+      //   cell: ({ getValue }) => (
+      //     <span className="text-sm text-muted-foreground">
+      //       {formatDate(getValue<string>())}
+      //     </span>
+      //   ),
+      // },
     ],
     [],
   );

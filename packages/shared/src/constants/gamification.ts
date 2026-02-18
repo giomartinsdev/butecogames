@@ -15,6 +15,7 @@ export const XP_CONFIG: XpConfig = {
   challengeCompleted: 25,
   transferSent: 5,
   chatMessage: 1,
+  politicalCompassCompleted: 50,
 };
 
 export const MAX_CHAT_XP_PER_DAY = 10;
@@ -116,6 +117,7 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
   { id: "event_bet_first", name: "Palpiteiro", description: "Faça sua primeira aposta em evento", category: "betting", icon: "Calendar", reward: 50 },
 
   // Social
+  { id: "political_compass_first", name: "Politizado", description: "Complete a Bússola Política pela primeira vez", category: "social", icon: "Compass", reward: 100 },
   { id: "first_transfer", name: "Generoso", description: "Envie sua primeira transferência", category: "social", icon: "HandCoins", reward: 50 },
   { id: "transfers_10", name: "Filantropo", description: "Envie 10 transferências", category: "social", icon: "HandCoins", reward: 300 },
   { id: "daily_7", name: "Frequentador", description: "Colete a recompensa diária 7 vezes", category: "social", icon: "CalendarCheck", reward: 200 },

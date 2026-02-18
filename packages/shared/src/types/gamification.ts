@@ -8,6 +8,7 @@ export interface XpConfig {
   challengeCompleted: number;
   transferSent: number;
   chatMessage: number;
+  politicalCompassCompleted: number;
 }
 
 export interface LevelInfo {
@@ -93,7 +94,8 @@ export type GamificationAction =
   | "daily_reward"
   | "transfer_sent"
   | "chat_message"
-  | "challenge_completed";
+  | "challenge_completed"
+  | "political_compass_completed";
 
 export interface GamificationActionMeta {
   gameId?: string;

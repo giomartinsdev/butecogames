@@ -120,6 +120,8 @@ function getXpForAction(
       return XP_CONFIG.transferSent;
     case "challenge_completed":
       return XP_CONFIG.challengeCompleted;
+    case "political_compass_completed":
+      return XP_CONFIG.politicalCompassCompleted;
     case "chat_message": {
       if (!userId) return 0;
       const today = new Date().toISOString().slice(0, 10);
@@ -217,6 +219,7 @@ const achievementCheckers: Record<string, AchievementChecker> = {
     return p.totalWins >= 25;
   },
   event_bet_first: (p) => p.gamesPlayed.includes("event-betting"),
+  political_compass_first: (_p, _w, _wo, action) => action === "political_compass_completed",
   first_transfer: (p) => p.totalTransfers >= 1,
   transfers_10: (p) => p.totalTransfers >= 10,
   daily_7: (p) => p.totalDailyRewards >= 7,
