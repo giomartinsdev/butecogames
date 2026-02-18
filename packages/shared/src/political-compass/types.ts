@@ -38,8 +38,8 @@ export interface PoliticalCompassPage {
 }
 
 export const LIKERT_OPTIONS: { value: LikertAnswer; label: string }[] = [
-  { value: 3, label: "Concordo totalmente" },
-  { value: 2, label: "Concordo" },
-  { value: 1, label: "Discordo" },
   { value: 0, label: "Discordo totalmente" },
+  { value: 1, label: "Discordo" },
+  { value: 2, label: "Concordo" },
+  { value: 3, label: "Concordo totalmente" },
 ];
