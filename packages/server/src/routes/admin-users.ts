@@ -4,6 +4,7 @@ import { requireAdmin } from "../middleware/admin.js";
 import { UserProfile } from "../models/UserProfile.js";
 import { getMongoDb } from "../db/connection.js";
 import { disconnectUser } from "../socket/io-store.js";
+import { getUserPresence } from "../services/presence.js";
 
 const router = Router();
 
@@ -46,6 +47,7 @@ router.get("/users", requireAuth, requireAdmin, async (req, res) => {
       email: u.email as string,
       image: (u.image as string) || null,
       profile: profileMap.get(uid) || null,
+      presence: getUserPresence(uid),
     };
   });
 

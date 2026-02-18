@@ -8,12 +8,14 @@ import { useOnlineUsers } from "@/hooks/useOnlineUsers.js";
 import { useGamificationEvents } from "@/hooks/useGamificationEvents.js";
 import { useNotificationEvents } from "@/hooks/useNotificationEvents.js";
 import { NotificationPopup } from "./NotificationPopup.js";
+import { useActivityTracker } from "@/hooks/useActivityTracker.js";
 
 export function Layout() {
   const { socket } = useSocket();
   useCursorEffect();
   useOnlineUsers();
   useGamificationEvents();
+  useActivityTracker();
   const { popup, clearPopup } = useNotificationEvents();
   const queryClient = useQueryClient();
 

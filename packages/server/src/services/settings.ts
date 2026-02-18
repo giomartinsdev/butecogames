@@ -14,6 +14,7 @@ import {
   CARD_DUEL_DISCONNECT_GRACE,
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
+  DEFAULT_AWAY_TIMEOUT,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -106,6 +107,7 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
     },
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,
+      awayTimeout: doc.general?.awayTimeout ?? DEFAULT_AWAY_TIMEOUT,
     },
   };
 }

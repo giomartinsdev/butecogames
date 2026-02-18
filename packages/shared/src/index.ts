@@ -1,5 +1,5 @@
 // Types
-export type { UserProfile, PublicPlayer, OnlineUser } from "./types/user.js";
+export type { UserProfile, PublicPlayer, OnlineUser, PresenceStatus } from "./types/user.js";
 export type { GameId, GameInfo } from "./types/game.js";
 export type { Wallet, Transaction, TransactionType } from "./types/wallet.js";
 export type {
@@ -118,6 +118,11 @@ export {
   DAILY_CHALLENGES_COUNT,
   WEEKLY_CHALLENGES_COUNT,
 } from "./constants/gamification.js";
+
+export {
+  DEFAULT_AWAY_TIMEOUT,
+  getRouteLabel,
+} from "./constants/presence.js";
 
 // Political Compass
 export type {

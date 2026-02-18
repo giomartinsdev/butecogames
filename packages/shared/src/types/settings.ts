@@ -16,6 +16,7 @@ export interface EventBettingSettings {
 
 export interface GeneralSettings {
   cursorSize: number;
+  awayTimeout: number;
 }
 
 export interface CardDuelSettings {

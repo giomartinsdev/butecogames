@@ -16,6 +16,7 @@ router.put("/", requireAuth, requireAdmin, async (req, res) => {
     const updated = await updateSettings(req.body);
     broadcastRouletteState();
     getIO().emit("settings:cursor_size", { cursorSize: updated.general.cursorSize });
+    getIO().emit("settings:away_timeout", { awayTimeout: updated.general.awayTimeout });
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: "Erro ao atualizar configurações" });

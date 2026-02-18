@@ -11,7 +11,7 @@ import { initCardDuelEngine } from "../services/card-duel.js";
 import { setEventBettingIO } from "../services/event-betting.js";
 import { env } from "../config/env.js";
 import { setIO } from "./io-store.js";
-import { userConnected, userDisconnected, getOnlineUsers } from "../services/presence.js";
+import { userConnected, userDisconnected, getOnlineUsers, updateUserStatus, updateUserPage } from "../services/presence.js";
 
 export async function setupSocket(httpServer: http.Server) {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
@@ -40,9 +40,24 @@ export async function setupSocket(httpServer: http.Server) {
     socket.emit("presence:online_users", { users: getOnlineUsers() });
     if (isNewUser) {
       socket.broadcast.emit("presence:user_joined", {
-        user: { userId, displayName, avatar: image },
+        user: { userId, displayName, avatar: image, status: "online", currentPage: null },
       });
     }
+
+    // Presence status & page updates
+    socket.on("presence:update_status", (data) => {
+      const changed = updateUserStatus(userId, data.status);
+      if (changed) {
+        io.emit("presence:user_updated", { userId, status: data.status });
+      }
+    });
+
+    socket.on("presence:update_page", (data) => {
+      const changed = updateUserPage(userId, data.page);
+      if (changed) {
+        io.emit("presence:user_updated", { userId, currentPage: data.page });
+      }
+    });
 
     registerRouletteHandlers(io, socket);
     registerChatHandlers(io, socket);

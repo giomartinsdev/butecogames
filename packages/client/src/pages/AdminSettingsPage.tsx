@@ -36,6 +36,7 @@ export function AdminSettingsPage() {
 
   const [general, setGeneral] = useState({
     cursorSize: 32,
+    awayTimeout: 180,
   });
 
   useEffect(() => {
@@ -109,6 +110,28 @@ export function AdminSettingsPage() {
                 setGeneral((prev) => ({
                   ...prev,
                   cursorSize: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+
+        <h3 className="text-sm font-semibold text-card-foreground mt-4 mb-2">Presença</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tempo para ausente (segundos)
+            </label>
+            <input
+              type="number"
+              min={30}
+              max={3600}
+              value={general.awayTimeout}
+              onChange={(e) =>
+                setGeneral((prev) => ({
+                  ...prev,
+                  awayTimeout: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

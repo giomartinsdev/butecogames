@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { useAdminUsers, useUpdateUserRole, useUpdateUserBan } from "@/hooks/useAdminUsers.js";
+import { getRouteLabel } from "@butecogames/shared";
 import type { AdminUser } from "@/api/admin-users.js";
 import { DataTable } from "@/components/ui/DataTable.js";
 import { toast } from "sonner";
@@ -121,6 +122,35 @@ export function AdminUsersPage() {
             >
               {banned ? "Banido" : "Ativo"}
             </span>
+          );
+        },
+      },
+      {
+        id: "presence",
+        header: "Atividade",
+        cell: ({ row }) => {
+          const presence = row.original.presence;
+          if (!presence) {
+            return <span className="text-xs text-muted-foreground">Offline</span>;
+          }
+          return (
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    presence.status === "online" ? "bg-green-500" : "bg-orange-400"
+                  }`}
+                />
+                <span className="text-xs text-card-foreground">
+                  {presence.status === "online" ? "Online" : "Ausente"}
+                </span>
+              </div>
+              {presence.currentPage && (
+                <span className="text-xs text-muted-foreground">
+                  {getRouteLabel(presence.currentPage)}
+                </span>
+              )}
+            </div>
           );
         },
       },

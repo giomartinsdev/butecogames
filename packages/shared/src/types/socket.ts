@@ -1,6 +1,6 @@
 import type { RouletteBetDisplay, RouletteBetType, RouletteWinner } from "./roulette.js";
 import type { BetOption, EventBettingEvent, EventOdds } from "./event-betting.js";
-import type { OnlineUser } from "./user.js";
+import type { OnlineUser, PresenceStatus } from "./user.js";
 import type {
   CardDuelGameType,
   CardDuelMatchResult,
@@ -37,6 +37,8 @@ export interface ClientToServerEvents {
   "card-duel:reconnect": (data: { roomId: string }) => void;
   "card-duel:play_bot": (data: { gameType: CardDuelGameType }) => void;
   "card-duel:cancel_search": () => void;
+  "presence:update_status": (data: { status: PresenceStatus }) => void;
+  "presence:update_page": (data: { page: string }) => void;
 }
 
 // Server → Client events
@@ -107,6 +109,12 @@ export interface ServerToClientEvents {
   "presence:online_users": (data: { users: OnlineUser[] }) => void;
   "presence:user_joined": (data: { user: OnlineUser }) => void;
   "presence:user_left": (data: { userId: string }) => void;
+  "presence:user_updated": (data: {
+    userId: string;
+    status?: PresenceStatus;
+    currentPage?: string | null;
+  }) => void;
+  "settings:away_timeout": (data: { awayTimeout: number }) => void;
   "card-duel:lobby_state": (data: { rooms: CardDuelRoomInfo[] }) => void;
   "card-duel:lobby_update": (data: { rooms: CardDuelRoomInfo[] }) => void;
   "card-duel:room_joined": (data: { roomState: CardDuelRoomState }) => void;

@@ -1,3 +1,4 @@
+import type { PresenceStatus } from "@butecogames/shared";
 import { apiFetch } from "./client.js";
 
 export interface AdminUser {
@@ -14,6 +15,10 @@ export interface AdminUser {
     bannedAt: string | null;
     level: number;
     xp: number;
+  } | null;
+  presence: {
+    status: PresenceStatus;
+    currentPage: string | null;
   } | null;
 }
 

@@ -14,6 +14,7 @@ import {
   CARD_DUEL_DISCONNECT_GRACE,
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
+  DEFAULT_AWAY_TIMEOUT,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -42,6 +43,7 @@ export interface ISettings {
   };
   general: {
     cursorSize: number;
+    awayTimeout: number;
   };
   updatedAt: Date;
   createdAt: Date;
@@ -74,6 +76,7 @@ const settingsSchema = new Schema(
     },
     general: {
       cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },
+      awayTimeout: { type: Number, default: DEFAULT_AWAY_TIMEOUT },
     },
   },
   { timestamps: true },

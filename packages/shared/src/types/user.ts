@@ -26,8 +26,12 @@ export interface PublicPlayer {
   level: number;
 }
 
+export type PresenceStatus = "online" | "away";
+
 export interface OnlineUser {
   userId: string;
   displayName: string;
   avatar: string;
+  status: PresenceStatus;
+  currentPage: string | null;
 }
