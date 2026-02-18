@@ -21,7 +21,7 @@ import {
 } from "@/hooks/useNotifications.js";
 import { DataTable } from "@/components/ui/DataTable.js";
 
-const TYPE_ICONS: Record<string, { icon: typeof Info; color: string }> = {
+export const TYPE_ICONS: Record<string, { icon: typeof Info; color: string }> = {
   info: { icon: Info, color: "text-blue-400" },
   success: { icon: CircleCheck, color: "text-green-400" },
   warning: { icon: TriangleAlert, color: "text-yellow-400" },
@@ -29,7 +29,7 @@ const TYPE_ICONS: Record<string, { icon: typeof Info; color: string }> = {
   announcement: { icon: Megaphone, color: "text-accent" },
 };
 
-const TYPE_LABELS: Record<string, string> = {
+export const TYPE_LABELS: Record<string, string> = {
   info: "Informação",
   success: "Sucesso",
   warning: "Aviso",

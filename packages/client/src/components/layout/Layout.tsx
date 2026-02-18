@@ -7,13 +7,14 @@ import { useCursorEffect } from "@/hooks/useCursorEffect.js";
 import { useOnlineUsers } from "@/hooks/useOnlineUsers.js";
 import { useGamificationEvents } from "@/hooks/useGamificationEvents.js";
 import { useNotificationEvents } from "@/hooks/useNotificationEvents.js";
+import { NotificationPopup } from "./NotificationPopup.js";
 
 export function Layout() {
   const { socket } = useSocket();
   useCursorEffect();
   useOnlineUsers();
   useGamificationEvents();
-  useNotificationEvents();
+  const { popup, clearPopup } = useNotificationEvents();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export function Layout() {
       <main className="mx-auto max-w-7xl px-6 py-8">
         <Outlet />
       </main>
+      {popup && <NotificationPopup notification={popup} onClose={clearPopup} />}
     </div>
   );
 }

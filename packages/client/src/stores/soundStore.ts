@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type SoundName = "bet_placed" | "bet_win" | "bet_lost";
+type SoundName = "bet_placed" | "bet_win" | "bet_lost" | "system_alert" | "direita_autoritaria" | "esquerda_autoritaria" | "centro";
 
 interface SoundState {
   enabled: boolean;

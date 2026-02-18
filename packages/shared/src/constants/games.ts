@@ -13,17 +13,6 @@ export const GAMES: GameInfo[] = [
     thumbnail: "/imgs/games/roulette.png",
   },
   {
-    id: "event-betting",
-    name: "Eventos",
-    description:
-      "Aposte em eventos esportivos, eSports e muito mais com odds dinâmicas!",
-    minPlayers: 1,
-    maxPlayers: 100,
-    available: true,
-    requiresRoom: false,
-    thumbnail: "/imgs/games/event_betting.png",
-  },
-  {
     id: "card-duel",
     name: "Duelo de Cartas",
     description:
@@ -34,6 +23,17 @@ export const GAMES: GameInfo[] = [
     requiresRoom: true,
     thumbnail: "/imgs/games/card_duel.png",
   },
+  {
+    id: "event-betting",
+    name: "Eventos",
+    description:
+      "Aposte em eventos esportivos, eSports e muito mais com odds dinâmicas!",
+    minPlayers: 1,
+    maxPlayers: 100,
+    available: true,
+    requiresRoom: false,
+    thumbnail: "/imgs/games/event_betting.png",
+  }
 ];
 
 export const INITIAL_BALANCE = 1000;

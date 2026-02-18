@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Shuffle } from "lucide-react";
 import type {
   PoliticalCompassQuestion,
   PoliticalCompassAnswer,
@@ -7,6 +8,7 @@ import type {
 } from "@butecogames/shared";
 import { LIKERT_OPTIONS, POLITICAL_COMPASS_PAGES } from "@butecogames/shared";
 import { cn } from "@/lib/utils.js";
+import { useUserProfile } from "@/hooks/useUserProfile.js";
 
 interface Props {
   questions: PoliticalCompassQuestion[];
@@ -21,6 +23,7 @@ export function PoliticalCompassSurvey({
   isSubmitting,
   onCancel,
 }: Props) {
+  const { isAdmin } = useUserProfile();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<number, LikertAnswer>>(new Map());
 
@@ -37,6 +40,14 @@ export function PoliticalCompassSurvey({
 
   function handleAnswer(questionId: number, value: LikertAnswer) {
     setAnswers((prev) => new Map(prev).set(questionId, value));
+  }
+
+  function handleRandomFill() {
+    const randomAnswers = new Map<number, LikertAnswer>();
+    for (const q of questions) {
+      randomAnswers.set(q.id, Math.floor(Math.random() * 4) as LikertAnswer);
+    }
+    setAnswers(randomAnswers);
   }
 
   function handleSubmit() {
@@ -58,7 +69,19 @@ export function PoliticalCompassSurvey({
           <span>
             Página {currentPageIndex + 1} de {pages.length}
           </span>
-          <span>{answeredCount}/{totalCount} respondidas</span>
+          <div className="flex items-center gap-3">
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={handleRandomFill}
+                className="flex items-center gap-1 text-xs text-accent hover:underline"
+              >
+                <Shuffle size={12} />
+                Auto-preencher
+              </button>
+            )}
+            <span>{answeredCount}/{totalCount} respondidas</span>
+          </div>
         </div>
         <div className="h-2 rounded-full bg-secondary">
           <div

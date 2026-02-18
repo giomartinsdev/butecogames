@@ -59,8 +59,8 @@ export function translateTransactionType(type: TransactionType): string {
 
 const gameLabels: Record<string, string> = {
   roulette: "Roleta",
-  "event-betting": "Eventos",
   "card-duel": "Duelo de Cartas",
+  "event-betting": "Eventos",
 };
 
 export function translateGameId(gameId: string | undefined): string | null {

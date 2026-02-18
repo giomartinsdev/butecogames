@@ -11,6 +11,7 @@ import { PoliticalCompassResultsTable } from "@/components/political-compass/Pol
 import { PoliticalCompassAnswersModal } from "@/components/political-compass/PoliticalCompassAnswersModal.js";
 import type { PoliticalCompassAnswer, PoliticalCompassResult } from "@butecogames/shared";
 import { toast } from "sonner";
+import { useSoundStore } from "@/stores/soundStore.js";
 
 export function PoliticalCompassPage() {
   const { data: questionsData, isLoading: loadingQuestions } =
@@ -44,9 +45,19 @@ export function PoliticalCompassPage() {
 
   const handleSubmit = async (answers: PoliticalCompassAnswer[]) => {
     try {
-      await submitMutation.mutateAsync(answers);
+      const data = await submitMutation.mutateAsync(answers);
       setShowSurvey(false);
       toast.success("Resultado salvo com sucesso!");
+
+      if (data.result) {
+        const { economicScore } = data.result;
+        if (economicScore > 0) {
+          useSoundStore.getState().playSound("direita_autoritaria");
+        } else if (economicScore < 0) {
+          useSoundStore.getState().playSound("esquerda_autoritaria");
+        }
+        // centro: no sound for now
+      }
     } catch (error: any) {
       toast.error(error.message || "Erro ao salvar resultado");
     }
