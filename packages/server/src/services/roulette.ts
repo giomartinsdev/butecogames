@@ -288,10 +288,13 @@ export async function placeBet(
   }
 
   // Debit wallet
-  await debitWallet(userId, amount, "bet_placed", {
+  const updatedWallet = await debitWallet(userId, amount, "bet_placed", {
     gameId: "roulette",
     roundId: state.currentRound._id.toString(),
   });
+
+  // Notify user of updated balance
+  io.to(`user:${userId}`).emit("wallet:updated", { balance: updatedWallet.balance });
 
   // Save bet
   await RouletteBet.create({

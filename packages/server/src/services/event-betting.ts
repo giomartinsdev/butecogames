@@ -111,10 +111,13 @@ export async function placeEventBet(
   }
 
   // Debit wallet atomically
-  await debitWallet(userId, amount, "bet_placed", {
+  const updatedWallet = await debitWallet(userId, amount, "bet_placed", {
     gameId: "event-betting",
     eventId: eventId,
   });
+
+  // Notify user of updated balance
+  io!.to(`user:${userId}`).emit("wallet:updated", { balance: updatedWallet.balance });
 
   // Calculate current odds for potential payout snapshot
   const poolField =
