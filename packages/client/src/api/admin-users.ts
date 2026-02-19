@@ -32,8 +32,8 @@ interface AdminUsersResponse {
   };
 }
 
-export function fetchAdminUsers(page = 1, search = "") {
-  const params = new URLSearchParams({ page: String(page) });
+export function fetchAdminUsers(page = 1, limit = 25, search = "") {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (search) params.set("search", search);
   return apiFetch<AdminUsersResponse>(`/api/admin/users?${params}`);
 }

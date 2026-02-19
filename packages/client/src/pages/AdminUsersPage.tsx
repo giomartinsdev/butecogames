@@ -11,10 +11,11 @@ import { toast } from "sonner";
 export function AdminUsersPage() {
   const { isAdmin, isLoading: profileLoading, user: currentUser } = useUserProfile();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const { data, isLoading } = useAdminUsers(page, debouncedSearch);
+  const { data, isLoading } = useAdminUsers(page, limit, debouncedSearch);
   const roleMutation = useUpdateUserRole();
   const banMutation = useUpdateUserBan();
 
@@ -222,8 +223,8 @@ export function AdminUsersPage() {
         </h1>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
+      {/* Search + page size */}
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         <input
           type="text"
           placeholder="Buscar por nome ou email..."
@@ -231,6 +232,17 @@ export function AdminUsersPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-lg border border-border bg-card px-4 py-2 text-card-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:max-w-md"
         />
+        <select
+          value={limit}
+          onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+          className="rounded-lg bg-muted px-3 py-2 text-sm text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+        >
+          {[25, 50, 100].map((size) => (
+            <option key={size} value={size}>
+              {size} por página
+            </option>
+          ))}
+        </select>
       </div>
 
       <DataTable

@@ -10,5 +10,6 @@ export function useAuditLogs(
   return useQuery({
     queryKey: ["audit-logs", page, limit, search, action],
     queryFn: () => fetchAuditLogs(page, limit, search, action),
+    refetchInterval: 10_000,
   });
 }

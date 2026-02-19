@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminUsers, updateUserRole, updateUserBan } from "@/api/admin-users.js";
 
-export function useAdminUsers(page = 1, search = "") {
+export function useAdminUsers(page = 1, limit = 25, search = "") {
   return useQuery({
-    queryKey: ["admin-users", page, search],
-    queryFn: () => fetchAdminUsers(page, search),
+    queryKey: ["admin-users", page, limit, search],
+    queryFn: () => fetchAdminUsers(page, limit, search),
   });
 }
 
