@@ -7,6 +7,7 @@ import {
 } from "@butecogames/shared";
 import type { PoliticalCompassAnswer } from "@butecogames/shared";
 import { processAction } from "../services/gamification.js";
+import { getSettings } from "../services/settings.js";
 
 const router = Router();
 
@@ -21,7 +22,11 @@ router.get("/result", requireAuth, async (req, res) => {
     const result = await PoliticalCompassResult.findOne({
       userId: req.user!.id,
     });
-    res.json({ result: result ? result.toObject() : null });
+    const { politicalCompass: pcSettings } = getSettings();
+    res.json({
+      result: result ? result.toObject() : null,
+      retestCooldownDays: pcSettings.retestCooldownDays,
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -60,18 +65,20 @@ router.post("/submit", requireAuth, async (req, res) => {
       });
     }
 
-    // 6-month cooldown check
+    // Cooldown check (configurable via admin settings)
+    const { politicalCompass: pcSettings } = getSettings();
+    const cooldownDays = pcSettings.retestCooldownDays;
     const existing = await PoliticalCompassResult.findOne({
       userId: req.user!.id,
     });
     if (existing) {
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      if (existing.updatedAt > sixMonthsAgo) {
+      const cooldownDate = new Date();
+      cooldownDate.setDate(cooldownDate.getDate() - cooldownDays);
+      if (existing.updatedAt > cooldownDate) {
         const nextDate = new Date(existing.updatedAt);
-        nextDate.setMonth(nextDate.getMonth() + 6);
+        nextDate.setDate(nextDate.getDate() + cooldownDays);
         return res.status(429).json({
-          error: `Você só pode refazer o teste após 6 meses. Próxima data: ${nextDate.toLocaleDateString("pt-BR")}`,
+          error: `Você só pode refazer o teste após ${cooldownDays} dias. Próxima data: ${nextDate.toLocaleDateString("pt-BR")}`,
         });
       }
     }

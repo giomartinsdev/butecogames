@@ -15,6 +15,7 @@ import {
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
   DEFAULT_AWAY_TIMEOUT,
+  DEFAULT_RETEST_COOLDOWN_DAYS,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -67,6 +68,12 @@ export async function updateSettings(
     }
   }
 
+  if (partial.politicalCompass) {
+    for (const [key, value] of Object.entries(partial.politicalCompass)) {
+      update[`politicalCompass.${key}`] = value;
+    }
+  }
+
   const doc = await Settings.findByIdAndUpdate(
     "app_settings",
     { $set: update },
@@ -108,6 +115,9 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,
       awayTimeout: doc.general?.awayTimeout ?? DEFAULT_AWAY_TIMEOUT,
+    },
+    politicalCompass: {
+      retestCooldownDays: doc.politicalCompass?.retestCooldownDays ?? DEFAULT_RETEST_COOLDOWN_DAYS,
     },
   };
 }

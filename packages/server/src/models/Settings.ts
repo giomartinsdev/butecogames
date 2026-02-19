@@ -15,6 +15,7 @@ import {
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
   DEFAULT_AWAY_TIMEOUT,
+  DEFAULT_RETEST_COOLDOWN_DAYS,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -44,6 +45,9 @@ export interface ISettings {
   general: {
     cursorSize: number;
     awayTimeout: number;
+  };
+  politicalCompass: {
+    retestCooldownDays: number;
   };
   updatedAt: Date;
   createdAt: Date;
@@ -77,6 +81,9 @@ const settingsSchema = new Schema(
     general: {
       cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },
       awayTimeout: { type: Number, default: DEFAULT_AWAY_TIMEOUT },
+    },
+    politicalCompass: {
+      retestCooldownDays: { type: Number, default: DEFAULT_RETEST_COOLDOWN_DAYS },
     },
   },
   { timestamps: true },

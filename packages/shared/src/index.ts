@@ -28,6 +28,7 @@ export type {
   EventBettingSettings,
   CardDuelSettings,
   GeneralSettings,
+  PoliticalCompassSettings,
   AppSettings,
 } from "./types/settings.js";
 export type { UserSettings } from "./types/user-settings.js";
@@ -138,4 +139,5 @@ export {
   POLITICAL_COMPASS_QUESTIONS,
   POLITICAL_COMPASS_PAGES,
   calculatePoliticalCompass,
+  DEFAULT_RETEST_COOLDOWN_DAYS,
 } from "./political-compass/index.js";

@@ -39,6 +39,10 @@ export function AdminSettingsPage() {
     awayTimeout: 180,
   });
 
+  const [politicalCompass, setPoliticalCompass] = useState({
+    retestCooldownDays: 180,
+  });
+
   useEffect(() => {
     if (settings) {
       setRoulette(settings.roulette);
@@ -50,6 +54,9 @@ export function AdminSettingsPage() {
       }
       if (settings.general) {
         setGeneral(settings.general);
+      }
+      if (settings.politicalCompass) {
+        setPoliticalCompass(settings.politicalCompass);
       }
     }
   }, [settings]);
@@ -68,7 +75,7 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette, eventBetting, cardDuel, general },
+      { roulette, eventBetting, cardDuel, general, politicalCompass },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
@@ -467,6 +474,36 @@ export function AdminSettingsPage() {
                 setCardDuel((prev) => ({
                   ...prev,
                   botBetAmount: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
+        <h2 className="text-xl font-bold text-card-foreground mb-4">
+          Bússola Política
+        </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Configure o tempo de espera para refazer o teste da bússola política.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Cooldown para reteste (dias)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={365}
+              value={politicalCompass.retestCooldownDays}
+              onChange={(e) =>
+                setPoliticalCompass((prev) => ({
+                  ...prev,
+                  retestCooldownDays: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

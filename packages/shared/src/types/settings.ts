@@ -28,9 +28,14 @@ export interface CardDuelSettings {
   botBetAmount: number;
 }
 
+export interface PoliticalCompassSettings {
+  retestCooldownDays: number;
+}
+
 export interface AppSettings {
   roulette: RouletteSettings;
   eventBetting: EventBettingSettings;
   cardDuel: CardDuelSettings;
   general: GeneralSettings;
+  politicalCompass: PoliticalCompassSettings;
 }

@@ -120,18 +120,18 @@ export function PoliticalCompassSurvey({
       </div>
 
       {/* Page title */}
-      <h3 className="text-lg font-semibold text-card-foreground">
-        {currentPage.title}
+      <h3 className="text-xl font-semibold text-card-foreground">
+        {currentPage.title.toUpperCase()}
       </h3>
 
       {/* Questions */}
       <div className="space-y-6">
         {pageQuestions.map((question, qIndex) => (
           <div key={question.id} className="space-y-2">
-            <p className="text-sm text-card-foreground font-medium">
-              <span className="text-muted-foreground mr-2">
+            <p className="w-full lg:w-[60%] text-lg text-card-foreground font-medium">
+              {/* <span className="text-muted-foreground mr-2">
                 {question.id + 1}.
-              </span>
+              </span> */}
               {question.text}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -140,7 +140,7 @@ export function PoliticalCompassSurvey({
                   key={option.value}
                   onClick={() => handleAnswer(question.id, option.value)}
                   className={cn(
-                    "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                    "rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
                     answers.get(question.id) === option.value
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border text-muted-foreground hover:bg-muted hover:text-card-foreground",
@@ -165,9 +165,10 @@ export function PoliticalCompassSurvey({
             Anterior
           </button>
           <button
-            onClick={() =>
-              setCurrentPageIndex((i) => Math.min(pages.length - 1, i + 1))
-            }
+            onClick={() => {
+              setCurrentPageIndex((i) => Math.min(pages.length - 1, i + 1));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             disabled={currentPageIndex === pages.length - 1}
             className="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-card-foreground hover:bg-muted transition-colors disabled:opacity-50"
           >

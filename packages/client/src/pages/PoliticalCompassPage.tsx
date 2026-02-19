@@ -10,6 +10,7 @@ import { PoliticalCompassChart } from "@/components/political-compass/PoliticalC
 import { PoliticalCompassResultsTable } from "@/components/political-compass/PoliticalCompassResultsTable.js";
 import { PoliticalCompassAnswersModal } from "@/components/political-compass/PoliticalCompassAnswersModal.js";
 import type { PoliticalCompassAnswer, PoliticalCompassResult } from "@butecogames/shared";
+import { DEFAULT_RETEST_COOLDOWN_DAYS } from "@butecogames/shared";
 import { toast } from "sonner";
 import { useSoundStore } from "@/stores/soundStore.js";
 
@@ -26,18 +27,19 @@ export function PoliticalCompassPage() {
   const [hoveredUserId, setHoveredUserId] = useState<string | null>(null);
 
   const hasResult = myResultData?.result != null;
+  const cooldownDays = myResultData?.retestCooldownDays ?? DEFAULT_RETEST_COOLDOWN_DAYS;
 
   const canRetake = (() => {
     if (!myResultData?.result?.updatedAt) return true;
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    return new Date(myResultData.result.updatedAt) <= sixMonthsAgo;
+    const cooldownDate = new Date();
+    cooldownDate.setDate(cooldownDate.getDate() - cooldownDays);
+    return new Date(myResultData.result.updatedAt) <= cooldownDate;
   })();
 
   const retakeDate = (() => {
     if (!myResultData?.result?.updatedAt || canRetake) return null;
     const next = new Date(myResultData.result.updatedAt);
-    next.setMonth(next.getMonth() + 6);
+    next.setDate(next.getDate() + cooldownDays);
     return next.toLocaleDateString("pt-BR");
   })();
 

@@ -11,6 +11,7 @@ interface QuestionsResponse {
 
 interface ResultResponse {
   result: PoliticalCompassResult | null;
+  retestCooldownDays?: number;
 }
 
 interface ResultsResponse {
