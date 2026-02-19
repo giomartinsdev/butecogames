@@ -16,6 +16,7 @@ const ROUTE_LABELS: Array<{ path: string; label: string }> = [
   { path: "/admin/settings", label: "Admin - Configurações" },
   { path: "/admin/users", label: "Admin - Usuários" },
   { path: "/admin/notifications", label: "Admin - Notificações" },
+  { path: "/admin/audit", label: "Admin - Auditoria" },
   { path: "/admin", label: "Admin" },
   { path: "/", label: "Início" },
 ];

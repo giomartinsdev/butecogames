@@ -9,6 +9,7 @@ import {
   resolveEvent,
   broadcastEventsUpdate,
 } from "../services/event-betting.js";
+import { logAudit } from "../services/audit.js";
 
 const router = Router();
 
@@ -116,6 +117,16 @@ router.post("/events", requireAuth, requireAdmin, async (req, res) => {
     // Broadcast updated events to all users
     await broadcastEventsUpdate();
 
+    logAudit({
+      adminId: req.user!.id,
+      adminName: req.user!.name,
+      action: "event.create",
+      targetId: event._id.toString(),
+      targetLabel: title,
+      oldData: null,
+      newData: { title, category, option1, option2, startTime: start, allowDraw },
+    });
+
     res.status(201).json({ event });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -171,11 +182,22 @@ router.put("/events/:eventId/status", requireAuth, requireAdmin, async (req, res
       event.startTime = null;
     }
 
+    const oldStatus = event.status;
     event.status = status as any;
     await event.save();
 
     // Broadcast updated events to all users
     await broadcastEventsUpdate();
+
+    logAudit({
+      adminId: req.user!.id,
+      adminName: req.user!.name,
+      action: "event.status_change",
+      targetId: event._id.toString(),
+      targetLabel: event.title,
+      oldData: { status: oldStatus },
+      newData: { status },
+    });
 
     res.json({ event });
   } catch (error: any) {
@@ -204,7 +226,18 @@ router.post("/events/:eventId/resolve", requireAuth, requireAdmin, async (req, r
       return res.status(400).json({ error: "Evento já foi resolvido" });
     }
 
+    const oldStatus = event.status;
     await resolveEvent(req.params.eventId as string, result as BetOption);
+
+    logAudit({
+      adminId: req.user!.id,
+      adminName: req.user!.name,
+      action: "event.resolve",
+      targetId: event._id.toString(),
+      targetLabel: event.title,
+      oldData: { status: oldStatus },
+      newData: { status: "completed", result },
+    });
 
     res.json({ success: true, message: "Evento encerrado com sucesso" });
   } catch (error: any) {

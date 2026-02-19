@@ -33,6 +33,12 @@ const adminActions: AdminAction[] = [
     path: "/admin/notifications",
     icon: "📢",
   },
+  {
+    title: "Auditoria",
+    description: "Histórico de ações administrativas",
+    path: "/admin/audit",
+    icon: "📋",
+  },
 ];
 
 export function AdminPage() {

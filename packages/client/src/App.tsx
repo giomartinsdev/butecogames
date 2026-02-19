@@ -20,6 +20,7 @@ import { CardDuelPage } from "@/pages/CardDuelPage.js";
 import { AdminNotificationsPage } from "@/pages/AdminNotificationsPage.js";
 import { AppsPage } from "@/pages/AppsPage.js";
 import { PoliticalCompassPage } from "@/pages/PoliticalCompassPage.js";
+import { AdminAuditPage } from "@/pages/AdminAuditPage.js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -96,6 +97,7 @@ function AppRoutes() {
         <Route path="/admin/settings" element={<AdminSettingsPage />} />
         <Route path="/admin/users" element={<AdminUsersPage />} />
         <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+        <Route path="/admin/audit" element={<AdminAuditPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />

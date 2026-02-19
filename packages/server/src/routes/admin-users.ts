@@ -5,6 +5,7 @@ import { UserProfile } from "../models/UserProfile.js";
 import { getMongoDb } from "../db/connection.js";
 import { disconnectUser } from "../socket/io-store.js";
 import { getUserPresence } from "../services/presence.js";
+import { logAudit } from "../services/audit.js";
 
 const router = Router();
 
@@ -83,6 +84,16 @@ router.put("/users/:userId/role", requireAuth, requireAdmin, async (req, res) =>
     return;
   }
 
+  logAudit({
+    adminId: req.user!.id,
+    adminName: req.user!.name,
+    action: "user.role_change",
+    targetId: userId,
+    targetLabel: profile.displayName,
+    oldData: { role: role === "admin" ? "user" : "admin" },
+    newData: { role },
+  });
+
   res.json({ profile });
 });
 
@@ -117,6 +128,16 @@ router.put("/users/:userId/ban", requireAuth, requireAdmin, async (req, res) => 
   if (banned) {
     disconnectUser(userId);
   }
+
+  logAudit({
+    adminId: req.user!.id,
+    adminName: req.user!.name,
+    action: "user.ban_change",
+    targetId: userId,
+    targetLabel: profile.displayName,
+    oldData: { banned: !banned },
+    newData: { banned: !!banned },
+  });
 
   res.json({ profile });
 });

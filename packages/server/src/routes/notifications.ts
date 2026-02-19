@@ -6,6 +6,7 @@ import { getIO } from "../socket/io-store.js";
 import { Notification } from "../models/Notification.js";
 import { UserNotification } from "../models/UserNotification.js";
 import { UserProfile } from "../models/UserProfile.js";
+import { logAudit } from "../services/audit.js";
 
 const router = Router();
 
@@ -95,6 +96,16 @@ router.post("/", async (req, res) => {
   // Create per-user records and emit unread counts (non-blocking)
   distributeToUsers(notification._id as Types.ObjectId).catch(() => {});
 
+  logAudit({
+    adminId: req.user!.id,
+    adminName: req.user!.name,
+    action: "notification.create",
+    targetId: notification._id.toString(),
+    targetLabel: trimmedTitle,
+    oldData: null,
+    newData: { type, title: trimmedTitle, message: trimmedMessage },
+  });
+
   res.json({ ok: true, notification });
 });
 
@@ -122,6 +133,16 @@ router.post("/:id/resend", async (req, res) => {
 
   // Create per-user records and emit unread counts (non-blocking)
   distributeToUsers(resent._id as Types.ObjectId).catch(() => {});
+
+  logAudit({
+    adminId: req.user!.id,
+    adminName: req.user!.name,
+    action: "notification.resend",
+    targetId: resent._id.toString(),
+    targetLabel: notification.title,
+    oldData: null,
+    newData: { type: notification.type, title: notification.title, originalId: notification._id.toString() },
+  });
 
   res.json({ ok: true, notification: resent });
 });
