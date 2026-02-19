@@ -74,7 +74,7 @@ export function PoliticalCompassSurvey({
               <button
                 type="button"
                 onClick={handleRandomFill}
-                className="flex items-center gap-1 text-xs text-accent hover:underline"
+                className="flex items-center gap-1 text-sm text-accent hover:underline"
               >
                 <Shuffle size={12} />
                 Auto-preencher
@@ -102,7 +102,7 @@ export function PoliticalCompassSurvey({
               key={page.page}
               onClick={() => setCurrentPageIndex(i)}
               className={cn(
-                "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                "rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
                 i === currentPageIndex
                   ? "border-primary bg-primary/10 text-primary"
                   : isComplete
@@ -120,14 +120,14 @@ export function PoliticalCompassSurvey({
       </div>
 
       {/* Page title */}
-      <h3 className="text-xl font-semibold text-card-foreground">
+      <h3 className="mb-8 text-xl font-semibold text-card-foreground">
         {currentPage.title.toUpperCase()}
       </h3>
 
       {/* Questions */}
       <div className="space-y-6">
         {pageQuestions.map((question, qIndex) => (
-          <div key={question.id} className="space-y-2">
+          <div key={question.id} className="space-y-4 mb-20">
             <p className="w-full lg:w-[60%] text-lg text-card-foreground font-medium">
               {/* <span className="text-muted-foreground mr-2">
                 {question.id + 1}.
