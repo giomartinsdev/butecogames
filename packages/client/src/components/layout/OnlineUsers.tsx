@@ -6,10 +6,11 @@ import { HandCoins } from "lucide-react";
 interface OnlineUsersProps {
   users: OnlineUser[];
   currentUserId?: string;
+  isAdmin?: boolean;
   onTransferClick: (user: OnlineUser) => void;
 }
 
-export function OnlineUsers({ users, currentUserId, onTransferClick }: OnlineUsersProps) {
+export function OnlineUsers({ users, currentUserId, isAdmin, onTransferClick }: OnlineUsersProps) {
   const [open, setOpen] = useState(false);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -94,7 +95,7 @@ export function OnlineUsers({ users, currentUserId, onTransferClick }: OnlineUse
                   <span className="block truncate text-sm text-card-foreground">
                     {user.displayName}
                   </span>
-                  {user.currentPage && (
+                  {user.currentPage && (isAdmin || !user.currentPage.startsWith("/admin")) && (
                     <span className="block truncate text-xs text-muted-foreground">
                       {getRouteLabel(user.currentPage)}
                     </span>

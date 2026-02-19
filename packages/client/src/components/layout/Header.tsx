@@ -108,7 +108,7 @@ export function Header() {
         <div className="flex items-center gap-4">
           {user && (
             <div className="flex items-center gap-3">
-              <OnlineUsers users={onlineUsers} currentUserId={user.id} onTransferClick={handleTransferFromOnline} />
+              <OnlineUsers users={onlineUsers} currentUserId={user.id} isAdmin={isAdmin} onTransferClick={handleTransferFromOnline} />
 
               <XpBar />
 
