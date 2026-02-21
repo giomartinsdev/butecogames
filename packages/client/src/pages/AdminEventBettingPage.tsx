@@ -30,6 +30,7 @@ import {
   Pencil,
   Download,
   Loader2,
+  Trash2,
 } from "lucide-react";
 
 const statusConfig: Record<
@@ -125,16 +126,18 @@ function EventEditForm({
             }
             onSave(data);
           }}
-          className="rounded p-1.5 text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
+          className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors disabled:opacity-50"
         >
-          <Check className="h-4 w-4" />
+          <Check className="h-3 w-3 inline mr-1" />
+          Confirmar
         </button>
         <button
           title="Cancelar"
           onClick={onCancel}
-          className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+          className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3 w-3 inline mr-1" />
+          Cancelar
         </button>
       </div>
     </div>
@@ -150,6 +153,8 @@ export function AdminEventBettingPage() {
   const [editingImages, setEditingImages] = useState<string | null>(null);
   const [imageUrls, setImageUrls] = useState({ option1ImageUrl: "", option2ImageUrl: "" });
   const [confirmResolve, setConfirmResolve] = useState<{ eventId: string; result: BetOption; label: string } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [confirmStatus, setConfirmStatus] = useState<{ eventId: string; status: string; label: string } | null>(null);
   const [editingEvent, setEditingEvent] = useState<string | null>(null);
   const [showUfcImport, setShowUfcImport] = useState(false);
   const [selectedFights, setSelectedFights] = useState<Set<number>>(new Set());
@@ -242,7 +247,7 @@ export function AdminEventBettingPage() {
         const res = await apiClient.post("/api/event-betting/events", {
           body: JSON.stringify({
             title: `${fight.fighter1} vs ${fight.fighter2}`,
-            description: fight.weightClass,
+            description: [ufcData.eventName, fight.weightClass].filter(Boolean).join(" • "),
             category: "ufc" as EventCategory,
             option1: fight.fighter1,
             option2: fight.fighter2,
@@ -413,6 +418,27 @@ export function AdminEventBettingPage() {
     },
   });
 
+  const deleteEventMutation = useMutation({
+    mutationFn: async (eventId: string) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || ""}/api/event-betting/events/${eventId}`,
+        { method: "DELETE", credentials: "include" },
+      );
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Erro ao excluir evento");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Evento excluído com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["admin-event-betting-events"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   const updateEventMutation = useMutation({
     mutationFn: async ({
       eventId,
@@ -455,10 +481,12 @@ export function AdminEventBettingPage() {
     (e: EventBettingEvent) =>
       e.status === "upcoming" || e.status === "in_progress",
   );
-  const completedEvents = (eventsData?.events || []).filter(
-    (e: EventBettingEvent) =>
-      e.status === "completed" || e.status === "cancelled",
-  );
+  const completedEvents = (eventsData?.events || [])
+    .filter(
+      (e: EventBettingEvent) =>
+        e.status === "completed" || e.status === "cancelled",
+    )
+    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const activeColumns = useMemo<ColumnDef<EventBettingEvent, any>[]>(
     () => [
@@ -664,32 +692,67 @@ export function AdminEventBettingPage() {
                 </div>
               )}
               {event.status === "upcoming" && (
-                <div className="flex items-center gap-1">
-                  <button
-                    title="Iniciar"
-                    onClick={() =>
-                      updateStatusMutation.mutate({
-                        eventId: event._id,
-                        status: "in_progress",
-                      })
-                    }
-                    className="rounded p-1.5 text-primary hover:bg-primary/10 transition-colors"
-                  >
-                    <Play className="h-4 w-4" />
-                  </button>
-                  <button
-                    title="Cancelar"
-                    onClick={() =>
-                      updateStatusMutation.mutate({
-                        eventId: event._id,
-                        status: "cancelled",
-                      })
-                    }
-                    className="rounded p-1.5 text-destructive hover:bg-destructive/10 transition-colors"
-                  >
-                    <XCircle className="h-4 w-4" />
-                  </button>
-                </div>
+                confirmStatus?.eventId === event._id ? (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs text-yellow-400 font-medium">
+                      {confirmStatus.label}?
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <button
+                        title="Confirmar"
+                        disabled={updateStatusMutation.isPending}
+                        onClick={() => {
+                          updateStatusMutation.mutate({
+                            eventId: confirmStatus.eventId,
+                            status: confirmStatus.status,
+                          });
+                          setConfirmStatus(null);
+                        }}
+                        className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
+                      >
+                        <Check className="h-3 w-3 inline mr-1" />
+                        Confirmar
+                      </button>
+                      <button
+                        title="Cancelar"
+                        onClick={() => setConfirmStatus(null)}
+                        className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                      >
+                        <X className="h-3 w-3 inline mr-1" />
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <button
+                      title="Iniciar"
+                      onClick={() =>
+                        setConfirmStatus({
+                          eventId: event._id,
+                          status: "in_progress",
+                          label: "Iniciar evento",
+                        })
+                      }
+                      className="rounded p-1.5 text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      <Play className="h-4 w-4" />
+                    </button>
+                    <button
+                      title="Cancelar"
+                      onClick={() =>
+                        setConfirmStatus({
+                          eventId: event._id,
+                          status: "cancelled",
+                          label: "Cancelar evento",
+                        })
+                      }
+                      className="rounded p-1.5 text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </button>
+                  </div>
+                )
               )}
               {event.status === "in_progress" && (
                 <>
@@ -729,19 +792,55 @@ export function AdminEventBettingPage() {
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1.5">
+                      {confirmStatus?.eventId === event._id ? (
+                      <div className="flex flex-col gap-1">
+                        <p className="text-xs text-yellow-400 font-medium">
+                          {confirmStatus.label}?
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <button
+                            title="Confirmar"
+                            disabled={updateStatusMutation.isPending}
+                            onClick={() => {
+                              if (confirmStatus.status === "upcoming") {
+                                setEditingStartTime(event._id);
+                                const oneHourFromNow = new Date();
+                                oneHourFromNow.setHours(oneHourFromNow.getHours() + 1);
+                                setNewStartTime(oneHourFromNow.toISOString().slice(0, 16));
+                              } else {
+                                updateStatusMutation.mutate({
+                                  eventId: confirmStatus.eventId,
+                                  status: confirmStatus.status,
+                                });
+                              }
+                              setConfirmStatus(null);
+                            }}
+                            className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
+                          >
+                            <Check className="h-3 w-3 inline mr-1" />
+                            Confirmar
+                          </button>
+                          <button
+                            title="Cancelar"
+                            onClick={() => setConfirmStatus(null)}
+                            className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                          >
+                            <X className="h-3 w-3 inline mr-1" />
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
                       <div className="flex items-center gap-1">
                         <button
                           title="Voltar para Próximo"
-                          onClick={() => {
-                            setEditingStartTime(event._id);
-                            const oneHourFromNow = new Date();
-                            oneHourFromNow.setHours(
-                              oneHourFromNow.getHours() + 1,
-                            );
-                            setNewStartTime(
-                              oneHourFromNow.toISOString().slice(0, 16),
-                            );
-                          }}
+                          onClick={() =>
+                            setConfirmStatus({
+                              eventId: event._id,
+                              status: "upcoming",
+                              label: "Voltar para Próximo",
+                            })
+                          }
                           className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
                         >
                           <Undo2 className="h-4 w-4" />
@@ -749,9 +848,10 @@ export function AdminEventBettingPage() {
                         <button
                           title="Cancelar Evento"
                           onClick={() =>
-                            updateStatusMutation.mutate({
+                            setConfirmStatus({
                               eventId: event._id,
                               status: "cancelled",
+                              label: "Cancelar evento",
                             })
                           }
                           className="rounded p-1.5 text-destructive hover:bg-destructive/10 transition-colors"
@@ -759,6 +859,7 @@ export function AdminEventBettingPage() {
                           <XCircle className="h-4 w-4" />
                         </button>
                       </div>
+                    )}
                       {confirmResolve?.eventId === event._id ? (
                         <div className="flex flex-col gap-1">
                           <p className="text-xs text-yellow-400 font-medium">
@@ -842,12 +943,52 @@ export function AdminEventBettingPage() {
                   )}
                 </>
               )}
+              {/* Delete button — only for events with no bets */}
+              {event.totalPool === 0 && (
+                confirmDelete === event._id ? (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs text-destructive font-medium">
+                      Excluir evento?
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <button
+                        title="Confirmar"
+                        disabled={deleteEventMutation.isPending}
+                        onClick={() => {
+                          deleteEventMutation.mutate(event._id);
+                          setConfirmDelete(null);
+                        }}
+                        className="rounded px-2 py-1 text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50"
+                      >
+                        <Check className="h-3 w-3 inline mr-1" />
+                        Confirmar
+                      </button>
+                      <button
+                        title="Cancelar"
+                        onClick={() => setConfirmDelete(null)}
+                        className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                      >
+                        <X className="h-3 w-3 inline mr-1" />
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    title="Excluir evento"
+                    onClick={() => setConfirmDelete(event._id)}
+                    className="rounded p-1.5 text-destructive/60 hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )
+              )}
             </div>
           );
         },
       },
     ],
-    [editingStartTime, newStartTime, editingImages, imageUrls, updateImagesMutation.isPending, confirmResolve, resolveEventMutation.isPending, editingEvent, updateEventMutation.isPending],
+    [editingStartTime, newStartTime, editingImages, imageUrls, updateImagesMutation.isPending, confirmResolve, resolveEventMutation.isPending, editingEvent, updateEventMutation.isPending, deleteEventMutation.isPending, confirmDelete, confirmStatus, updateStatusMutation.isPending],
   );
 
   const completedColumns = useMemo<ColumnDef<EventBettingEvent, any>[]>(

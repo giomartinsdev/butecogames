@@ -24,7 +24,7 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
     ? "w-full h-[100%] object-cover object-top"
     : "max-h-16 max-w-full rounded object-contain mb-2";
   const imgWrapClass = isUfc
-    ? "max-h-40 w-full rounded overflow-hidden mb-2"
+    ? "max-h-32 w-4/5 mx-auto rounded overflow-hidden mb-2"
     : "";
 
   const handlePlaceBet = (amount: number) => {

@@ -9,6 +9,7 @@ export type AuditAction =
   | "event.status_change"
   | "event.resolve"
   | "event.update_images"
+  | "event.delete"
   | "notification.create"
   | "notification.resend"
   | "xp.awarded";

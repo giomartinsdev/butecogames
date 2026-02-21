@@ -9,7 +9,8 @@ import {
   resolveEvent,
   broadcastEventsUpdate,
 } from "../services/event-betting.js";
-import { downloadEventImage } from "../services/image-download.js";
+import { downloadEventImage, deleteR2Image } from "../services/image-download.js";
+import { EventBettingBet } from "../models/EventBettingBet.js";
 import { logAudit } from "../services/audit.js";
 import { getUpcomingUfcEvent } from "../services/ufc-scraper.js";
 
@@ -410,6 +411,53 @@ router.put("/events/:eventId/images", requireAuth, requireAdmin, async (req, res
     }
 
     res.json({ event });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * DELETE /api/event-betting/events/:eventId
+ * Delete an event that has no bets (admin only).
+ * Also removes associated R2 images.
+ */
+router.delete("/events/:eventId", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const event = await EventBettingEvent.findById(req.params.eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Evento não encontrado" });
+    }
+
+    // Check if any bets exist for this event
+    const betCount = await EventBettingBet.countDocuments({ eventId: event._id });
+    if (betCount > 0) {
+      return res.status(400).json({
+        error: "Não é possível excluir um evento que já possui apostas",
+      });
+    }
+
+    // Delete R2 images if they exist
+    const deletePromises: Promise<void>[] = [];
+    if (event.option1Image) deletePromises.push(deleteR2Image(event.option1Image));
+    if (event.option2Image) deletePromises.push(deleteR2Image(event.option2Image));
+    await Promise.allSettled(deletePromises);
+
+    const title = event.title;
+    await event.deleteOne();
+
+    await broadcastEventsUpdate();
+
+    logAudit({
+      adminId: req.user!.id,
+      adminName: req.user!.name,
+      action: "event.delete",
+      targetId: req.params.eventId as string,
+      targetLabel: title,
+      oldData: null,
+      newData: null,
+    });
+
+    res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
