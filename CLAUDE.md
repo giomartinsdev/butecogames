@@ -51,6 +51,11 @@ docker-compose up     # MongoDB on 27017, Server on 3001, Client on 80 (nginx)
 | `DISCORD_GUILD_ID` | Discord server ID to restrict access to guild members only |
 | `PORT` | Server port (default: 3001) |
 | `NODE_ENV` | Environment (`development` or `production`) |
+| `R2_ACCOUNT_ID` | Cloudflare R2 account ID |
+| `R2_ACCESS_KEY_ID` | R2 API access key ID |
+| `R2_SECRET_ACCESS_KEY` | R2 API secret access key |
+| `R2_BUCKET_NAME` | R2 bucket name (e.g., `butecogames-images`) |
+| `R2_PUBLIC_URL` | Public URL for the R2 bucket (e.g., `https://images.butecodosdevs.com`) |
 | `VITE_API_URL` | Client-side API base URL (default: `http://localhost:3001`) |
 | `VITE_WS_URL` | Client-side WebSocket URL (default: `http://localhost:3001`) |
 

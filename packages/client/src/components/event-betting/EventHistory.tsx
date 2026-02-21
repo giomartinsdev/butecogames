@@ -1,6 +1,6 @@
 import type { EventBettingEvent, EventOdds } from "@butecogames/shared";
-import { EVENT_CATEGORIES } from "@butecogames/shared";
-import { formatCoins } from "@/lib/utils.js";
+import { EVENT_CATEGORIES, EVENT_CATEGORY_COLORS } from "@butecogames/shared";
+import { formatCoins, getCategoryGradient, getCategoryBorderColor } from "@/lib/utils.js";
 
 interface EventHistoryProps {
   events: Array<EventBettingEvent & { odds: EventOdds }>;
@@ -29,11 +29,18 @@ export function EventHistory({ events }: EventHistoryProps) {
       {events.map((event) => (
         <div
           key={event._id}
-          className="rounded-lg border border-border bg-card p-4 space-y-2"
+          className="rounded-lg border p-4 space-y-2"
+          style={{
+            background: getCategoryGradient(event.category),
+            borderColor: getCategoryBorderColor(event.category),
+          }}
         >
           <div className="flex items-start justify-between">
             <div>
-              <div className="text-xs text-muted-foreground mb-1">
+              <div
+                className="text-xs font-medium mb-1"
+                style={{ color: EVENT_CATEGORY_COLORS[event.category] }}
+              >
                 {EVENT_CATEGORIES[event.category]}
               </div>
               <h4 className="font-bold text-card-foreground">{event.title}</h4>
@@ -48,8 +55,16 @@ export function EventHistory({ events }: EventHistoryProps) {
             </div>
           </div>
 
-          <div className="text-sm font-medium text-card-foreground">
-            {event.option1} vs {event.option2}
+          <div className="text-sm font-medium text-card-foreground flex items-center gap-2">
+            {event.option1Image && (
+              <img src={event.option1Image} alt={event.option1} className="w-6 h-6 rounded-full object-cover" />
+            )}
+            <span>{event.option1}</span>
+            <span className="text-muted-foreground">vs</span>
+            <span>{event.option2}</span>
+            {event.option2Image && (
+              <img src={event.option2Image} alt={event.option2} className="w-6 h-6 rounded-full object-cover" />
+            )}
           </div>
 
           {event.result && (

@@ -25,4 +25,9 @@ export const env = {
   DISCORD_CLIENT_SECRET: requireEnv("DISCORD_CLIENT_SECRET"),
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
   DISCORD_GUILD_ID: requireEnv("DISCORD_GUILD_ID"),
+  R2_ACCOUNT_ID: requireEnv("R2_ACCOUNT_ID"),
+  R2_ACCESS_KEY_ID: requireEnv("R2_ACCESS_KEY_ID"),
+  R2_SECRET_ACCESS_KEY: requireEnv("R2_SECRET_ACCESS_KEY"),
+  R2_BUCKET_NAME: requireEnv("R2_BUCKET_NAME"),
+  R2_PUBLIC_URL: requireEnv("R2_PUBLIC_URL"), // e.g. https://images.butecodosdevs.com
 } as const;

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { RouletteBetType, TransactionType } from "@butecogames/shared";
+import type { RouletteBetType, TransactionType, EventCategory } from "@butecogames/shared";
+import { EVENT_CATEGORY_COLORS } from "@butecogames/shared";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,4 +67,14 @@ const gameLabels: Record<string, string> = {
 export function translateGameId(gameId: string | undefined): string | null {
   if (!gameId) return null;
   return gameLabels[gameId] ?? gameId;
+}
+
+export function getCategoryGradient(category: EventCategory): string {
+  const color = EVENT_CATEGORY_COLORS[category];
+  return `linear-gradient(135deg, ${color}26 0%, ${color}0D 50%, transparent 100%)`;
+}
+
+export function getCategoryBorderColor(category: EventCategory): string {
+  const color = EVENT_CATEGORY_COLORS[category];
+  return `${color}40`;
 }

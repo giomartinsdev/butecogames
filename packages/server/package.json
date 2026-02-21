@@ -11,6 +11,7 @@
     "make-admin": "tsx src/scripts/make-admin.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.995.0",
     "@butecogames/shared": "workspace:*",
     "better-auth": "^1.4.0",
     "cors": "^2.8.5",

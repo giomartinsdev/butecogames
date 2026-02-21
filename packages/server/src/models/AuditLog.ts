@@ -5,8 +5,10 @@ export type AuditAction =
   | "user.ban_change"
   | "settings.update"
   | "event.create"
+  | "event.update"
   | "event.status_change"
   | "event.resolve"
+  | "event.update_images"
   | "notification.create"
   | "notification.resend"
   | "xp.awarded";

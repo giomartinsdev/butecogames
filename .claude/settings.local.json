@@ -21,7 +21,10 @@
       "Bash(mongosh:*)",
       "Bash(npx tsc:*)",
       "Bash(pnpm --filter @butecogames/client run build)",
-      "Bash(pnpm --filter @butecogames/server exec tsc:*)"
+      "Bash(pnpm --filter @butecogames/server exec tsc:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(npx:*)"
     ]
   }
 }

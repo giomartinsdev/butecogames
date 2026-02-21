@@ -10,3 +10,13 @@ export const EVENT_CATEGORIES = {
   entertainment: "Entretenimento",
   other: "Outro",
 } as const;
+
+export const EVENT_CATEGORY_COLORS: Record<string, string> = {
+  ufc: "#CC0B09",
+  sports: "#C1F800",
+  esports: "#E65993",
+  entertainment: "#3EB3D7",
+  other: "#ACCAD3",
+};
+
+export const DEFAULT_DRAW_IMAGE = "/imgs/events/draw_default.svg";

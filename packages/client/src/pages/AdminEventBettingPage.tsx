@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -8,11 +8,12 @@ import type {
   EventStatus,
   EventBettingEvent,
 } from "@butecogames/shared";
-import { EVENT_CATEGORIES } from "@butecogames/shared";
+import { EVENT_CATEGORIES, EVENT_CATEGORY_COLORS } from "@butecogames/shared";
 import { apiClient } from "@/api/client.js";
 import { toast } from "sonner";
 import { formatCoins } from "@/lib/utils.js";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
+import { useSocketStore } from "@/stores/socketStore.js";
 import { DataTable } from "@/components/ui/DataTable.js";
 import {
   Play,
@@ -23,6 +24,9 @@ import {
   Check,
   X,
   Calendar,
+  ImagePlus,
+  RefreshCw,
+  Pencil,
 } from "lucide-react";
 
 const statusConfig: Record<
@@ -47,22 +51,114 @@ const statusConfig: Record<
   },
 };
 
+function EventEditForm({
+  event,
+  isPending,
+  onSave,
+  onCancel,
+}: {
+  event: EventBettingEvent;
+  isPending: boolean;
+  onSave: (data: { title: string; description: string; option1: string; option2: string }) => void;
+  onCancel: () => void;
+}) {
+  const [data, setData] = useState({
+    title: event.title,
+    description: event.description || "",
+    option1: event.option1,
+    option2: event.option2,
+  });
+
+  return (
+    <div className="flex flex-col gap-1.5 min-w-50">
+      <input
+        type="text"
+        value={data.title}
+        onChange={(e) => setData((prev) => ({ ...prev, title: e.target.value }))}
+        onBlur={(e) => {
+          const match = e.target.value.match(/^(.+?)\s+(?:vs\.?|x)\s+(.+)$/i);
+          if (match) {
+            setData((prev) => ({
+              ...prev,
+              option1: match[1].trim(),
+              option2: match[2].trim(),
+            }));
+          }
+        }}
+        placeholder="Título"
+        className="rounded bg-muted px-2 py-1 text-xs text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+      />
+      <input
+        type="text"
+        value={data.description}
+        onChange={(e) => setData((prev) => ({ ...prev, description: e.target.value }))}
+        placeholder="Descrição (opcional)"
+        className="rounded bg-muted px-2 py-1 text-xs text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+      />
+      <div className="grid grid-cols-2 gap-1">
+        <input
+          type="text"
+          value={data.option1}
+          onChange={(e) => setData((prev) => ({ ...prev, option1: e.target.value }))}
+          placeholder="Opção 1"
+          className="rounded bg-muted px-2 py-1 text-xs text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+        />
+        <input
+          type="text"
+          value={data.option2}
+          onChange={(e) => setData((prev) => ({ ...prev, option2: e.target.value }))}
+          placeholder="Opção 2"
+          className="rounded bg-muted px-2 py-1 text-xs text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+        />
+      </div>
+      <div className="flex gap-1">
+        <button
+          title="Salvar"
+          disabled={isPending}
+          onClick={() => {
+            if (!data.title || !data.option1 || !data.option2) {
+              toast.error("Título e opções são obrigatórios");
+              return;
+            }
+            onSave(data);
+          }}
+          className="rounded p-1.5 text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
+        >
+          <Check className="h-4 w-4" />
+        </button>
+        <button
+          title="Cancelar"
+          onClick={onCancel}
+          className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function AdminEventBettingPage() {
   const { isAdmin, isLoading: profileLoading } = useUserProfile();
   const queryClient = useQueryClient();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingStartTime, setEditingStartTime] = useState<string | null>(null);
   const [newStartTime, setNewStartTime] = useState("");
+  const [editingImages, setEditingImages] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState({ option1ImageUrl: "", option2ImageUrl: "" });
+  const [confirmResolve, setConfirmResolve] = useState<{ eventId: string; result: BetOption; label: string } | null>(null);
+  const [editingEvent, setEditingEvent] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     category: "ufc" as EventCategory,
     option1: "",
     option2: "",
+    option1ImageUrl: "",
+    option2ImageUrl: "",
     startTime: "",
     allowDraw: true,
   });
-
   const { data: eventsData, isLoading } = useQuery({
     queryKey: ["admin-event-betting-events"],
     queryFn: async () => {
@@ -71,6 +167,27 @@ export function AdminEventBettingPage() {
     },
     refetchInterval: 5000,
   });
+
+  const socket = useSocketStore((s) => s.socket);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.emit("event:join");
+
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-event-betting-events"] });
+    };
+
+    socket.on("event:odds_update", invalidate);
+    socket.on("event:events_update", invalidate);
+
+    return () => {
+      socket.emit("event:leave");
+      socket.off("event:odds_update", invalidate);
+      socket.off("event:events_update", invalidate);
+    };
+  }, [socket, queryClient]);
 
   const createEventMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -92,6 +209,8 @@ export function AdminEventBettingPage() {
         category: "ufc",
         option1: "",
         option2: "",
+        option1ImageUrl: "",
+        option2ImageUrl: "",
         startTime: "",
         allowDraw: true,
       });
@@ -171,6 +290,78 @@ export function AdminEventBettingPage() {
     },
   });
 
+  const updateImagesMutation = useMutation({
+    mutationFn: async ({
+      eventId,
+      option1ImageUrl,
+      option2ImageUrl,
+    }: {
+      eventId: string;
+      option1ImageUrl?: string;
+      option2ImageUrl?: string;
+    }) => {
+      const res = await apiClient.put(
+        `/api/event-betting/events/${eventId}/images`,
+        {
+          body: JSON.stringify({ option1ImageUrl, option2ImageUrl }),
+        },
+      );
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Erro ao atualizar imagens");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.errors?.length) {
+        toast.error(`Algumas imagens falharam: ${data.errors.join(", ")}`);
+      } else {
+        toast.success("Imagens atualizadas!");
+      }
+      setEditingImages(null);
+      setImageUrls({ option1ImageUrl: "", option2ImageUrl: "" });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-event-betting-events"],
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const updateEventMutation = useMutation({
+    mutationFn: async ({
+      eventId,
+      ...data
+    }: {
+      eventId: string;
+      title: string;
+      description: string;
+      option1: string;
+      option2: string;
+    }) => {
+      const res = await apiClient.put(
+        `/api/event-betting/events/${eventId}`,
+        { body: JSON.stringify(data) },
+      );
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Erro ao atualizar evento");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Evento atualizado!");
+      setEditingEvent(null);
+      queryClient.invalidateQueries({
+        queryKey: ["admin-event-betting-events"],
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleCreateEvent = (e: React.FormEvent) => {
     e.preventDefault();
     createEventMutation.mutate(formData);
@@ -192,9 +383,25 @@ export function AdminEventBettingPage() {
         header: "Evento",
         cell: ({ row }) => {
           const event = row.original;
+          const catColor = EVENT_CATEGORY_COLORS[event.category];
+
+          if (editingEvent === event._id) {
+            return (
+              <EventEditForm
+                event={event}
+                isPending={updateEventMutation.isPending}
+                onSave={(data) => updateEventMutation.mutate({ eventId: event._id, ...data })}
+                onCancel={() => setEditingEvent(null)}
+              />
+            );
+          }
+
           return (
-            <div>
-              <span className="text-[10px] text-muted-foreground">
+            <div className="group relative">
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: catColor }}
+              >
                 {EVENT_CATEGORIES[event.category]}
               </span>
               <p className="font-medium text-card-foreground">{event.title}</p>
@@ -209,6 +416,13 @@ export function AdminEventBettingPage() {
                   {new Date(event.startTime).toLocaleString("pt-BR")}
                 </p>
               )}
+              <button
+                title="Editar evento"
+                onClick={() => setEditingEvent(event._id)}
+                className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 rounded p-1 text-muted-foreground hover:bg-muted transition-all"
+              >
+                <Pencil className="h-3 w-3" />
+              </button>
             </div>
           );
         },
@@ -220,14 +434,24 @@ export function AdminEventBettingPage() {
           const event = row.original;
           return (
             <div className="space-y-1 text-xs">
-              <div className="flex justify-between gap-4">
-                <span className="text-card-foreground">{event.option1}</span>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-card-foreground flex items-center gap-1">
+                  {event.option1Image && (
+                    <img src={event.option1Image} alt="" className="w-4 h-4 rounded-full object-cover" />
+                  )}
+                  {event.option1}
+                </span>
                 <span className="text-muted-foreground">
                   {formatCoins(event.option1Pool)}
                 </span>
               </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-card-foreground">{event.option2}</span>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-card-foreground flex items-center gap-1">
+                  {event.option2Image && (
+                    <img src={event.option2Image} alt="" className="w-4 h-4 rounded-full object-cover" />
+                  )}
+                  {event.option2}
+                </span>
                 <span className="text-muted-foreground">
                   {formatCoins(event.option2Pool)}
                 </span>
@@ -272,6 +496,89 @@ export function AdminEventBettingPage() {
           const event = row.original;
           return (
             <div className="flex flex-col gap-1.5">
+              {/* Image edit inline form */}
+              {editingImages === event._id && (
+                <div className="flex flex-col gap-1 mb-1">
+                  <input
+                    type="url"
+                    value={imageUrls.option1ImageUrl}
+                    onChange={(e) => setImageUrls((prev) => ({ ...prev, option1ImageUrl: e.target.value }))}
+                    placeholder={`Img ${event.option1}`}
+                    className="rounded bg-muted px-2 py-1 text-xs text-card-foreground outline-none focus:ring-1 focus:ring-primary w-48"
+                  />
+                  <input
+                    type="url"
+                    value={imageUrls.option2ImageUrl}
+                    onChange={(e) => setImageUrls((prev) => ({ ...prev, option2ImageUrl: e.target.value }))}
+                    placeholder={`Img ${event.option2}`}
+                    className="rounded bg-muted px-2 py-1 text-xs text-card-foreground outline-none focus:ring-1 focus:ring-primary w-48"
+                  />
+                  <div className="flex gap-1">
+                    <button
+                      title="Salvar"
+                      disabled={updateImagesMutation.isPending}
+                      onClick={() => {
+                        if (!imageUrls.option1ImageUrl && !imageUrls.option2ImageUrl) {
+                          toast.error("Forneça pelo menos uma URL");
+                          return;
+                        }
+                        updateImagesMutation.mutate({
+                          eventId: event._id,
+                          option1ImageUrl: imageUrls.option1ImageUrl || undefined,
+                          option2ImageUrl: imageUrls.option2ImageUrl || undefined,
+                        });
+                      }}
+                      className="rounded p-1.5 text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                    <button
+                      title="Cancelar"
+                      onClick={() => {
+                        setEditingImages(null);
+                        setImageUrls({ option1ImageUrl: "", option2ImageUrl: "" });
+                      }}
+                      className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              {/* Image retry/edit button */}
+              {editingImages !== event._id && (
+                <div className="flex items-center gap-1">
+                  {(event.option1ImageUrl || event.option2ImageUrl) && (!event.option1Image || !event.option2Image) ? (
+                    <button
+                      title="Retry imagens com falha"
+                      onClick={() => {
+                        updateImagesMutation.mutate({
+                          eventId: event._id,
+                          option1ImageUrl: !event.option1Image && event.option1ImageUrl ? event.option1ImageUrl : undefined,
+                          option2ImageUrl: !event.option2Image && event.option2ImageUrl ? event.option2ImageUrl : undefined,
+                        });
+                      }}
+                      disabled={updateImagesMutation.isPending}
+                      className="rounded p-1.5 text-yellow-400 hover:bg-yellow-500/10 transition-colors disabled:opacity-50"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </button>
+                  ) : null}
+                  <button
+                    title="Editar imagens"
+                    onClick={() => {
+                      setEditingImages(event._id);
+                      setImageUrls({
+                        option1ImageUrl: event.option1ImageUrl || "",
+                        option2ImageUrl: event.option2ImageUrl || "",
+                      });
+                    }}
+                    className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+                  >
+                    <ImagePlus className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
               {event.status === "upcoming" && (
                 <div className="flex items-center gap-1">
                   <button
@@ -368,13 +675,46 @@ export function AdminEventBettingPage() {
                           <XCircle className="h-4 w-4" />
                         </button>
                       </div>
+                      {confirmResolve?.eventId === event._id ? (
+                        <div className="flex flex-col gap-1">
+                          <p className="text-xs text-yellow-400 font-medium">
+                            Confirmar vencedor: {confirmResolve.label}?
+                          </p>
+                          <div className="flex items-center gap-1">
+                            <button
+                              title="Confirmar"
+                              disabled={resolveEventMutation.isPending}
+                              onClick={() => {
+                                resolveEventMutation.mutate({
+                                  eventId: confirmResolve.eventId,
+                                  result: confirmResolve.result,
+                                });
+                                setConfirmResolve(null);
+                              }}
+                              className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
+                            >
+                              <Check className="h-3 w-3 inline mr-1" />
+                              Confirmar
+                            </button>
+                            <button
+                              title="Cancelar"
+                              onClick={() => setConfirmResolve(null)}
+                              className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                            >
+                              <X className="h-3 w-3 inline mr-1" />
+                              Cancelar
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
                       <div className="flex items-center gap-1">
                         <button
                           title={`Vencedor: ${event.option1}`}
                           onClick={() =>
-                            resolveEventMutation.mutate({
+                            setConfirmResolve({
                               eventId: event._id,
                               result: "option1",
+                              label: event.option1,
                             })
                           }
                           className="rounded px-2 py-1 text-xs font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
@@ -386,9 +726,10 @@ export function AdminEventBettingPage() {
                           <button
                             title="Empate"
                             onClick={() =>
-                              resolveEventMutation.mutate({
+                              setConfirmResolve({
                                 eventId: event._id,
                                 result: "draw",
+                                label: "Empate",
                               })
                             }
                             className="rounded px-2 py-1 text-xs font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
@@ -400,9 +741,10 @@ export function AdminEventBettingPage() {
                         <button
                           title={`Vencedor: ${event.option2}`}
                           onClick={() =>
-                            resolveEventMutation.mutate({
+                            setConfirmResolve({
                               eventId: event._id,
                               result: "option2",
+                              label: event.option2,
                             })
                           }
                           className="rounded px-2 py-1 text-xs font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
@@ -411,6 +753,7 @@ export function AdminEventBettingPage() {
                           {event.option2}
                         </button>
                       </div>
+                      )}
                     </div>
                   )}
                 </>
@@ -420,7 +763,7 @@ export function AdminEventBettingPage() {
         },
       },
     ],
-    [editingStartTime, newStartTime],
+    [editingStartTime, newStartTime, editingImages, imageUrls, updateImagesMutation.isPending, confirmResolve, resolveEventMutation.isPending, editingEvent, updateEventMutation.isPending],
   );
 
   const completedColumns = useMemo<ColumnDef<EventBettingEvent, any>[]>(
@@ -430,9 +773,13 @@ export function AdminEventBettingPage() {
         header: "Evento",
         cell: ({ row }) => {
           const event = row.original;
+          const catColor = EVENT_CATEGORY_COLORS[event.category];
           return (
             <div>
-              <span className="text-[10px] text-muted-foreground">
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: catColor }}
+              >
                 {EVENT_CATEGORIES[event.category]}
               </span>
               <p className="font-medium text-card-foreground">{event.title}</p>
@@ -452,14 +799,24 @@ export function AdminEventBettingPage() {
           const event = row.original;
           return (
             <div className="space-y-1 text-xs">
-              <div className="flex justify-between gap-4">
-                <span className="text-card-foreground">{event.option1}</span>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-card-foreground flex items-center gap-1">
+                  {event.option1Image && (
+                    <img src={event.option1Image} alt="" className="w-4 h-4 rounded-full object-cover" />
+                  )}
+                  {event.option1}
+                </span>
                 <span className="text-muted-foreground">
                   {formatCoins(event.option1Pool)}
                 </span>
               </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-card-foreground">{event.option2}</span>
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-card-foreground flex items-center gap-1">
+                  {event.option2Image && (
+                    <img src={event.option2Image} alt="" className="w-4 h-4 rounded-full object-cover" />
+                  )}
+                  {event.option2}
+                </span>
                 <span className="text-muted-foreground">
                   {formatCoins(event.option2Pool)}
                 </span>
@@ -698,29 +1055,61 @@ export function AdminEventBettingPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-muted-foreground">Opção 1</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.option1}
-                  onChange={(e) =>
-                    setFormData({ ...formData, option1: e.target.value })
-                  }
-                  className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
-                />
+              <div className="space-y-2">
+                <div>
+                  <label className="text-sm text-muted-foreground">Opção 1</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.option1}
+                    onChange={(e) =>
+                      setFormData({ ...formData, option1: e.target.value })
+                    }
+                    className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    URL da Imagem (opcional)
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.option1ImageUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, option1ImageUrl: e.target.value })
+                    }
+                    placeholder="https://exemplo.com/imagem.png"
+                    className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary text-sm"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm text-muted-foreground">Opção 2</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.option2}
-                  onChange={(e) =>
-                    setFormData({ ...formData, option2: e.target.value })
-                  }
-                  className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
-                />
+              <div className="space-y-2">
+                <div>
+                  <label className="text-sm text-muted-foreground">Opção 2</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.option2}
+                    onChange={(e) =>
+                      setFormData({ ...formData, option2: e.target.value })
+                    }
+                    className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    URL da Imagem (opcional)
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.option2ImageUrl}
+                    onChange={(e) =>
+                      setFormData({ ...formData, option2ImageUrl: e.target.value })
+                    }
+                    placeholder="https://exemplo.com/imagem.png"
+                    className="mt-1 w-full rounded-lg bg-muted px-3 py-2 text-card-foreground outline-none focus:ring-1 focus:ring-primary text-sm"
+                  />
+                </div>
               </div>
             </div>
 

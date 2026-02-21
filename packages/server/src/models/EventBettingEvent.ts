@@ -11,6 +11,10 @@ const eventBettingEventSchema = new Schema(
     },
     option1: { type: String, required: true },
     option2: { type: String, required: true },
+    option1Image: { type: String, default: null },
+    option2Image: { type: String, default: null },
+    option1ImageUrl: { type: String, default: null },
+    option2ImageUrl: { type: String, default: null },
     allowDraw: { type: Boolean, default: true },
     startTime: { type: Date, default: null },
     status: {

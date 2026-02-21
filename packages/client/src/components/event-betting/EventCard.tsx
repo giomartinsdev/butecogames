@@ -1,8 +1,7 @@
 import { useState } from "react";
 import type { EventBettingEvent, EventOdds, BetOption } from "@butecogames/shared";
-import { EVENT_CATEGORIES } from "@butecogames/shared";
-import { formatCoins } from "@/lib/utils.js";
-import { cn } from "@/lib/utils.js";
+import { EVENT_CATEGORIES, EVENT_CATEGORY_COLORS, DEFAULT_DRAW_IMAGE } from "@butecogames/shared";
+import { formatCoins, cn, getCategoryGradient, getCategoryBorderColor } from "@/lib/utils.js";
 import { BetAmountInput } from "@/components/ui/BetAmountInput.js";
 
 interface EventCardProps {
@@ -19,6 +18,10 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
 
   const isUpcoming = event.status === "upcoming";
   const canBet = isUpcoming && !disabled && (!event.startTime || new Date(event.startTime) > new Date());
+  const hasImages = !!(event.option1Image || event.option2Image);
+  const imgClass = event.category === "ufc"
+    ? "max-h-40 max-w-full rounded object-contain mb-2"
+    : "max-h-16 max-w-full rounded object-contain mb-2";
 
   const handlePlaceBet = (amount: number) => {
     if (!selectedOption || !canBet) return;
@@ -37,11 +40,20 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div
+      className="rounded-lg border p-4 space-y-3"
+      style={{
+        background: getCategoryGradient(event.category),
+        borderColor: getCategoryBorderColor(event.category),
+      }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-xs text-muted-foreground mb-1">
+          <div
+            className="text-xs font-medium mb-1"
+            style={{ color: EVENT_CATEGORY_COLORS[event.category] }}
+          >
             {EVENT_CATEGORIES[event.category]}
           </div>
           <h3 className="font-bold text-card-foreground">{event.title}</h3>
@@ -78,12 +90,19 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
           onClick={() => setSelectedOption("option1")}
           disabled={!canBet}
           className={cn(
-            "rounded-lg border p-3 transition-all disabled:opacity-40",
+            "rounded-lg border p-3 transition-all disabled:opacity-40 flex flex-col items-center justify-center",
             selectedOption === "option1"
               ? "border-primary bg-primary/10"
               : "border-border bg-muted hover:border-primary/50"
           )}
         >
+          {event.option1Image && (
+            <img
+              src={event.option1Image}
+              alt={event.option1}
+              className={imgClass}
+            />
+          )}
           <div className="text-sm font-medium text-card-foreground mb-1">
             {event.option1}
           </div>
@@ -100,12 +119,19 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
             onClick={() => setSelectedOption("draw")}
             disabled={!canBet}
             className={cn(
-              "rounded-lg border p-3 transition-all disabled:opacity-40",
+              "rounded-lg border p-3 transition-all disabled:opacity-40 flex flex-col items-center justify-center",
               selectedOption === "draw"
                 ? "border-primary bg-primary/10"
                 : "border-border bg-muted hover:border-primary/50"
             )}
           >
+            {hasImages && (
+              <img
+                src={DEFAULT_DRAW_IMAGE}
+                alt="Empate"
+                className={imgClass}
+              />
+            )}
             <div className="text-sm font-medium text-card-foreground mb-1">Empate</div>
             <div className="text-xs text-accent font-bold">
               {event.odds.draw?.toFixed(2)}x
@@ -120,12 +146,19 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
           onClick={() => setSelectedOption("option2")}
           disabled={!canBet}
           className={cn(
-            "rounded-lg border p-3 transition-all disabled:opacity-40",
+            "rounded-lg border p-3 transition-all disabled:opacity-40 flex flex-col items-center justify-center",
             selectedOption === "option2"
               ? "border-primary bg-primary/10"
               : "border-border bg-muted hover:border-primary/50"
           )}
         >
+          {event.option2Image && (
+            <img
+              src={event.option2Image}
+              alt={event.option2}
+              className={imgClass}
+            />
+          )}
           <div className="text-sm font-medium text-card-foreground mb-1">
             {event.option2}
           </div>

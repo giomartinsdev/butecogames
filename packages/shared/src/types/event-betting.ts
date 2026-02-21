@@ -16,6 +16,10 @@ export interface EventBettingEvent {
   category: EventCategory;
   option1: string;
   option2: string;
+  option1Image: string | null;
+  option2Image: string | null;
+  option1ImageUrl: string | null;
+  option2ImageUrl: string | null;
   allowDraw: boolean;
   startTime: Date | null;
   status: EventStatus;
