@@ -19,9 +19,13 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
   const isUpcoming = event.status === "upcoming";
   const canBet = isUpcoming && !disabled && (!event.startTime || new Date(event.startTime) > new Date());
   const hasImages = !!(event.option1Image || event.option2Image);
-  const imgClass = event.category === "ufc"
-    ? "max-h-40 max-w-full rounded object-contain mb-2"
+  const isUfc = event.category === "ufc";
+  const imgClass = isUfc
+    ? "w-full h-[100%] object-cover object-top"
     : "max-h-16 max-w-full rounded object-contain mb-2";
+  const imgWrapClass = isUfc
+    ? "max-h-40 w-full rounded overflow-hidden mb-2"
+    : "";
 
   const handlePlaceBet = (amount: number) => {
     if (!selectedOption || !canBet) return;
@@ -97,11 +101,13 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
           )}
         >
           {event.option1Image && (
-            <img
-              src={event.option1Image}
-              alt={event.option1}
-              className={imgClass}
-            />
+            imgWrapClass ? (
+              <div className={imgWrapClass}>
+                <img src={event.option1Image} alt={event.option1} className={imgClass} />
+              </div>
+            ) : (
+              <img src={event.option1Image} alt={event.option1} className={imgClass} />
+            )
           )}
           <div className="text-sm font-medium text-card-foreground mb-1">
             {event.option1}
@@ -129,7 +135,7 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
               <img
                 src={DEFAULT_DRAW_IMAGE}
                 alt="Empate"
-                className={imgClass}
+                className="max-h-16 max-w-full rounded object-contain mb-2"
               />
             )}
             <div className="text-sm font-medium text-card-foreground mb-1">Empate</div>
@@ -153,11 +159,13 @@ export function EventCard({ event, onPlaceBet, disabled = false, minBet, maxBet 
           )}
         >
           {event.option2Image && (
-            <img
-              src={event.option2Image}
-              alt={event.option2}
-              className={imgClass}
-            />
+            imgWrapClass ? (
+              <div className={imgWrapClass}>
+                <img src={event.option2Image} alt={event.option2} className={imgClass} />
+              </div>
+            ) : (
+              <img src={event.option2Image} alt={event.option2} className={imgClass} />
+            )
           )}
           <div className="text-sm font-medium text-card-foreground mb-1">
             {event.option2}

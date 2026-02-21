@@ -7,6 +7,7 @@ import type {
   BetOption,
   EventStatus,
   EventBettingEvent,
+  UfcEventData,
 } from "@butecogames/shared";
 import { EVENT_CATEGORIES, EVENT_CATEGORY_COLORS } from "@butecogames/shared";
 import { apiClient } from "@/api/client.js";
@@ -27,6 +28,8 @@ import {
   ImagePlus,
   RefreshCw,
   Pencil,
+  Download,
+  Loader2,
 } from "lucide-react";
 
 const statusConfig: Record<
@@ -148,6 +151,9 @@ export function AdminEventBettingPage() {
   const [imageUrls, setImageUrls] = useState({ option1ImageUrl: "", option2ImageUrl: "" });
   const [confirmResolve, setConfirmResolve] = useState<{ eventId: string; result: BetOption; label: string } | null>(null);
   const [editingEvent, setEditingEvent] = useState<string | null>(null);
+  const [showUfcImport, setShowUfcImport] = useState(false);
+  const [selectedFights, setSelectedFights] = useState<Set<number>>(new Set());
+  const [importingFights, setImportingFights] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -188,6 +194,84 @@ export function AdminEventBettingPage() {
       socket.off("event:events_update", invalidate);
     };
   }, [socket, queryClient]);
+
+  const {
+    data: ufcData,
+    isLoading: ufcLoading,
+    error: ufcError,
+    refetch: refetchUfc,
+  } = useQuery({
+    queryKey: ["ufc-upcoming"],
+    queryFn: async () => {
+      const res = await apiClient.get("/api/event-betting/ufc/upcoming");
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Erro ao buscar evento UFC");
+      }
+      return res.json() as Promise<UfcEventData>;
+    },
+    enabled: showUfcImport,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+  const toggleFight = (index: number) => {
+    setSelectedFights((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
+
+  const handleImportFights = async () => {
+    if (!ufcData?.fights) return;
+
+    const fightsToImport = ufcData.fights.filter((_, i) => selectedFights.has(i));
+    if (fightsToImport.length === 0) {
+      toast.error("Selecione pelo menos uma luta");
+      return;
+    }
+
+    setImportingFights(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const fight of fightsToImport) {
+      try {
+        const res = await apiClient.post("/api/event-betting/events", {
+          body: JSON.stringify({
+            title: `${fight.fighter1} vs ${fight.fighter2}`,
+            description: fight.weightClass,
+            category: "ufc" as EventCategory,
+            option1: fight.fighter1,
+            option2: fight.fighter2,
+            option1ImageUrl: fight.fighter1ImageUrl || "",
+            option2ImageUrl: fight.fighter2ImageUrl || "",
+            startTime: ufcData.eventDate || "",
+            allowDraw: true,
+          }),
+        });
+        if (res.ok) successCount++;
+        else errorCount++;
+      } catch {
+        errorCount++;
+      }
+    }
+
+    setImportingFights(false);
+
+    if (successCount > 0) {
+      toast.success(`${successCount} luta(s) importada(s) com sucesso!`);
+      queryClient.invalidateQueries({ queryKey: ["admin-event-betting-events"] });
+    }
+    if (errorCount > 0) {
+      toast.error(`${errorCount} luta(s) falharam ao importar`);
+    }
+
+    setShowUfcImport(false);
+    setSelectedFights(new Set());
+  };
 
   const createEventMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -1037,8 +1121,176 @@ export function AdminEventBettingPage() {
                     </option>
                   ))}
                 </select>
+                {formData.category === "ufc" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowUfcImport(!showUfcImport);
+                      setSelectedFights(new Set());
+                    }}
+                    className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors mt-1"
+                  >
+                    <Download className="h-3 w-3" />
+                    {showUfcImport ? "Fechar importação" : "Importar do UFC.com"}
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* UFC Import Panel */}
+            {showUfcImport && (
+              <div className="rounded-lg border border-primary/30 bg-muted/50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-card-foreground">
+                    Importar Lutas do UFC
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowUfcImport(false);
+                      setSelectedFights(new Set());
+                    }}
+                    className="text-muted-foreground hover:text-card-foreground transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {ufcLoading && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      Buscando evento...
+                    </span>
+                  </div>
+                )}
+
+                {ufcError && (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-destructive mb-2">
+                      {(ufcError as Error).message}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => refetchUfc()}
+                      className="text-xs text-primary hover:text-primary/80"
+                    >
+                      Tentar novamente
+                    </button>
+                  </div>
+                )}
+
+                {ufcData && (
+                  <>
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">
+                        {ufcData.eventName}
+                        {ufcData.eventDate && (
+                          <> — {new Date(ufcData.eventDate).toLocaleDateString("pt-BR")}</>
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedFights(
+                            new Set(ufcData.fights.map((_, i) => i)),
+                          )
+                        }
+                        className="text-xs text-primary hover:text-primary/80"
+                      >
+                        Selecionar todas
+                      </button>
+                      <span className="text-xs text-muted-foreground">|</span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFights(new Set())}
+                        className="text-xs text-muted-foreground hover:text-card-foreground"
+                      >
+                        Limpar seleção
+                      </button>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {selectedFights.size} selecionada(s)
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                      {ufcData.fights.map((fight, index) => (
+                        <label
+                          key={index}
+                          className={`flex items-center gap-3 rounded-lg border p-2 cursor-pointer transition-colors ${
+                            selectedFights.has(index)
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-muted-foreground"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedFights.has(index)}
+                            onChange={() => toggleFight(index)}
+                            className="h-4 w-4 rounded border-border bg-muted text-primary shrink-0"
+                          />
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {fight.fighter1ImageUrl && (
+                              <div className="w-10 h-12 rounded overflow-hidden bg-muted shrink-0">
+                                <img
+                                  src={fight.fighter1ImageUrl}
+                                  alt={fight.fighter1}
+                                  className="w-full h-[200%] object-cover object-top"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-card-foreground truncate">
+                                {fight.fighter1} vs {fight.fighter2}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {fight.weightClass || "—"}
+                                {fight.isMainCard && (
+                                  <span className="ml-1 text-primary">
+                                    • Card Principal
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                            {fight.fighter2ImageUrl && (
+                              <div className="w-10 h-12 rounded overflow-hidden bg-muted shrink-0">
+                                <img
+                                  src={fight.fighter2ImageUrl}
+                                  alt={fight.fighter2}
+                                  className="w-full h-[200%] object-cover object-top"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+
+                    {ufcData.fights.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        Nenhuma luta encontrada neste evento
+                      </p>
+                    )}
+
+                    {selectedFights.size > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleImportFights}
+                        disabled={importingFights}
+                        className="mt-3 w-full rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                      >
+                        {importingFights
+                          ? "Importando..."
+                          : `Importar ${selectedFights.size} luta(s)`}
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
 
             <div>
               <label className="text-sm text-muted-foreground">

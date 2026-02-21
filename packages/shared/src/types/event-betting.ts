@@ -49,3 +49,19 @@ export interface EventOdds {
   option2: number;
   draw?: number;
 }
+
+export interface UfcFight {
+  fighter1: string;
+  fighter2: string;
+  fighter1ImageUrl: string | null;
+  fighter2ImageUrl: string | null;
+  weightClass: string;
+  isMainCard: boolean;
+}
+
+export interface UfcEventData {
+  eventName: string;
+  eventUrl: string;
+  eventDate: string | null;
+  fights: UfcFight[];
+}

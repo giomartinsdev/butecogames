@@ -11,6 +11,7 @@ import {
 } from "../services/event-betting.js";
 import { downloadEventImage } from "../services/image-download.js";
 import { logAudit } from "../services/audit.js";
+import { getUpcomingUfcEvent } from "../services/ufc-scraper.js";
 
 const router = Router();
 
@@ -27,6 +28,22 @@ router.get("/events", requireAuth, async (req, res) => {
     res.json({ events });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/event-betting/ufc/upcoming
+ * Scrape next upcoming UFC event fight card (admin only)
+ */
+router.get("/ufc/upcoming", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const data = await getUpcomingUfcEvent();
+    res.json(data);
+  } catch (error: any) {
+    console.error("[UFC Scraper] Error:", error);
+    res.status(502).json({
+      error: `Erro ao buscar evento UFC: ${error.message}`,
+    });
   }
 });
 

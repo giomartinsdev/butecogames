@@ -22,6 +22,8 @@ export type {
   EventBettingEvent,
   EventBettingBet,
   EventOdds,
+  UfcFight,
+  UfcEventData,
 } from "./types/event-betting.js";
 export type {
   RouletteSettings,
