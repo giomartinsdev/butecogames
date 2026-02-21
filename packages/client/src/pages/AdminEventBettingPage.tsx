@@ -640,9 +640,10 @@ export function AdminEventBettingPage() {
                           option2ImageUrl: imageUrls.option2ImageUrl || undefined,
                         });
                       }}
-                      className="rounded p-1.5 text-green-400 hover:bg-green-500/10 transition-colors disabled:opacity-50"
+                      className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors disabled:opacity-50"
                     >
-                      <Check className="h-4 w-4" />
+                      <Check className="h-3 w-3 inline mr-1" />
+                      Confirmar
                     </button>
                     <button
                       title="Cancelar"
@@ -650,9 +651,10 @@ export function AdminEventBettingPage() {
                         setEditingImages(null);
                         setImageUrls({ option1ImageUrl: "", option2ImageUrl: "" });
                       }}
-                      className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+                      className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-3 w-3 inline mr-1" />
+                      Cancelar
                     </button>
                   </div>
                 </div>
@@ -774,9 +776,10 @@ export function AdminEventBettingPage() {
                               startTime: newStartTime || undefined,
                             });
                           }}
-                          className="rounded p-1.5 text-green-400 hover:bg-green-500/10 transition-colors"
+                          className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
                         >
-                          <Check className="h-4 w-4" />
+                          <Check className="h-3 w-3 inline mr-1" />
+                          Confirmar
                         </button>
                         <button
                           title="Cancelar"
@@ -784,9 +787,10 @@ export function AdminEventBettingPage() {
                             setEditingStartTime(null);
                             setNewStartTime("");
                           }}
-                          className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+                          className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-3 w-3 inline mr-1" />
+                          Cancelar
                         </button>
                       </div>
                     </div>
@@ -1132,9 +1136,10 @@ export function AdminEventBettingPage() {
                         startTime: newStartTime,
                       });
                     }}
-                    className="rounded p-1.5 text-green-400 hover:bg-green-500/10 transition-colors"
+                    className="rounded px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
                   >
-                    <Check className="h-4 w-4" />
+                    <Check className="h-3 w-3 inline mr-1" />
+                    Confirmar
                   </button>
                   <button
                     title="Cancelar"
@@ -1142,9 +1147,10 @@ export function AdminEventBettingPage() {
                       setEditingStartTime(null);
                       setNewStartTime("");
                     }}
-                    className="rounded p-1.5 text-muted-foreground hover:bg-muted transition-colors"
+                    className="rounded px-2 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3 w-3 inline mr-1" />
+                    Cancelar
                   </button>
                 </div>
               </div>
