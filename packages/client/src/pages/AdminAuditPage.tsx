@@ -16,6 +16,7 @@ const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   "event.resolve": { label: "Evento resolvido", color: "bg-purple-500/20 text-purple-400" },
   "notification.create": { label: "Notificação", color: "bg-cyan-500/20 text-cyan-400" },
   "notification.resend": { label: "Reenvio", color: "bg-teal-500/20 text-teal-400" },
+  "xp.awarded": { label: "XP concedido", color: "bg-emerald-500/20 text-emerald-400" },
 };
 
 const ACTION_OPTIONS = [
@@ -28,6 +29,7 @@ const ACTION_OPTIONS = [
   { value: "event.resolve", label: "Evento resolvido" },
   { value: "notification.create", label: "Notificação" },
   { value: "notification.resend", label: "Reenvio" },
+  { value: "xp.awarded", label: "XP concedido" },
 ];
 
 const PAGE_SIZES = [25, 50, 100];

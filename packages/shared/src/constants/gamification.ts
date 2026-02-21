@@ -14,11 +14,9 @@ export const XP_CONFIG: XpConfig = {
   dailyReward: 15,
   challengeCompleted: 25,
   transferSent: 5,
-  chatMessage: 1,
   politicalCompassCompleted: 50,
 };
 
-export const MAX_CHAT_XP_PER_DAY = 10;
 
 /**
  * XP required to go from `level` to `level + 1`.
@@ -145,7 +143,7 @@ export const CHALLENGE_TEMPLATES: ChallengeTemplate[] = [
   { id: "daily_claim", type: "daily_reward_claim", period: "daily", name: "Presença Garantida", description: "Colete a recompensa diária", target: 1, rewardCoins: 50, rewardXp: 15, icon: "Gift" },
   { id: "daily_transfer", type: "transfer_send", period: "daily", name: "Boa Ação do Dia", description: "Envie uma transferência hoje", target: 1, rewardCoins: 75, rewardXp: 15, icon: "HandCoins" },
   { id: "daily_spend_500", type: "spend_amount", period: "daily", name: "Gastão do Dia", description: "Aposte um total de 500 coins hoje", target: 500, rewardCoins: 150, rewardXp: 25, icon: "Banknote" },
-  { id: "daily_chat_5", type: "chat_messages", period: "daily", name: "Tagarela", description: "Envie 5 mensagens no chat hoje", target: 5, rewardCoins: 50, rewardXp: 10, icon: "MessageCircle" },
+
 
   // Weekly (5)
   { id: "weekly_bet_20", type: "bet_count", period: "weekly", name: "Maratonista", description: "Faça 20 apostas esta semana", target: 20, rewardCoins: 500, rewardXp: 100, icon: "Flame" },

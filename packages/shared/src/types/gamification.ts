@@ -7,7 +7,7 @@ export interface XpConfig {
   dailyReward: number;
   challengeCompleted: number;
   transferSent: number;
-  chatMessage: number;
+
   politicalCompassCompleted: number;
 }
 
@@ -51,8 +51,7 @@ export type ChallengeType =
   | "transfer_send"
   | "spend_amount"
   | "win_amount"
-  | "play_all_games"
-  | "chat_messages";
+  | "play_all_games";
 
 export type ChallengePeriod = "daily" | "weekly";
 
@@ -93,7 +92,6 @@ export type GamificationAction =
   | "bet_won"
   | "daily_reward"
   | "transfer_sent"
-  | "chat_message"
   | "challenge_completed"
   | "political_compass_completed";
 

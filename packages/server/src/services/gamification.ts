@@ -5,7 +5,7 @@ import {
   DAILY_CHALLENGES_COUNT,
   WEEKLY_CHALLENGES_COUNT,
   XP_CONFIG,
-  MAX_CHAT_XP_PER_DAY,
+
   calculateWinXp,
   levelFromXp,
 } from "@butecogames/shared";
@@ -15,9 +15,8 @@ import { UserChallengeProgress, type IUserChallengeProgress } from "../models/Us
 import { creditWallet } from "./wallet.js";
 import { getIO } from "../socket/io-store.js";
 import { invalidateLeaderboardCache } from "../routes/leaderboard.js";
+import { logAudit } from "./audit.js";
 
-// Track chat XP per user per day to enforce the cap
-const chatXpTracker = new Map<string, { date: string; count: number }>();
 
 /**
  * Main entry point. Called by game engines after any action.
@@ -36,9 +35,9 @@ export async function processAction(
     await incrementStats(profile, action, meta);
 
     // 2. Award XP
-    const xpAmount = getXpForAction(action, meta, userId);
+    const xpAmount = getXpForAction(action, meta);
     if (xpAmount > 0) {
-      await awardXp(userId, profile, xpAmount);
+      await awardXp(userId, profile, xpAmount, action, meta);
     }
 
     // 3. Check achievements
@@ -104,7 +103,6 @@ async function incrementStats(
 function getXpForAction(
   action: GamificationAction,
   meta?: GamificationActionMeta,
-  userId?: string,
 ): number {
   switch (action) {
     case "bet_placed":
@@ -122,18 +120,6 @@ function getXpForAction(
       return XP_CONFIG.challengeCompleted;
     case "political_compass_completed":
       return XP_CONFIG.politicalCompassCompleted;
-    case "chat_message": {
-      if (!userId) return 0;
-      const today = new Date().toISOString().slice(0, 10);
-      const tracker = chatXpTracker.get(userId);
-      if (tracker && tracker.date === today) {
-        if (tracker.count >= MAX_CHAT_XP_PER_DAY) return 0;
-        tracker.count++;
-      } else {
-        chatXpTracker.set(userId, { date: today, count: 1 });
-      }
-      return XP_CONFIG.chatMessage;
-    }
     default:
       return 0;
   }
@@ -143,6 +129,8 @@ async function awardXp(
   userId: string,
   profile: IUserProfile,
   amount: number,
+  action: GamificationAction,
+  meta?: GamificationActionMeta,
 ): Promise<void> {
   const oldLevel = profile.level;
   const newXp = profile.xp + amount;
@@ -156,6 +144,22 @@ async function awardXp(
 
   profile.xp = newXp;
   profile.level = newLevel;
+
+  // Audit log
+  logAudit({
+    adminId: "system",
+    adminName: "Sistema",
+    action: "xp.awarded",
+    targetId: userId,
+    targetLabel: profile.displayName,
+    newData: {
+      reason: action,
+      xp: amount,
+      totalXp: newXp,
+      level: newLevel,
+      ...(meta?.gameId ? { gameId: meta.gameId } : {}),
+    },
+  });
 
   try {
     const io = getIO();
@@ -486,8 +490,6 @@ function getChallengeIncrement(
       // The challenge target is 3 (all games). We increment on bet_placed with a new gameId.
       // For simplicity, count unique games from UserProfile.gamesPlayed
       return action === "bet_placed" ? 1 : 0;
-    case "chat_messages":
-      return action === "chat_message" ? 1 : 0;
     default:
       return 0;
   }

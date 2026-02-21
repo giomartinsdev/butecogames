@@ -8,7 +8,8 @@ export type AuditAction =
   | "event.status_change"
   | "event.resolve"
   | "notification.create"
-  | "notification.resend";
+  | "notification.resend"
+  | "xp.awarded";
 
 export interface IAuditLog extends Document {
   adminId: string;
@@ -37,6 +38,7 @@ const auditLogSchema = new Schema<IAuditLog>(
         "event.resolve",
         "notification.create",
         "notification.resend",
+        "xp.awarded",
       ],
     },
     targetId: { type: String, default: null },

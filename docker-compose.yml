@@ -6,7 +6,21 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - butecogames
     restart: unless-stopped
+
+  valkey:
+    container_name: db-valkey
+    image: valkey/valkey
+    ports:
+      - 6379:6379
+    command: valkey-server --save 20 1 --loglevel warning --requirepass "123456"
+    volumes:
+      - valkey_data:/data
+    networks:
+      - butecogames
+    restart: always
 
   butecogames-server:
     build:
@@ -21,6 +35,8 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/butecogames
     depends_on:
       - mongodb
+    networks:
+      - butecogames
     restart: unless-stopped
 
   butecogames-client:
@@ -35,7 +51,14 @@ services:
       - VITE_WS_URL=${VITE_WS_URL:-http://localhost:3001}
     depends_on:
       - butecogames-server
+    networks:
+      - butecogames
     restart: unless-stopped
 
 volumes:
   mongodb_data:
+  valkey_data:
+
+networks:
+  butecogames:
+

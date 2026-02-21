@@ -13,10 +13,10 @@
     "build:client": "pnpm --filter @butecogames/client run build",
     "lint": "pnpm -r run lint",
     "typecheck": "pnpm -r run typecheck",
+    "docker:buildx:setup": "docker buildx create --name multiplatform --driver docker-container --use 2>/dev/null || docker buildx use multiplatform",
     "docker:build": "docker build -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile . && docker build -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile .",
     "docker:build:server": "docker build -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile .",
     "docker:build:client": "docker build -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile .",
-    "docker:buildx:setup": "docker buildx create --name multiplatform --driver docker-container --use 2>/dev/null || docker buildx use multiplatform",
     "docker:push": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile --push . && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push .",
     "docker:push:server": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile --push .",
     "docker:push:client": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push ."

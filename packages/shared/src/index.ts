@@ -108,7 +108,6 @@ export {
 } from "./constants/card-duel.js";
 export {
   XP_CONFIG,
-  MAX_CHAT_XP_PER_DAY,
   xpForLevel,
   cumulativeXpForLevel,
   levelFromXp,
