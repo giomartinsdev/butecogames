@@ -1364,7 +1364,7 @@ export function AdminEventBettingPage() {
                     </div>
 
                     <div className="space-y-2 max-h-80 overflow-y-auto">
-                      {ufcData.fights.map((fight, index) => (
+                      {ufcData.fights.map((fight, index) => ({ fight, index })).reverse().map(({ fight, index }) => (
                         <label
                           key={index}
                           className={`flex items-center gap-3 rounded-lg border p-2 cursor-pointer transition-colors ${

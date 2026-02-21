@@ -9,6 +9,8 @@ import { apiClient } from "@/api/client.js";
 import {
   DEFAULT_EVENT_BETTING_MIN_BET,
   DEFAULT_EVENT_BETTING_MAX_BET,
+  DEFAULT_EVENT_BETTING_HOUSE_EDGE,
+  DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT,
 } from "@butecogames/shared";
 
 type FilterTab = "upcoming" | "in_progress" | "completed";
@@ -19,6 +21,8 @@ export function EventBettingPage() {
   const { data: settings } = useSettings();
   const minBet = settings?.eventBetting?.minBet ?? DEFAULT_EVENT_BETTING_MIN_BET;
   const maxBet = settings?.eventBetting?.maxBet ?? DEFAULT_EVENT_BETTING_MAX_BET;
+  const houseEdge = settings?.eventBetting?.houseEdge ?? DEFAULT_EVENT_BETTING_HOUSE_EDGE;
+  const maxBetsPerEvent = settings?.eventBetting?.maxBetsPerEvent ?? DEFAULT_EVENT_BETTING_MAX_BETS_PER_EVENT;
 
   // Fetch user's bets
   const { data: myBetsData } = useQuery({
@@ -119,8 +123,8 @@ export function EventBettingPage() {
               <li>• As odds são dinâmicas e mudam conforme as apostas</li>
               <li>• Quanto mais pessoas apostam em uma opção, menor a odd</li>
               <li>• O pool total é dividido entre os vencedores</li>
-              <li>• Taxa da casa: 5%</li>
-              <li>• Máximo de 3 apostas por evento</li>
+              <li>• Taxa da casa: {Math.round(houseEdge * 100)}%</li>
+              <li>• Máximo de {maxBetsPerEvent} apostas por evento</li>
             </ul>
           </div>
         </div>
