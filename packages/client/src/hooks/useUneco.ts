@@ -138,7 +138,7 @@ export function useUneco(userId?: string) {
         if (currentPlayerIndex === myIndex) {
           const variants = ["uneco_sua_vez_1", "uneco_sua_vez_2", "uneco_sua_vez_3"] as const;
           const pick = variants[Math.floor(Math.random() * variants.length)];
-          useSoundStore.getState().playSound(`uneco/${pick}`);
+          useSoundStore.getState().playSound(pick);
         } else {
           // Close color picker if turn moved away from us
           setColorPickerOpen(false);
