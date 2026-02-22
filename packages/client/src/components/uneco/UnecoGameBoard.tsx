@@ -145,16 +145,18 @@ export function UnecoGameBoard({
         </div>
       )}
 
-      {/* Forfeit button */}
-      <div className="flex justify-center pt-2">
-        <button
-          type="button"
-          onClick={() => setShowForfeitModal(true)}
-          className="rounded-lg bg-destructive/10 px-4 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
-        >
-          Desistir
-        </button>
-      </div>
+      {/* Forfeit button (players only, not spectators) */}
+      {myPlayer && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setShowForfeitModal(true)}
+            className="rounded-lg bg-destructive/10 px-4 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
+          >
+            Desistir
+          </button>
+        </div>
+      )}
 
       {/* Forfeit confirmation modal */}
       {showForfeitModal && (

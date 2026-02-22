@@ -26,7 +26,20 @@ export function UnecoPage() {
     sayUneco,
     forfeitGame,
     spectate,
+    stopSpectating,
   } = useUneco(user?.id);
+
+  const isSpectator = gameState
+    ? !gameState.players.some((p) => p.userId === user?.id)
+    : false;
+
+  const handleLeaveRoom = useCallback(() => {
+    if (isSpectator) {
+      stopSpectating();
+    } else {
+      leaveRoom();
+    }
+  }, [isSpectator, stopSpectating, leaveRoom]);
 
   const handleOpenColorPicker = useCallback(
     (cardId: string) => {
@@ -74,7 +87,7 @@ export function UnecoPage() {
           gameState={gameState}
           userId={user?.id ?? ""}
           colorPickerOpen={colorPickerOpen}
-          onLeaveRoom={leaveRoom}
+          onLeaveRoom={handleLeaveRoom}
           onSetReady={setReady}
           onStartGame={startGame}
           onPlayCard={playCard}
