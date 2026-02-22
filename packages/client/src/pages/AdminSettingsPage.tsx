@@ -39,6 +39,16 @@ export function AdminSettingsPage() {
     awayTimeout: 180,
   });
 
+  const [uno, setUno] = useState({
+    minPlayers: 2,
+    maxPlayers: 10,
+    turnTimeout: 30,
+    minBet: 10,
+    maxBet: 10000,
+    unoCatchWindow: 5,
+    disconnectGrace: 60,
+  });
+
   const [politicalCompass, setPoliticalCompass] = useState({
     retestCooldownDays: 180,
   });
@@ -54,6 +64,9 @@ export function AdminSettingsPage() {
       }
       if (settings.general) {
         setGeneral(settings.general);
+      }
+      if (settings.uno) {
+        setUno(settings.uno);
       }
       if (settings.politicalCompass) {
         setPoliticalCompass(settings.politicalCompass);
@@ -75,7 +88,7 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette, eventBetting, cardDuel, general, politicalCompass },
+      { roulette, eventBetting, cardDuel, uno, general, politicalCompass },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
@@ -474,6 +487,155 @@ export function AdminSettingsPage() {
                 setCardDuel((prev) => ({
                   ...prev,
                   botBetAmount: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
+        <h2 className="text-xl font-bold text-card-foreground mb-4">
+          UNO
+        </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Configure os limites e tempos do jogo de UNO.
+        </p>
+
+        <h3 className="text-sm font-semibold text-card-foreground mb-2">Jogadores</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Mínimo de jogadores
+            </label>
+            <input
+              type="number"
+              min={2}
+              max={10}
+              value={uno.minPlayers}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  minPlayers: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Máximo de jogadores
+            </label>
+            <input
+              type="number"
+              min={2}
+              max={10}
+              value={uno.maxPlayers}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  maxPlayers: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+
+        <h3 className="text-sm font-semibold text-card-foreground mb-2">Limites de apostas</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta mínima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={uno.minBet}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  minBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Aposta máxima (coins)
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={uno.maxBet}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  maxBet: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+        </div>
+
+        <h3 className="text-sm font-semibold text-card-foreground mb-2">Tempos</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tempo por turno (segundos)
+            </label>
+            <input
+              type="number"
+              min={10}
+              max={120}
+              value={uno.turnTimeout}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  turnTimeout: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Janela para pegar UNO (segundos)
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={30}
+              value={uno.unoCatchWindow}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  unoCatchWindow: parseInt(e.target.value, 10) || 0,
+                }))
+              }
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-card-foreground mb-1">
+              Tempo de reconexão (segundos)
+            </label>
+            <input
+              type="number"
+              min={10}
+              max={300}
+              value={uno.disconnectGrace}
+              onChange={(e) =>
+                setUno((prev) => ({
+                  ...prev,
+                  disconnectGrace: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"

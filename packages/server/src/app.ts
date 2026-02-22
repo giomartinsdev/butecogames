@@ -12,6 +12,7 @@ import settingsRouter from "./routes/settings.js";
 import adminUsersRouter from "./routes/admin-users.js";
 import userSettingsRouter from "./routes/user-settings.js";
 import cardDuelRouter from "./routes/card-duel.js";
+import unoRouter from "./routes/uno.js";
 import gamificationRouter from "./routes/gamification.js";
 import notificationsRouter from "./routes/notifications.js";
 import userNotificationsRouter from "./routes/user-notifications.js";
@@ -45,6 +46,7 @@ export function createApp() {
   app.use("/api/event-betting", eventBettingRouter);
   app.use("/api/settings", settingsRouter);
   app.use("/api/card-duel", cardDuelRouter);
+  app.use("/api/uno", unoRouter);
   app.use("/api/admin", adminUsersRouter);
   app.use("/api/gamification", gamificationRouter);
   app.use("/api/admin/notifications", notificationsRouter);

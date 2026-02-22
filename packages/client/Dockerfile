@@ -28,8 +28,8 @@ FROM nginx:alpine
 # Copy built static files
 COPY --from=builder /app/packages/client/dist /usr/share/nginx/html
 
-# Copy nginx config and entrypoint
-COPY packages/client/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx config template and entrypoint
+COPY packages/client/nginx.conf.template /etc/nginx/templates/nginx.conf.template
 COPY packages/client/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 

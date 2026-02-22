@@ -19,7 +19,13 @@
     "docker:build:client": "docker build -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile .",
     "docker:push": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile --push . && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push .",
     "docker:push:server": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:latest -f packages/server/Dockerfile --push .",
-    "docker:push:client": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push ."
+    "docker:push:client": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:latest -f packages/client/Dockerfile --push .",
+    "docker:build-staging": "docker build -t brunofunnie/butecogames-server:staging -f packages/server/Dockerfile . && docker build -t brunofunnie/butecogames-client:staging -f packages/client/Dockerfile .",
+    "docker:build-staging:server": "docker build -t brunofunnie/butecogames-server:staging -f packages/server/Dockerfile .",
+    "docker:build-staging:client": "docker build -t brunofunnie/butecogames-client:staging -f packages/client/Dockerfile .",
+    "docker:push-staging": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:staging -f packages/server/Dockerfile --push . && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:staging -f packages/client/Dockerfile --push .",
+    "docker:push-staging:server": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-server:staging -f packages/server/Dockerfile --push .",
+    "docker:push-staging:client": "pnpm docker:buildx:setup && docker buildx build --platform linux/amd64,linux/arm64 -t brunofunnie/butecogames-client:staging -f packages/client/Dockerfile --push ."
   },
   "engines": {
     "node": ">=20.0.0",

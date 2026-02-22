@@ -9,6 +9,14 @@ import type {
   CardDuelRoomState,
   CardDuelRoundData,
 } from "./card-duel.js";
+import type {
+  UnoCard,
+  UnoCardColor,
+  UnoDirection,
+  UnoGameState,
+  UnoPlayer,
+  UnoRoomInfo,
+} from "./uno.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
@@ -37,6 +45,19 @@ export interface ClientToServerEvents {
   "card-duel:reconnect": (data: { roomId: string }) => void;
   "card-duel:play_bot": (data: { gameType: CardDuelGameType }) => void;
   "card-duel:cancel_search": () => void;
+  "uno:join_lobby": () => void;
+  "uno:leave_lobby": () => void;
+  "uno:create_room": (data: { betAmount: number; maxPlayers: number }) => void;
+  "uno:join_room": (data: { roomId: string }) => void;
+  "uno:leave_room": () => void;
+  "uno:player_ready": () => void;
+  "uno:start_game": () => void;
+  "uno:play_card": (data: { cardId: string; chosenColor?: UnoCardColor }) => void;
+  "uno:draw_card": () => void;
+  "uno:say_uno": () => void;
+  "uno:catch_uno": (data: { targetUserId: string }) => void;
+  "uno:spectate": (data: { roomId: string }) => void;
+  "uno:stop_spectating": () => void;
   "presence:update_status": (data: { status: PresenceStatus }) => void;
   "presence:update_page": (data: { page: string }) => void;
 }
@@ -155,4 +176,55 @@ export interface ServerToClientEvents {
     payout: number;
   }) => void;
   "card-duel:error": (data: { message: string }) => void;
+  "uno:lobby_state": (data: { rooms: UnoRoomInfo[] }) => void;
+  "uno:lobby_update": (data: { rooms: UnoRoomInfo[] }) => void;
+  "uno:room_joined": (data: { gameState: UnoGameState }) => void;
+  "uno:game_state": (data: { gameState: UnoGameState }) => void;
+  "uno:player_joined": (data: { player: UnoPlayer }) => void;
+  "uno:player_left": (data: { userId: string }) => void;
+  "uno:player_ready": (data: { userId: string }) => void;
+  "uno:game_started": (data: { gameState: UnoGameState }) => void;
+  "uno:card_played": (data: {
+    userId: string;
+    card: UnoCard;
+    chosenColor?: UnoCardColor;
+    newCurrentPlayer: number;
+    direction: UnoDirection;
+    cardCount: number;
+  }) => void;
+  "uno:card_drawn": (data: {
+    userId: string;
+    cardCount: number;
+    card?: UnoCard;
+  }) => void;
+  "uno:turn_changed": (data: {
+    currentPlayerIndex: number;
+    timeRemaining: number;
+    drawStack: number;
+  }) => void;
+  "uno:uno_said": (data: { userId: string }) => void;
+  "uno:uno_caught": (data: {
+    catcherId: string;
+    targetId: string;
+    penaltyCards: number;
+  }) => void;
+  "uno:uno_catchable": (data: { userId: string }) => void;
+  "uno:round_ended": (data: {
+    winnerId: string;
+    winnerName: string;
+    payout: number;
+    players: Array<{ userId: string; displayName: string; cardsLeft: number }>;
+  }) => void;
+  "uno:room_closed": (data: { reason: string }) => void;
+  "uno:player_disconnected": (data: {
+    userId: string;
+    countdown: number;
+  }) => void;
+  "uno:player_reconnected": (data: { userId: string }) => void;
+  "uno:uno_penalty": (data: {
+    userId: string;
+    penaltyCards: number;
+  }) => void;
+  "uno:spectator_count": (data: { count: number }) => void;
+  "uno:error": (data: { message: string }) => void;
 }

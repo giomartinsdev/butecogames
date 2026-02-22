@@ -29,6 +29,7 @@ export type {
   RouletteSettings,
   EventBettingSettings,
   CardDuelSettings,
+  UnoSettings,
   GeneralSettings,
   PoliticalCompassSettings,
   AppSettings,
@@ -60,6 +61,19 @@ export type {
   CardDuelRoomState,
   CardDuelMatchHistory,
 } from "./types/card-duel.js";
+export type {
+  UnoCardColor,
+  WildColor,
+  AnyCardColor,
+  UnoCardValue,
+  UnoCard,
+  UnoPlayer,
+  UnoDirection,
+  UnoRoomStatus,
+  UnoRoomInfo,
+  UnoGameState,
+  UnoMatchHistory,
+} from "./types/uno.js";
 
 // Constants
 export {
@@ -123,6 +137,22 @@ export {
   WEEKLY_CHALLENGES_COUNT,
 } from "./constants/gamification.js";
 
+export {
+  UNO_COLORS,
+  UNO_NUMBER_VALUES,
+  UNO_ACTION_VALUES,
+  UNO_WILD_VALUES,
+  UNO_CARD_POINTS,
+  UNO_COLOR_HEX,
+  DEFAULT_UNO_MIN_PLAYERS,
+  DEFAULT_UNO_MAX_PLAYERS,
+  DEFAULT_UNO_TURN_TIMEOUT,
+  DEFAULT_UNO_MIN_BET,
+  DEFAULT_UNO_MAX_BET,
+  DEFAULT_UNO_CATCH_WINDOW,
+  DEFAULT_UNO_DISCONNECT_GRACE,
+  DEFAULT_UNO_START_CARDS,
+} from "./constants/uno.js";
 export {
   DEFAULT_AWAY_TIMEOUT,
   getRouteLabel,

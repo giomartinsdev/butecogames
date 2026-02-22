@@ -33,7 +33,18 @@ export const GAMES: GameInfo[] = [
     available: true,
     requiresRoom: false,
     thumbnail: "/imgs/games/event_betting.png",
-  }
+  },
+  {
+    id: "uno",
+    name: "UNO",
+    description:
+      "Jogue UNO com seus amigos! Combine cores e números para ficar sem cartas primeiro.",
+    minPlayers: 2,
+    maxPlayers: 10,
+    available: true,
+    requiresRoom: true,
+    thumbnail: "/imgs/games/uno.png",
+  },
 ];
 
 export const INITIAL_BALANCE = 1000;

@@ -5,9 +5,11 @@ import { socketAuthMiddleware } from "./middleware.js";
 import { registerRouletteHandlers } from "./roulette.js";
 import { registerChatHandlers } from "./chat.js";
 import { registerCardDuelHandlers } from "./card-duel.js";
+import { registerUnoHandlers } from "./uno.js";
 import { setupEventBettingHandlers } from "./event-betting.js";
 import { initRouletteEngine } from "../services/roulette.js";
 import { initCardDuelEngine } from "../services/card-duel.js";
+import { initUnoEngine } from "../services/uno.js";
 import { setEventBettingIO } from "../services/event-betting.js";
 import { env } from "../config/env.js";
 import { setIO } from "./io-store.js";
@@ -62,6 +64,7 @@ export async function setupSocket(httpServer: http.Server) {
     registerRouletteHandlers(io, socket);
     registerChatHandlers(io, socket);
     registerCardDuelHandlers(io, socket);
+    registerUnoHandlers(io, socket);
 
     socket.on("disconnect", () => {
       console.log(`[Socket] Disconnected: ${displayName}`);
@@ -75,6 +78,7 @@ export async function setupSocket(httpServer: http.Server) {
   // Initialize game engines
   await initRouletteEngine(io);
   await initCardDuelEngine(io);
+  await initUnoEngine(io);
 
   return io;
 }

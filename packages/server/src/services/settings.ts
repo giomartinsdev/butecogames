@@ -14,6 +14,13 @@ import {
   CARD_DUEL_DISCONNECT_GRACE,
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
+  DEFAULT_UNO_MIN_PLAYERS,
+  DEFAULT_UNO_MAX_PLAYERS,
+  DEFAULT_UNO_TURN_TIMEOUT,
+  DEFAULT_UNO_MIN_BET,
+  DEFAULT_UNO_MAX_BET,
+  DEFAULT_UNO_CATCH_WINDOW,
+  DEFAULT_UNO_DISCONNECT_GRACE,
   DEFAULT_AWAY_TIMEOUT,
   DEFAULT_RETEST_COOLDOWN_DAYS,
 } from "@butecogames/shared";
@@ -59,6 +66,12 @@ export async function updateSettings(
   if (partial.cardDuel) {
     for (const [key, value] of Object.entries(partial.cardDuel)) {
       update[`cardDuel.${key}`] = value;
+    }
+  }
+
+  if (partial.uno) {
+    for (const [key, value] of Object.entries(partial.uno)) {
+      update[`uno.${key}`] = value;
     }
   }
 
@@ -111,6 +124,15 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       disconnectGrace: doc.cardDuel?.disconnectGrace ?? CARD_DUEL_DISCONNECT_GRACE,
       cardRevealDelay: doc.cardDuel?.cardRevealDelay ?? CARD_DUEL_CARD_REVEAL_DELAY,
       botBetAmount: doc.cardDuel?.botBetAmount ?? DEFAULT_CARD_DUEL_BOT_BET,
+    },
+    uno: {
+      minPlayers: doc.uno?.minPlayers ?? DEFAULT_UNO_MIN_PLAYERS,
+      maxPlayers: doc.uno?.maxPlayers ?? DEFAULT_UNO_MAX_PLAYERS,
+      turnTimeout: doc.uno?.turnTimeout ?? DEFAULT_UNO_TURN_TIMEOUT,
+      minBet: doc.uno?.minBet ?? DEFAULT_UNO_MIN_BET,
+      maxBet: doc.uno?.maxBet ?? DEFAULT_UNO_MAX_BET,
+      unoCatchWindow: doc.uno?.unoCatchWindow ?? DEFAULT_UNO_CATCH_WINDOW,
+      disconnectGrace: doc.uno?.disconnectGrace ?? DEFAULT_UNO_DISCONNECT_GRACE,
     },
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,

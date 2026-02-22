@@ -8,7 +8,7 @@ import { logAudit } from "../services/audit.js";
 
 const router = Router();
 
-router.get("/", requireAuth, requireAdmin, (_req, res) => {
+router.get("/", requireAuth, (_req, res) => {
   res.json(getSettings());
 });
 
