@@ -12,6 +12,8 @@ export function useUneco(userId?: string) {
   const {
     lobbyRooms,
     setLobbyRooms,
+    ongoingRooms,
+    setOngoingRooms,
     gameState,
     setGameState,
     isInLobby,
@@ -33,11 +35,13 @@ export function useUneco(userId?: string) {
     setIsInLobby(true);
 
     // Lobby events
-    socket.on("uneco:lobby_state", ({ rooms }) => {
+    socket.on("uneco:lobby_state", ({ rooms, ongoingRooms: ongoing }) => {
       setLobbyRooms(rooms);
+      setOngoingRooms(ongoing);
     });
-    socket.on("uneco:lobby_update", ({ rooms }) => {
+    socket.on("uneco:lobby_update", ({ rooms, ongoingRooms: ongoing }) => {
       setLobbyRooms(rooms);
+      setOngoingRooms(ongoing);
     });
 
     // Room events
@@ -384,6 +388,7 @@ export function useUneco(userId?: string) {
 
   return {
     lobbyRooms,
+    ongoingRooms,
     gameState,
     isInLobby,
     colorPickerOpen,

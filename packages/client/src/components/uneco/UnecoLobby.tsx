@@ -8,11 +8,13 @@ import { formatCoins } from "@/lib/utils.js";
 
 interface UnecoLobbyProps {
   rooms: UnecoRoomInfo[];
+  ongoingRooms: UnecoRoomInfo[];
   onCreateRoom: (betAmount: number, maxPlayers: number) => void;
   onJoinRoom: (roomId: string) => void;
+  onSpectate: (roomId: string) => void;
 }
 
-export function UnecoLobby({ rooms, onCreateRoom, onJoinRoom }: UnecoLobbyProps) {
+export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSpectate }: UnecoLobbyProps) {
   const { data: wallet } = useWallet();
   const { data: settings } = useSettings();
   const [betAmount, setBetAmount] = useState(100);
@@ -124,11 +126,11 @@ export function UnecoLobby({ rooms, onCreateRoom, onJoinRoom }: UnecoLobbyProps)
           </h3>
 
           {rooms.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma sala disponível. Crie uma!
+            <p className="text-sm text-muted-foreground pb-4">
+              Nenhuma sala aguardando jogadores.
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 pb-6 border-b border-border/50 mb-6">
               {rooms.map((room) => (
                 <div
                   key={room.roomId}
@@ -162,6 +164,55 @@ export function UnecoLobby({ rooms, onCreateRoom, onJoinRoom }: UnecoLobbyProps)
                     className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
                   >
                     Entrar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <h3 className="mb-3 font-semibold text-card-foreground">
+            Em Andamento ({ongoingRooms.length})
+          </h3>
+
+          {ongoingRooms.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Nenhuma partida em andamento no momento.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {ongoingRooms.map((room) => (
+                <div
+                  key={room.roomId}
+                  className="flex items-center justify-between rounded-lg border border-border bg-background/50 p-3 opacity-80"
+                >
+                  <div className="flex items-center gap-3">
+                    {room.owner.avatar ? (
+                      <img
+                        src={room.owner.avatar}
+                        alt=""
+                        className="h-8 w-8 rounded-full grayscale-[50%]"
+                      />
+                    ) : (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold grayscale-[50%]">
+                        {room.owner.displayName.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div>
+                      <p className="flex items-center gap-2 text-sm font-medium text-card-foreground">
+                        {room.owner.displayName}
+                        <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatCoins(room.betAmount)} coins · {room.playerCount} jogadores em partida
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onSpectate(room.roomId)}
+                    className="rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
+                  >
+                    Assistir
                   </button>
                 </div>
               ))}

@@ -9,6 +9,7 @@ export function UnecoPage() {
   const { user } = useAuth();
   const {
     lobbyRooms,
+    ongoingRooms,
     gameState,
     isInLobby,
     colorPickerOpen,
@@ -24,6 +25,7 @@ export function UnecoPage() {
     drawCard,
     sayUneco,
     forfeitGame,
+    spectate,
   } = useUneco(user?.id);
 
   const handleOpenColorPicker = useCallback(
@@ -62,8 +64,10 @@ export function UnecoPage() {
       {isInLobby || !gameState ? (
         <UnecoLobby
           rooms={lobbyRooms}
+          ongoingRooms={ongoingRooms}
           onCreateRoom={createRoom}
           onJoinRoom={joinRoom}
+          onSpectate={spectate}
         />
       ) : (
         <UnecoRoom

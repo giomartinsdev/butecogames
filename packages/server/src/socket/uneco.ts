@@ -17,6 +17,7 @@ import {
   handleDisconnect,
   handleReconnect,
   getLobbyRooms,
+  getOngoingRooms,
   getPlayerRoom,
   getGameStateForPlayer,
   spectateRoom,
@@ -44,7 +45,8 @@ export function registerUnecoHandlers(io: TypedIO, socket: Socket) {
     }
     socket.join("uneco:lobby");
     const rooms = getLobbyRooms();
-    socket.emit("uneco:lobby_state", { rooms });
+    const ongoingRooms = getOngoingRooms();
+    socket.emit("uneco:lobby_state", { rooms, ongoingRooms });
   });
 
   socket.on("uneco:leave_lobby", () => {

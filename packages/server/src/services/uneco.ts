@@ -295,8 +295,18 @@ export function getLobbyRooms(): UnecoRoomInfo[] {
   return result;
 }
 
+export function getOngoingRooms(): UnecoRoomInfo[] {
+  const result: UnecoRoomInfo[] = [];
+  for (const room of rooms.values()) {
+    if (room.status === "playing") {
+      result.push(toRoomInfo(room));
+    }
+  }
+  return result;
+}
+
 function broadcastLobbyUpdate(): void {
-  io.to("uneco:lobby").emit("uneco:lobby_update", { rooms: getLobbyRooms() });
+  io.to("uneco:lobby").emit("uneco:lobby_update", { rooms: getLobbyRooms(), ongoingRooms: getOngoingRooms() });
 }
 
 // ---------------------------------------------------------------------------

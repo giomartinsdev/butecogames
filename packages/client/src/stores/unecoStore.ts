@@ -4,6 +4,8 @@ import type { UnecoRoomInfo, UnecoGameState } from "@butecogames/shared";
 interface UnecoState {
   lobbyRooms: UnecoRoomInfo[];
   setLobbyRooms: (rooms: UnecoRoomInfo[]) => void;
+  ongoingRooms: UnecoRoomInfo[];
+  setOngoingRooms: (rooms: UnecoRoomInfo[]) => void;
   gameState: UnecoGameState | null;
   setGameState: (state: UnecoGameState | null) => void;
   isInLobby: boolean;
@@ -18,6 +20,8 @@ interface UnecoState {
 export const useUnecoStore = create<UnecoState>((set) => ({
   lobbyRooms: [],
   setLobbyRooms: (rooms) => set({ lobbyRooms: rooms }),
+  ongoingRooms: [],
+  setOngoingRooms: (rooms) => set({ ongoingRooms: rooms }),
   gameState: null,
   setGameState: (state) => set({ gameState: state }),
   isInLobby: true,
@@ -29,6 +33,7 @@ export const useUnecoStore = create<UnecoState>((set) => ({
   reset: () =>
     set({
       lobbyRooms: [],
+      ongoingRooms: [],
       gameState: null,
       isInLobby: true,
       colorPickerOpen: false,

@@ -177,8 +177,8 @@ export interface ServerToClientEvents {
     payout: number;
   }) => void;
   "card-duel:error": (data: { message: string }) => void;
-  "uneco:lobby_state": (data: { rooms: UnecoRoomInfo[] }) => void;
-  "uneco:lobby_update": (data: { rooms: UnecoRoomInfo[] }) => void;
+  "uneco:lobby_state": (data: { rooms: UnecoRoomInfo[]; ongoingRooms: UnecoRoomInfo[] }) => void;
+  "uneco:lobby_update": (data: { rooms: UnecoRoomInfo[]; ongoingRooms: UnecoRoomInfo[] }) => void;
   "uneco:room_joined": (data: { gameState: UnecoGameState }) => void;
   "uneco:game_state": (data: { gameState: UnecoGameState }) => void;
   "uneco:player_joined": (data: { player: UnecoPlayer }) => void;
