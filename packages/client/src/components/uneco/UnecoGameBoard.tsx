@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { UnecoGameState, UnecoCardColor } from "@butecogames/shared";
 import { UnecoHand } from "./UnecoHand.js";
 import { UnecoPile } from "./UnecoPile.js";
@@ -30,6 +31,8 @@ export function UnecoGameBoard({
   onCloseColorPicker,
   onSelectColor,
 }: UnecoGameBoardProps) {
+  const [showForfeitModal, setShowForfeitModal] = useState(false);
+
   const myPlayerIndex = gameState.players.findIndex(
     (p) => p.userId === userId,
   );
@@ -146,16 +149,44 @@ export function UnecoGameBoard({
       <div className="flex justify-center pt-2">
         <button
           type="button"
-          onClick={() => {
-            if (window.confirm("Tem certeza que deseja desistir? Você perderá suas coins apostadas.")) {
-              onForfeit();
-            }
-          }}
+          onClick={() => setShowForfeitModal(true)}
           className="rounded-lg bg-destructive/10 px-4 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
         >
           Desistir
         </button>
       </div>
+
+      {/* Forfeit confirmation modal */}
+      {showForfeitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowForfeitModal(false)} />
+          <div className="relative w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-xl">
+            <h2 className="mb-2 text-lg font-bold text-card-foreground">Desistir da partida</h2>
+            <p className="mb-5 text-sm text-muted-foreground">
+              Tem certeza que deseja desistir? Você perderá suas coins apostadas.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowForfeitModal(false)}
+                className="flex-1 rounded-lg bg-slate-700 px-4 py-2.5 font-medium text-muted-foreground transition hover:bg-slate-600"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForfeitModal(false);
+                  onForfeit();
+                }}
+                className="flex-1 rounded-lg bg-destructive px-4 py-2.5 font-medium text-destructive-foreground transition hover:bg-destructive/90"
+              >
+                Desistir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
