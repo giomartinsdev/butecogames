@@ -7,6 +7,8 @@ interface UnecoCardProps {
   playable?: boolean;
   faceDown?: boolean;
   onClick?: () => void;
+  /** When true, applies random rotation for pile effect */
+  rotation?: number;
 }
 
 const VALUE_DISPLAY: Record<string, string> = {
@@ -24,9 +26,15 @@ function getCardBg(color: AnyCardColor): string {
   return "";
 }
 
-function getCardStyle(color: AnyCardColor): React.CSSProperties {
-  if (color === "wild") return {};
-  return { backgroundColor: UNECO_COLOR_HEX[color] ?? "#666" };
+function getCardStyle(color: AnyCardColor, rotation?: number): React.CSSProperties {
+  const style: React.CSSProperties = {};
+  if (color !== "wild") {
+    style.backgroundColor = UNECO_COLOR_HEX[color] ?? "#666";
+  }
+  if (rotation !== undefined) {
+    style.transform = `rotate(${rotation}deg)`;
+  }
+  return style;
 }
 
 const SIZE_CLASSES = {
@@ -41,11 +49,13 @@ export function UnecoCard({
   playable = false,
   faceDown = false,
   onClick,
+  rotation,
 }: UnecoCardProps) {
   if (faceDown) {
     return (
       <div
         className={`${SIZE_CLASSES[size]} flex items-center justify-center border-2 border-white/20 bg-gray-700 font-bold text-white shadow-md cursor-default select-none`}
+        style={rotation !== undefined ? { transform: `rotate(${rotation}deg)` } : undefined}
       >
         <span className="text-2xl">?</span>
       </div>
@@ -54,7 +64,7 @@ export function UnecoCard({
 
   const display = VALUE_DISPLAY[card.value] ?? card.value;
   const bgClass = getCardBg(card.color);
-  const bgStyle = getCardStyle(card.color);
+  const bgStyle = getCardStyle(card.color, rotation);
 
   return (
     <button
@@ -68,7 +78,7 @@ export function UnecoCard({
         border-2 font-bold text-white shadow-md select-none
         transition-all duration-150
         ${playable
-          ? "border-white/80 cursor-pointer hover:-translate-y-2 hover:shadow-lg hover:shadow-white/20 ring-2 ring-white/40"
+          ? "border-white/80 cursor-pointer ring-2 ring-white/40"
           : "border-white/20 cursor-default"
         }
         ${onClick && !playable ? "cursor-pointer hover:opacity-80" : ""}

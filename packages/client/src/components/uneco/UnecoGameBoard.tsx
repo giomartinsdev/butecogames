@@ -19,6 +19,27 @@ interface UnecoGameBoardProps {
   onSelectColor: (color: UnecoCardColor) => void;
 }
 
+/**
+ * Calculate position on a horizontal oval for opponent placement.
+ * Distributes opponents evenly along the arc excluding the bottom (current player position).
+ */
+function getOvalPosition(index: number, total: number) {
+  // Distribute along the top arc: from 210° clockwise through top to 330°
+  // 0° = top, 90° = right, 180° = bottom, 270° = left
+  const step = 300 / (total + 1);
+  const angleDeg = (210 + step * (index + 1)) % 360;
+  const angleRad = (angleDeg * Math.PI) / 180;
+
+  // sin gives x, -cos gives y (0°=top)
+  const x = Math.sin(angleRad);
+  const y = -Math.cos(angleRad);
+
+  return {
+    left: `${50 + x * 42}%`,
+    top: `${42 + y * 36}%`,
+  };
+}
+
 export function UnecoGameBoard({
   gameState,
   userId,
@@ -63,64 +84,78 @@ export function UnecoGameBoard({
     gameState.status === "playing";
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Opponents */}
-      <div className="flex flex-wrap items-start justify-center gap-3">
-        {opponents.map((player) => (
-          <UnecoOpponent
-            key={player.userId}
-            player={player}
-            isCurrentTurn={
-              gameState.players[gameState.currentPlayerIndex]?.userId ===
-              player.userId
-            }
-          />
-        ))}
-      </div>
+    <div className="flex flex-col gap-2">
+      {/* Table area: oval layout with opponents around center piles */}
+      <div className="relative mx-auto w-full max-w-3xl" style={{ minHeight: "380px" }}>
+        {/* Oval table background */}
+        <div
+          className="absolute inset-x-[5%] inset-y-[5%] rounded-[50%] border-2 border-white/10 bg-emerald-950/40"
+          style={{ boxShadow: "inset 0 0 60px rgba(0,0,0,0.3)" }}
+        />
 
-      {/* Turn indicator */}
-      <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
+        {/* Opponents positioned around the oval */}
+        {opponents.map((player, idx) => {
+          const pos = getOvalPosition(idx, opponents.length);
+          return (
+            <div
+              key={player.userId}
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{ left: pos.left, top: pos.top }}
+            >
+              <UnecoOpponent
+                player={player}
+                isCurrentTurn={
+                  gameState.players[gameState.currentPlayerIndex]?.userId ===
+                  player.userId
+                }
+              />
+            </div>
+          );
+        })}
 
-      {/* Draw stack indicator */}
-      {gameState.drawStack > 0 && (
-        <div className="flex justify-center">
-          <div className="rounded-lg bg-destructive/20 px-4 py-2 text-center">
-            <span className="text-sm font-bold text-destructive">
-              +{gameState.drawStack} acumulado!
-              {isMyTurn && " Jogue +2/+4 ou compre"}
-            </span>
+        {/* Center: Piles + indicators */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="flex flex-col items-center gap-2">
+            {/* Turn indicator */}
+            <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
+
+            {/* Draw stack indicator */}
+            {gameState.drawStack > 0 && (
+              <div className="rounded-lg bg-destructive/20 px-3 py-1 text-center">
+                <span className="text-xs font-bold text-destructive">
+                  +{gameState.drawStack} acumulado!
+                  {isMyTurn && " Jogue +2/+4 ou compre"}
+                </span>
+              </div>
+            )}
+
+            {/* Draw & Discard piles */}
+            <UnecoPile
+              discardTop={gameState.discardTop}
+              currentColor={gameState.currentColor}
+              deckCount={gameState.deckCount}
+              direction={gameState.direction}
+              isMyTurn={isMyTurn}
+              onDraw={onDrawCard}
+              drawStack={gameState.drawStack}
+            />
+
+            {/* UNECO button */}
+            {showUnecoButton && (
+              <button
+                type="button"
+                onClick={onSayUneco}
+                className="animate-bounce rounded-full bg-yellow-500 px-5 py-1.5 text-sm font-extrabold text-black shadow-lg transition-transform hover:scale-110"
+              >
+                UNECO!
+              </button>
+            )}
           </div>
         </div>
-      )}
-
-      {/* Center: Pile */}
-      <div className="flex items-center justify-center py-4">
-        <UnecoPile
-          discardTop={gameState.discardTop}
-          currentColor={gameState.currentColor}
-          deckCount={gameState.deckCount}
-          direction={gameState.direction}
-          isMyTurn={isMyTurn}
-          onDraw={onDrawCard}
-          drawStack={gameState.drawStack}
-        />
       </div>
 
-      {/* UNECO button */}
-      {showUnecoButton && (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={onSayUneco}
-            className="animate-bounce rounded-full bg-yellow-500 px-6 py-2 text-lg font-extrabold text-black shadow-lg transition-transform hover:scale-110"
-          >
-            UNECO!
-          </button>
-        </div>
-      )}
-
-      {/* My hand */}
-      <div className="border-t border-border pt-2">
+      {/* My hand (bottom of table) */}
+      <div className="border-t border-border pt-1">
         <UnecoHand
           hand={gameState.hand}
           gameState={gameState}
@@ -138,16 +173,15 @@ export function UnecoGameBoard({
         />
       )}
 
-      {/* Spectator count */}
-      {gameState.spectatorCount > 0 && (
-        <div className="text-center text-xs text-muted-foreground">
-          {gameState.spectatorCount} espectador{gameState.spectatorCount > 1 ? "es" : ""}
-        </div>
-      )}
+      {/* Bottom bar: spectator count + forfeit */}
+      <div className="flex items-center justify-center gap-4">
+        {gameState.spectatorCount > 0 && (
+          <span className="text-xs text-muted-foreground">
+            {gameState.spectatorCount} espectador{gameState.spectatorCount > 1 ? "es" : ""}
+          </span>
+        )}
 
-      {/* Forfeit button (players only, not spectators) */}
-      {myPlayer && (
-        <div className="flex justify-center pt-2">
+        {myPlayer && (
           <button
             type="button"
             onClick={() => setShowForfeitModal(true)}
@@ -155,8 +189,8 @@ export function UnecoGameBoard({
           >
             Desistir
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Forfeit confirmation modal */}
       {showForfeitModal && (
