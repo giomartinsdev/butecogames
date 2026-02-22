@@ -64,52 +64,53 @@ export function UnecoPile({
   ], []);
 
   return (
-    <div className="flex items-center gap-8">
-      {/* Draw pile */}
-      <button
-        type="button"
-        onClick={onDraw}
-        disabled={!isMyTurn}
-        className="relative"
-        style={{ width: 80, height: 112 }}
-      >
-        {/* Backing cards for depth */}
-        {drawPileRotations.map((r, i) => (
-          <div
-            key={i}
-            className="absolute inset-0 rounded-lg border-2 border-white/10 bg-gray-800"
-            style={{
-              transform: `rotate(${r.rotation}deg) translate(${r.offsetX}px, ${r.offsetY}px)`,
-              zIndex: i,
-            }}
-          />
-        ))}
-        {/* Top card */}
-        <div
-          className={`
-            absolute inset-0 flex items-center justify-center rounded-lg
-            border-2 bg-gray-700 font-bold text-white shadow-lg transition-all
-            ${isMyTurn
-              ? "border-primary cursor-pointer hover:scale-105 hover:shadow-primary/30"
-              : "border-white/20 cursor-default"
-            }
-          `}
-          style={{ zIndex: 2 }}
+    <div className="flex flex-col items-center">
+      {/* Piles area: discard centered, draw deck offset top-left */}
+      <div className="relative" style={{ width: 160, height: 130 }}>
+        {/* Draw pile — left side */}
+        <button
+          type="button"
+          onClick={onDraw}
+          disabled={!isMyTurn}
+          className="absolute"
+          style={{ width: 64, height: 90, left: -80, top: 10 }}
         >
-          <div className="text-center">
-            <div className="text-2xl">🂠</div>
-            {drawStack > 0 && isMyTurn ? (
-              <div className="text-xs font-bold text-destructive">+{drawStack}</div>
-            ) : (
-              <div className="text-xs text-gray-300">{deckCount}</div>
-            )}
+          {/* Backing cards for depth */}
+          {drawPileRotations.map((r, i) => (
+            <div
+              key={i}
+              className="absolute inset-0 rounded-lg border-2 border-white/10 bg-gray-800"
+              style={{
+                transform: `rotate(${r.rotation}deg) translate(${r.offsetX}px, ${r.offsetY}px)`,
+                zIndex: i,
+              }}
+            />
+          ))}
+          {/* Top card */}
+          <div
+            className={`
+              absolute inset-0 flex items-center justify-center rounded-lg
+              border-2 bg-gray-700 font-bold text-white shadow-lg transition-all
+              ${isMyTurn
+                ? "border-primary cursor-pointer hover:scale-105 hover:shadow-primary/30"
+                : "border-white/20 cursor-default"
+              }
+            `}
+            style={{ zIndex: 2 }}
+          >
+            <div className="text-center">
+              <div className="text-lg">🂠</div>
+              {drawStack > 0 && isMyTurn ? (
+                <div className="text-[10px] font-bold text-destructive">+{drawStack}</div>
+              ) : (
+                <div className="text-[10px] text-gray-300">{deckCount}</div>
+              )}
+            </div>
           </div>
-        </div>
-      </button>
+        </button>
 
-      {/* Discard pile with history */}
-      <div className="flex flex-col items-center gap-2">
-        <div className="relative" style={{ width: 80, height: 112 }}>
+        {/* Discard pile — centered */}
+        <div className="absolute" style={{ width: 80, height: 112, left: 40, top: 9 }}>
           {pileHistory.length === 0 && !discardTop && (
             <div className="flex h-full w-full items-center justify-center rounded-lg border-2 border-dashed border-white/20 text-muted-foreground">
               —
@@ -130,17 +131,17 @@ export function UnecoPile({
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Current color indicator */}
-        <div className="flex items-center gap-2">
-          <div
-            className="h-5 w-5 rounded-full border-2 border-white/40 shadow"
-            style={{ backgroundColor: UNECO_COLOR_HEX[currentColor] }}
-          />
-          <span className="text-xs text-muted-foreground">
-            {direction === "clockwise" ? "→" : "←"}
-          </span>
-        </div>
+      {/* Current color indicator + direction */}
+      <div className="mt-4 flex items-center gap-2">
+        <div
+          className="h-5 w-5 rounded-full border-2 border-white/40 shadow"
+          style={{ backgroundColor: UNECO_COLOR_HEX[currentColor] }}
+        />
+        <span className="text-xs text-muted-foreground">
+          {direction === "clockwise" ? "→" : "←"}
+        </span>
       </div>
     </div>
   );
