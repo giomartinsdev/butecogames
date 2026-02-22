@@ -227,6 +227,17 @@ export function useUneco(userId?: string) {
       }
     });
 
+    socket.on("uneco:player_forfeited", ({ userId: forfeitUserId, winnerName }) => {
+      const current = useUnecoStore.getState().gameState;
+      const player = current?.players.find((p) => p.userId === forfeitUserId);
+      const name = player?.displayName ?? "Jogador";
+      if (winnerName) {
+        toast.info(`${name} desistiu da partida! ${winnerName} venceu!`);
+      } else {
+        toast.info(`${name} desistiu da partida!`);
+      }
+    });
+
     // Room closed — return to lobby
     socket.on("uneco:room_closed", ({ reason }) => {
       setGameState(null);
@@ -266,6 +277,7 @@ export function useUneco(userId?: string) {
       socket.off("uneco:player_disconnected");
       socket.off("uneco:player_reconnected");
       socket.off("uneco:spectator_count");
+      socket.off("uneco:player_forfeited");
       socket.off("uneco:room_closed");
       socket.off("uneco:error");
       reset();
@@ -366,6 +378,10 @@ export function useUneco(userId?: string) {
     setIsInLobby(true);
   }, [socket]);
 
+  const forfeitGame = useCallback(() => {
+    socket?.emit("uneco:forfeit");
+  }, [socket]);
+
   return {
     lobbyRooms,
     gameState,
@@ -385,5 +401,6 @@ export function useUneco(userId?: string) {
     catchUneco: catchUnecoAction,
     spectate,
     stopSpectating,
+    forfeitGame,
   };
 }

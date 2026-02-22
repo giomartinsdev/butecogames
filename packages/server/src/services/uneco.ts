@@ -1229,6 +1229,45 @@ async function handlePlayerForfeit(
   startTurnTimer(room);
 }
 
+export async function forfeitGame(userId: string): Promise<void> {
+  const roomId = playerRoomMap.get(userId);
+  if (!roomId) throw new Error("Você não está em uma sala");
+
+  const room = rooms.get(roomId);
+  if (!room) throw new Error("Sala não encontrada");
+  if (room.status !== "playing") throw new Error("O jogo não está em andamento");
+
+  const player = room.players.find((p) => p.userId === userId);
+  if (!player) throw new Error("Jogador não encontrado");
+
+  if (room.players.length === 2) {
+    // 2-player match: opponent wins immediately
+    const opponent = room.players.find((p) => p.userId !== userId)!;
+    const pot = room.betAmount * room.players.length;
+
+    io.to(roomSocketName(roomId)).emit("uneco:player_forfeited", {
+      userId,
+      winnerId: opponent.userId,
+      winnerName: opponent.displayName,
+      payout: pot,
+    });
+    io.to(spectatorSocketName(roomId)).emit("uneco:player_forfeited", {
+      userId,
+      winnerId: opponent.userId,
+      winnerName: opponent.displayName,
+      payout: pot,
+    });
+
+    await resolveGame(roomId, opponent.userId);
+  } else {
+    // 3+ player match: just remove the player
+    io.to(roomSocketName(roomId)).emit("uneco:player_forfeited", { userId });
+    io.to(spectatorSocketName(roomId)).emit("uneco:player_forfeited", { userId });
+
+    await handlePlayerForfeit(roomId, userId);
+  }
+}
+
 export async function handleDisconnect(
   userId: string,
   socketId: string,

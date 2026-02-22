@@ -12,6 +12,7 @@ interface UnecoGameBoardProps {
   onPlayCard: (cardId: string, chosenColor?: UnecoCardColor) => void;
   onDrawCard: () => void;
   onSayUneco: () => void;
+  onForfeit: () => void;
   onOpenColorPicker: (cardId: string) => void;
   onCloseColorPicker: () => void;
   onSelectColor: (color: UnecoCardColor) => void;
@@ -24,6 +25,7 @@ export function UnecoGameBoard({
   onPlayCard,
   onDrawCard,
   onSayUneco,
+  onForfeit,
   onOpenColorPicker,
   onCloseColorPicker,
   onSelectColor,
@@ -139,6 +141,21 @@ export function UnecoGameBoard({
           {gameState.spectatorCount} espectador{gameState.spectatorCount > 1 ? "es" : ""}
         </div>
       )}
+
+      {/* Forfeit button */}
+      <div className="flex justify-center pt-2">
+        <button
+          type="button"
+          onClick={() => {
+            if (window.confirm("Tem certeza que deseja desistir? Você perderá suas coins apostadas.")) {
+              onForfeit();
+            }
+          }}
+          className="rounded-lg bg-destructive/10 px-4 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
+        >
+          Desistir
+        </button>
+      </div>
     </div>
   );
 }

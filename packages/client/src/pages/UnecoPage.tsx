@@ -23,6 +23,7 @@ export function UnecoPage() {
     playCard,
     drawCard,
     sayUneco,
+    forfeitGame,
   } = useUneco(user?.id);
 
   const handleOpenColorPicker = useCallback(
@@ -75,6 +76,7 @@ export function UnecoPage() {
           onPlayCard={playCard}
           onDrawCard={drawCard}
           onSayUneco={sayUneco}
+          onForfeit={forfeitGame}
           onOpenColorPicker={handleOpenColorPicker}
           onCloseColorPicker={handleCloseColorPicker}
           onSelectColor={handleSelectColor}

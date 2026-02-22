@@ -56,6 +56,7 @@ export interface ClientToServerEvents {
   "uneco:draw_card": () => void;
   "uneco:say_uneco": () => void;
   "uneco:catch_uneco": (data: { targetUserId: string }) => void;
+  "uneco:forfeit": () => void;
   "uneco:spectate": (data: { roomId: string }) => void;
   "uneco:stop_spectating": () => void;
   "presence:update_status": (data: { status: PresenceStatus }) => void;
@@ -224,6 +225,12 @@ export interface ServerToClientEvents {
   "uneco:uneco_penalty": (data: {
     userId: string;
     penaltyCards: number;
+  }) => void;
+  "uneco:player_forfeited": (data: {
+    userId: string;
+    winnerId?: string;
+    winnerName?: string;
+    payout?: number;
   }) => void;
   "uneco:spectator_count": (data: { count: number }) => void;
   "uneco:error": (data: { message: string }) => void;

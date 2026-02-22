@@ -13,6 +13,7 @@ import {
   drawCard,
   sayUneco,
   catchUneco,
+  forfeitGame,
   handleDisconnect,
   handleReconnect,
   getLobbyRooms,
@@ -158,6 +159,17 @@ export function registerUnecoHandlers(io: TypedIO, socket: Socket) {
     } catch (err) {
       socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro",
+      });
+    }
+  });
+
+  socket.on("uneco:forfeit", async () => {
+    try {
+      await forfeitGame(userId);
+    } catch (err) {
+      socket.emit("uneco:error", {
+        message:
+          err instanceof Error ? err.message : "Erro ao desistir",
       });
     }
   });

@@ -13,6 +13,7 @@ interface UnecoRoomProps {
   onPlayCard: (cardId: string, chosenColor?: UnecoCardColor) => void;
   onDrawCard: () => void;
   onSayUneco: () => void;
+  onForfeit: () => void;
   onOpenColorPicker: (cardId: string) => void;
   onCloseColorPicker: () => void;
   onSelectColor: (color: UnecoCardColor) => void;
@@ -78,9 +79,8 @@ function WaitingRoom({
                 </span>
               </div>
               <span
-                className={`text-xs font-medium ${
-                  player.isReady ? "text-green-400" : "text-muted-foreground"
-                }`}
+                className={`text-xs font-medium ${player.isReady ? "text-green-400" : "text-muted-foreground"
+                  }`}
               >
                 {player.isReady ? "Pronto" : "Aguardando"}
               </span>
@@ -93,11 +93,10 @@ function WaitingRoom({
             <button
               type="button"
               onClick={onSetReady}
-              className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                myPlayer.isReady
+              className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${myPlayer.isReady
                   ? "bg-muted text-muted-foreground hover:bg-muted/80"
                   : "bg-green-600 text-white hover:bg-green-600/90"
-              }`}
+                }`}
             >
               {myPlayer.isReady ? "Cancelar" : "Pronto"}
             </button>
@@ -137,6 +136,7 @@ export function UnecoRoom({
   onPlayCard,
   onDrawCard,
   onSayUneco,
+  onForfeit,
   onOpenColorPicker,
   onCloseColorPicker,
   onSelectColor,
@@ -171,6 +171,7 @@ export function UnecoRoom({
       onPlayCard={onPlayCard}
       onDrawCard={onDrawCard}
       onSayUneco={onSayUneco}
+      onForfeit={onForfeit}
       onOpenColorPicker={onOpenColorPicker}
       onCloseColorPicker={onCloseColorPicker}
       onSelectColor={onSelectColor}
