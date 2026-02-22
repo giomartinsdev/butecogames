@@ -11,8 +11,8 @@ import {
   startGame,
   playCard,
   drawCard,
-  sayUno,
-  catchUno,
+  sayUneco,
+  catchUneco,
   handleDisconnect,
   handleReconnect,
   getLobbyRooms,
@@ -20,37 +20,37 @@ import {
   getGameStateForPlayer,
   spectateRoom,
   stopSpectating,
-} from "../services/uno.js";
+} from "../services/uneco.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
 
-export function registerUnoHandlers(io: TypedIO, socket: Socket) {
+export function registerUnecoHandlers(io: TypedIO, socket: Socket) {
   const { userId, displayName, image } = socket.data;
 
-  socket.on("uno:join_lobby", async () => {
+  socket.on("uneco:join_lobby", async () => {
     // Check if user is already in a room (page refresh / reconnect)
     const existingRoomId = getPlayerRoom(userId);
     if (existingRoomId) {
       try {
         await handleReconnect(userId, socket.id, existingRoomId);
-        socket.join(`uno:room:${existingRoomId}`);
+        socket.join(`uneco:room:${existingRoomId}`);
         const state = getGameStateForPlayer(existingRoomId, userId);
-        socket.emit("uno:room_joined", { gameState: state });
+        socket.emit("uneco:room_joined", { gameState: state });
         return;
       } catch {
         // Room no longer valid, fall through to lobby
       }
     }
-    socket.join("uno:lobby");
+    socket.join("uneco:lobby");
     const rooms = getLobbyRooms();
-    socket.emit("uno:lobby_state", { rooms });
+    socket.emit("uneco:lobby_state", { rooms });
   });
 
-  socket.on("uno:leave_lobby", () => {
-    socket.leave("uno:lobby");
+  socket.on("uneco:leave_lobby", () => {
+    socket.leave("uneco:lobby");
   });
 
-  socket.on("uno:create_room", async ({ betAmount, maxPlayers }) => {
+  socket.on("uneco:create_room", async ({ betAmount, maxPlayers }) => {
     try {
       const roomId = await createRoom(
         userId,
@@ -60,125 +60,125 @@ export function registerUnoHandlers(io: TypedIO, socket: Socket) {
         betAmount,
         maxPlayers,
       );
-      socket.join(`uno:room:${roomId}`);
-      socket.leave("uno:lobby");
+      socket.join(`uneco:room:${roomId}`);
+      socket.leave("uneco:lobby");
       const state = getGameStateForPlayer(roomId, userId);
-      socket.emit("uno:room_joined", { gameState: state });
+      socket.emit("uneco:room_joined", { gameState: state });
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro ao criar sala",
       });
     }
   });
 
-  socket.on("uno:join_room", async ({ roomId }) => {
+  socket.on("uneco:join_room", async ({ roomId }) => {
     try {
       await joinRoom(roomId, userId, displayName, image, socket.id);
-      socket.join(`uno:room:${roomId}`);
-      socket.leave("uno:lobby");
+      socket.join(`uneco:room:${roomId}`);
+      socket.leave("uneco:lobby");
       const state = getGameStateForPlayer(roomId, userId);
-      socket.emit("uno:room_joined", { gameState: state });
+      socket.emit("uneco:room_joined", { gameState: state });
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro ao entrar na sala",
       });
     }
   });
 
-  socket.on("uno:leave_room", async () => {
+  socket.on("uneco:leave_room", async () => {
     try {
       const roomId = getPlayerRoom(userId);
       if (roomId) {
         await leaveRoom(userId);
-        socket.leave(`uno:room:${roomId}`);
-        socket.emit("uno:room_closed", { reason: "Você saiu da sala" });
-        socket.join("uno:lobby");
+        socket.leave(`uneco:room:${roomId}`);
+        socket.emit("uneco:room_closed", { reason: "Você saiu da sala" });
+        socket.join("uneco:lobby");
       }
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro ao sair da sala",
       });
     }
   });
 
-  socket.on("uno:player_ready", () => {
+  socket.on("uneco:player_ready", () => {
     try {
       setPlayerReady(userId);
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro",
       });
     }
   });
 
-  socket.on("uno:start_game", async () => {
+  socket.on("uneco:start_game", async () => {
     try {
       await startGame(userId);
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message:
           err instanceof Error ? err.message : "Erro ao iniciar o jogo",
       });
     }
   });
 
-  socket.on("uno:play_card", async ({ cardId, chosenColor }) => {
+  socket.on("uneco:play_card", async ({ cardId, chosenColor }) => {
     try {
       await playCard(userId, cardId, chosenColor);
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro ao jogar carta",
       });
     }
   });
 
-  socket.on("uno:draw_card", () => {
+  socket.on("uneco:draw_card", () => {
     try {
       drawCard(userId);
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro ao comprar carta",
       });
     }
   });
 
-  socket.on("uno:say_uno", () => {
+  socket.on("uneco:say_uneco", () => {
     try {
-      sayUno(userId);
+      sayUneco(userId);
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro",
       });
     }
   });
 
-  socket.on("uno:catch_uno", ({ targetUserId }) => {
+  socket.on("uneco:catch_uneco", ({ targetUserId }) => {
     try {
-      catchUno(userId, targetUserId);
+      catchUneco(userId, targetUserId);
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro",
       });
     }
   });
 
-  socket.on("uno:spectate", ({ roomId }) => {
+  socket.on("uneco:spectate", ({ roomId }) => {
     try {
       spectateRoom(userId, socket.id, roomId);
-      socket.join(`uno:spectate:${roomId}`);
-      socket.leave("uno:lobby");
+      socket.join(`uneco:spectate:${roomId}`);
+      socket.leave("uneco:lobby");
       const state = getGameStateForPlayer(roomId, "__spectator__");
-      socket.emit("uno:game_state", { gameState: state });
+      socket.emit("uneco:game_state", { gameState: state });
     } catch (err) {
-      socket.emit("uno:error", {
+      socket.emit("uneco:error", {
         message: err instanceof Error ? err.message : "Erro ao assistir",
       });
     }
   });
 
-  socket.on("uno:stop_spectating", () => {
+  socket.on("uneco:stop_spectating", () => {
     stopSpectating(userId);
-    socket.join("uno:lobby");
+    socket.join("uneco:lobby");
   });
 
   socket.on("disconnect", () => {

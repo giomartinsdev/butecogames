@@ -1,11 +1,11 @@
 import { create } from "zustand";
-import type { UnoRoomInfo, UnoGameState } from "@butecogames/shared";
+import type { UnecoRoomInfo, UnecoGameState } from "@butecogames/shared";
 
-interface UnoState {
-  lobbyRooms: UnoRoomInfo[];
-  setLobbyRooms: (rooms: UnoRoomInfo[]) => void;
-  gameState: UnoGameState | null;
-  setGameState: (state: UnoGameState | null) => void;
+interface UnecoState {
+  lobbyRooms: UnecoRoomInfo[];
+  setLobbyRooms: (rooms: UnecoRoomInfo[]) => void;
+  gameState: UnecoGameState | null;
+  setGameState: (state: UnecoGameState | null) => void;
   isInLobby: boolean;
   setIsInLobby: (v: boolean) => void;
   colorPickerOpen: boolean;
@@ -15,7 +15,7 @@ interface UnoState {
   reset: () => void;
 }
 
-export const useUnoStore = create<UnoState>((set) => ({
+export const useUnecoStore = create<UnecoState>((set) => ({
   lobbyRooms: [],
   setLobbyRooms: (rooms) => set({ lobbyRooms: rooms }),
   gameState: null,

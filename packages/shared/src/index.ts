@@ -29,7 +29,7 @@ export type {
   RouletteSettings,
   EventBettingSettings,
   CardDuelSettings,
-  UnoSettings,
+  UnecoSettings,
   GeneralSettings,
   PoliticalCompassSettings,
   AppSettings,
@@ -62,18 +62,18 @@ export type {
   CardDuelMatchHistory,
 } from "./types/card-duel.js";
 export type {
-  UnoCardColor,
+  UnecoCardColor,
   WildColor,
   AnyCardColor,
-  UnoCardValue,
-  UnoCard,
-  UnoPlayer,
-  UnoDirection,
-  UnoRoomStatus,
-  UnoRoomInfo,
-  UnoGameState,
-  UnoMatchHistory,
-} from "./types/uno.js";
+  UnecoCardValue,
+  UnecoCard,
+  UnecoPlayer,
+  UnecoDirection,
+  UnecoRoomStatus,
+  UnecoRoomInfo,
+  UnecoGameState,
+  UnecoMatchHistory,
+} from "./types/uneco.js";
 
 // Constants
 export {
@@ -138,21 +138,21 @@ export {
 } from "./constants/gamification.js";
 
 export {
-  UNO_COLORS,
-  UNO_NUMBER_VALUES,
-  UNO_ACTION_VALUES,
-  UNO_WILD_VALUES,
-  UNO_CARD_POINTS,
-  UNO_COLOR_HEX,
-  DEFAULT_UNO_MIN_PLAYERS,
-  DEFAULT_UNO_MAX_PLAYERS,
-  DEFAULT_UNO_TURN_TIMEOUT,
-  DEFAULT_UNO_MIN_BET,
-  DEFAULT_UNO_MAX_BET,
-  DEFAULT_UNO_CATCH_WINDOW,
-  DEFAULT_UNO_DISCONNECT_GRACE,
-  DEFAULT_UNO_START_CARDS,
-} from "./constants/uno.js";
+  UNECO_COLORS,
+  UNECO_NUMBER_VALUES,
+  UNECO_ACTION_VALUES,
+  UNECO_WILD_VALUES,
+  UNECO_CARD_POINTS,
+  UNECO_COLOR_HEX,
+  DEFAULT_UNECO_MIN_PLAYERS,
+  DEFAULT_UNECO_MAX_PLAYERS,
+  DEFAULT_UNECO_TURN_TIMEOUT,
+  DEFAULT_UNECO_MIN_BET,
+  DEFAULT_UNECO_MAX_BET,
+  DEFAULT_UNECO_CATCH_WINDOW,
+  DEFAULT_UNECO_DISCONNECT_GRACE,
+  DEFAULT_UNECO_START_CARDS,
+} from "./constants/uneco.js";
 export {
   DEFAULT_AWAY_TIMEOUT,
   getRouteLabel,

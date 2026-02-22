@@ -1,8 +1,8 @@
-import type { UnoCard as UnoCardType, AnyCardColor } from "@butecogames/shared";
-import { UNO_COLOR_HEX } from "@butecogames/shared";
+import type { UnecoCard as UnecoCardType, AnyCardColor } from "@butecogames/shared";
+import { UNECO_COLOR_HEX } from "@butecogames/shared";
 
-interface UnoCardProps {
-  card: UnoCardType;
+interface UnecoCardProps {
+  card: UnecoCardType;
   size?: "sm" | "md" | "lg";
   playable?: boolean;
   faceDown?: boolean;
@@ -26,7 +26,7 @@ function getCardBg(color: AnyCardColor): string {
 
 function getCardStyle(color: AnyCardColor): React.CSSProperties {
   if (color === "wild") return {};
-  return { backgroundColor: UNO_COLOR_HEX[color] ?? "#666" };
+  return { backgroundColor: UNECO_COLOR_HEX[color] ?? "#666" };
 }
 
 const SIZE_CLASSES = {
@@ -35,13 +35,13 @@ const SIZE_CLASSES = {
   lg: "w-20 h-28 text-xl rounded-lg",
 };
 
-export function UnoCard({
+export function UnecoCard({
   card,
   size = "md",
   playable = false,
   faceDown = false,
   onClick,
-}: UnoCardProps) {
+}: UnecoCardProps) {
   if (faceDown) {
     return (
       <div

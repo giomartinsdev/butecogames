@@ -32,13 +32,13 @@ export interface PoliticalCompassSettings {
   retestCooldownDays: number;
 }
 
-export interface UnoSettings {
+export interface UnecoSettings {
   minPlayers: number;
   maxPlayers: number;
   turnTimeout: number;
   minBet: number;
   maxBet: number;
-  unoCatchWindow: number;
+  unecoCatchWindow: number;
   disconnectGrace: number;
 }
 
@@ -46,7 +46,7 @@ export interface AppSettings {
   roulette: RouletteSettings;
   eventBetting: EventBettingSettings;
   cardDuel: CardDuelSettings;
-  uno: UnoSettings;
+  uneco: UnecoSettings;
   general: GeneralSettings;
   politicalCompass: PoliticalCompassSettings;
 }

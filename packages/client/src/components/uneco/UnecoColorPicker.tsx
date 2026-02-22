@@ -1,19 +1,19 @@
-import type { UnoCardColor } from "@butecogames/shared";
-import { UNO_COLOR_HEX } from "@butecogames/shared";
+import type { UnecoCardColor } from "@butecogames/shared";
+import { UNECO_COLOR_HEX } from "@butecogames/shared";
 
-interface UnoColorPickerProps {
-  onSelect: (color: UnoCardColor) => void;
+interface UnecoColorPickerProps {
+  onSelect: (color: UnecoCardColor) => void;
   onCancel: () => void;
 }
 
-const COLORS: { color: UnoCardColor; label: string }[] = [
+const COLORS: { color: UnecoCardColor; label: string }[] = [
   { color: "red", label: "Vermelho" },
   { color: "blue", label: "Azul" },
   { color: "green", label: "Verde" },
   { color: "yellow", label: "Amarelo" },
 ];
 
-export function UnoColorPicker({ onSelect, onCancel }: UnoColorPickerProps) {
+export function UnecoColorPicker({ onSelect, onCancel }: UnecoColorPickerProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div className="rounded-xl border border-border bg-card p-6 shadow-2xl">
@@ -27,7 +27,7 @@ export function UnoColorPicker({ onSelect, onCancel }: UnoColorPickerProps) {
               type="button"
               onClick={() => onSelect(color)}
               className="flex h-20 w-20 items-center justify-center rounded-xl border-2 border-white/30 text-sm font-bold text-white shadow-lg transition-transform hover:scale-110 hover:border-white/60"
-              style={{ backgroundColor: UNO_COLOR_HEX[color] }}
+              style={{ backgroundColor: UNECO_COLOR_HEX[color] }}
             >
               {label}
             </button>

@@ -1,8 +1,8 @@
 // === Card Types ===
-export type UnoCardColor = "red" | "blue" | "green" | "yellow";
+export type UnecoCardColor = "red" | "blue" | "green" | "yellow";
 export type WildColor = "wild";
-export type AnyCardColor = UnoCardColor | WildColor;
-export type UnoCardValue =
+export type AnyCardColor = UnecoCardColor | WildColor;
+export type UnecoCardValue =
   | "0"
   | "1"
   | "2"
@@ -19,26 +19,26 @@ export type UnoCardValue =
   | "wild"
   | "+4";
 
-export interface UnoCard {
+export interface UnecoCard {
   id: string;
   color: AnyCardColor;
-  value: UnoCardValue;
+  value: UnecoCardValue;
 }
 
 // === Player Types ===
-export interface UnoPlayer {
+export interface UnecoPlayer {
   userId: string;
   displayName: string;
   avatar: string;
   cardCount: number;
   isReady: boolean;
-  saidUno: boolean;
+  saidUneco: boolean;
   connected: boolean;
 }
 
-export type UnoDirection = "clockwise" | "counterclockwise";
+export type UnecoDirection = "clockwise" | "counterclockwise";
 
-export type UnoRoomStatus =
+export type UnecoRoomStatus =
   | "waiting"
   | "starting"
   | "playing"
@@ -46,38 +46,38 @@ export type UnoRoomStatus =
   | "cancelled";
 
 // === Room Info (lobby listing) ===
-export interface UnoRoomInfo {
+export interface UnecoRoomInfo {
   roomId: string;
   owner: { userId: string; displayName: string; avatar: string };
   betAmount: number;
   maxPlayers: number;
   playerCount: number;
-  status: UnoRoomStatus;
+  status: UnecoRoomStatus;
   createdAt: string;
 }
 
 // === Game State (sent to a specific player) ===
-export interface UnoGameState {
+export interface UnecoGameState {
   roomId: string;
-  status: UnoRoomStatus;
+  status: UnecoRoomStatus;
   betAmount: number;
   maxPlayers: number;
-  players: UnoPlayer[];
+  players: UnecoPlayer[];
   currentPlayerIndex: number;
-  direction: UnoDirection;
-  discardTop: UnoCard | null;
-  currentColor: UnoCardColor;
+  direction: UnecoDirection;
+  discardTop: UnecoCard | null;
+  currentColor: UnecoCardColor;
   deckCount: number;
-  hand: UnoCard[];
+  hand: UnecoCard[];
   turnTimeRemaining: number;
   winner: string | null;
   spectatorCount: number;
-  unoCatchable: string | null;
+  unecoCatchable: string | null;
   drawStack: number;
 }
 
 // === Match History ===
-export interface UnoMatchHistory {
+export interface UnecoMatchHistory {
   _id: string;
   roomId: string;
   betAmount: number;

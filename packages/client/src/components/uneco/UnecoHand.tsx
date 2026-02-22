@@ -1,18 +1,18 @@
-import type { UnoCard as UnoCardType, UnoCardColor, UnoGameState } from "@butecogames/shared";
-import { UnoCard } from "./UnoCard.js";
+import type { UnecoCard as UnecoCardType, UnecoCardColor, UnecoGameState } from "@butecogames/shared";
+import { UnecoCard } from "./UnecoCard.js";
 
-interface UnoHandProps {
-  hand: UnoCardType[];
-  gameState: UnoGameState;
+interface UnecoHandProps {
+  hand: UnecoCardType[];
+  gameState: UnecoGameState;
   isMyTurn: boolean;
-  onPlayCard: (cardId: string, chosenColor?: UnoCardColor) => void;
+  onPlayCard: (cardId: string, chosenColor?: UnecoCardColor) => void;
   onOpenColorPicker: (cardId: string) => void;
 }
 
 function isPlayable(
-  card: UnoCardType,
-  discardTop: UnoCardType | null,
-  currentColor: UnoCardColor,
+  card: UnecoCardType,
+  discardTop: UnecoCardType | null,
+  currentColor: UnecoCardColor,
   drawStack: number,
 ): boolean {
   // When draw stack is active, only +2/+4 can be played to stack
@@ -26,7 +26,7 @@ function isPlayable(
   return false;
 }
 
-function sortHand(hand: UnoCardType[]): UnoCardType[] {
+function sortHand(hand: UnecoCardType[]): UnecoCardType[] {
   const colorOrder = { red: 0, blue: 1, green: 2, yellow: 3, wild: 4 };
   return [...hand].sort((a, b) => {
     const ca = colorOrder[a.color] ?? 5;
@@ -36,16 +36,16 @@ function sortHand(hand: UnoCardType[]): UnoCardType[] {
   });
 }
 
-export function UnoHand({
+export function UnecoHand({
   hand,
   gameState,
   isMyTurn,
   onPlayCard,
   onOpenColorPicker,
-}: UnoHandProps) {
+}: UnecoHandProps) {
   const sorted = sortHand(hand);
 
-  const handleClick = (card: UnoCardType) => {
+  const handleClick = (card: UnecoCardType) => {
     if (!isMyTurn) return;
     if (!isPlayable(card, gameState.discardTop, gameState.currentColor, gameState.drawStack)) return;
 
@@ -68,7 +68,7 @@ export function UnoHand({
             key={card.id}
             className={`transition-transform ${playable ? "" : ""}`}
           >
-            <UnoCard
+            <UnecoCard
               card={card}
               size="lg"
               playable={playable}

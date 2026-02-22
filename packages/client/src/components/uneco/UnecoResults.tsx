@@ -1,13 +1,13 @@
-import type { UnoGameState } from "@butecogames/shared";
+import type { UnecoGameState } from "@butecogames/shared";
 import { formatCoins } from "@/lib/utils.js";
 
-interface UnoResultsProps {
-  gameState: UnoGameState;
+interface UnecoResultsProps {
+  gameState: UnecoGameState;
   userId: string;
   onReturnToLobby: () => void;
 }
 
-export function UnoResults({ gameState, userId, onReturnToLobby }: UnoResultsProps) {
+export function UnecoResults({ gameState, userId, onReturnToLobby }: UnecoResultsProps) {
   const isWinner = gameState.winner === userId;
   const winner = gameState.players.find((p) => p.userId === gameState.winner);
   const pot = gameState.betAmount * gameState.players.length;

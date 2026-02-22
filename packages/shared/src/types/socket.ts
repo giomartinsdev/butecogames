@@ -10,13 +10,13 @@ import type {
   CardDuelRoundData,
 } from "./card-duel.js";
 import type {
-  UnoCard,
-  UnoCardColor,
-  UnoDirection,
-  UnoGameState,
-  UnoPlayer,
-  UnoRoomInfo,
-} from "./uno.js";
+  UnecoCard,
+  UnecoCardColor,
+  UnecoDirection,
+  UnecoGameState,
+  UnecoPlayer,
+  UnecoRoomInfo,
+} from "./uneco.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
@@ -45,19 +45,19 @@ export interface ClientToServerEvents {
   "card-duel:reconnect": (data: { roomId: string }) => void;
   "card-duel:play_bot": (data: { gameType: CardDuelGameType }) => void;
   "card-duel:cancel_search": () => void;
-  "uno:join_lobby": () => void;
-  "uno:leave_lobby": () => void;
-  "uno:create_room": (data: { betAmount: number; maxPlayers: number }) => void;
-  "uno:join_room": (data: { roomId: string }) => void;
-  "uno:leave_room": () => void;
-  "uno:player_ready": () => void;
-  "uno:start_game": () => void;
-  "uno:play_card": (data: { cardId: string; chosenColor?: UnoCardColor }) => void;
-  "uno:draw_card": () => void;
-  "uno:say_uno": () => void;
-  "uno:catch_uno": (data: { targetUserId: string }) => void;
-  "uno:spectate": (data: { roomId: string }) => void;
-  "uno:stop_spectating": () => void;
+  "uneco:join_lobby": () => void;
+  "uneco:leave_lobby": () => void;
+  "uneco:create_room": (data: { betAmount: number; maxPlayers: number }) => void;
+  "uneco:join_room": (data: { roomId: string }) => void;
+  "uneco:leave_room": () => void;
+  "uneco:player_ready": () => void;
+  "uneco:start_game": () => void;
+  "uneco:play_card": (data: { cardId: string; chosenColor?: UnecoCardColor }) => void;
+  "uneco:draw_card": () => void;
+  "uneco:say_uneco": () => void;
+  "uneco:catch_uneco": (data: { targetUserId: string }) => void;
+  "uneco:spectate": (data: { roomId: string }) => void;
+  "uneco:stop_spectating": () => void;
   "presence:update_status": (data: { status: PresenceStatus }) => void;
   "presence:update_page": (data: { page: string }) => void;
 }
@@ -176,55 +176,55 @@ export interface ServerToClientEvents {
     payout: number;
   }) => void;
   "card-duel:error": (data: { message: string }) => void;
-  "uno:lobby_state": (data: { rooms: UnoRoomInfo[] }) => void;
-  "uno:lobby_update": (data: { rooms: UnoRoomInfo[] }) => void;
-  "uno:room_joined": (data: { gameState: UnoGameState }) => void;
-  "uno:game_state": (data: { gameState: UnoGameState }) => void;
-  "uno:player_joined": (data: { player: UnoPlayer }) => void;
-  "uno:player_left": (data: { userId: string }) => void;
-  "uno:player_ready": (data: { userId: string }) => void;
-  "uno:game_started": (data: { gameState: UnoGameState }) => void;
-  "uno:card_played": (data: {
+  "uneco:lobby_state": (data: { rooms: UnecoRoomInfo[] }) => void;
+  "uneco:lobby_update": (data: { rooms: UnecoRoomInfo[] }) => void;
+  "uneco:room_joined": (data: { gameState: UnecoGameState }) => void;
+  "uneco:game_state": (data: { gameState: UnecoGameState }) => void;
+  "uneco:player_joined": (data: { player: UnecoPlayer }) => void;
+  "uneco:player_left": (data: { userId: string }) => void;
+  "uneco:player_ready": (data: { userId: string }) => void;
+  "uneco:game_started": (data: { gameState: UnecoGameState }) => void;
+  "uneco:card_played": (data: {
     userId: string;
-    card: UnoCard;
-    chosenColor?: UnoCardColor;
+    card: UnecoCard;
+    chosenColor?: UnecoCardColor;
     newCurrentPlayer: number;
-    direction: UnoDirection;
+    direction: UnecoDirection;
     cardCount: number;
   }) => void;
-  "uno:card_drawn": (data: {
+  "uneco:card_drawn": (data: {
     userId: string;
     cardCount: number;
-    card?: UnoCard;
+    card?: UnecoCard;
   }) => void;
-  "uno:turn_changed": (data: {
+  "uneco:turn_changed": (data: {
     currentPlayerIndex: number;
     timeRemaining: number;
     drawStack: number;
   }) => void;
-  "uno:uno_said": (data: { userId: string }) => void;
-  "uno:uno_caught": (data: {
+  "uneco:uneco_said": (data: { userId: string }) => void;
+  "uneco:uneco_caught": (data: {
     catcherId: string;
     targetId: string;
     penaltyCards: number;
   }) => void;
-  "uno:uno_catchable": (data: { userId: string }) => void;
-  "uno:round_ended": (data: {
+  "uneco:uneco_catchable": (data: { userId: string }) => void;
+  "uneco:round_ended": (data: {
     winnerId: string;
     winnerName: string;
     payout: number;
     players: Array<{ userId: string; displayName: string; cardsLeft: number }>;
   }) => void;
-  "uno:room_closed": (data: { reason: string }) => void;
-  "uno:player_disconnected": (data: {
+  "uneco:room_closed": (data: { reason: string }) => void;
+  "uneco:player_disconnected": (data: {
     userId: string;
     countdown: number;
   }) => void;
-  "uno:player_reconnected": (data: { userId: string }) => void;
-  "uno:uno_penalty": (data: {
+  "uneco:player_reconnected": (data: { userId: string }) => void;
+  "uneco:uneco_penalty": (data: {
     userId: string;
     penaltyCards: number;
   }) => void;
-  "uno:spectator_count": (data: { count: number }) => void;
-  "uno:error": (data: { message: string }) => void;
+  "uneco:spectator_count": (data: { count: number }) => void;
+  "uneco:error": (data: { message: string }) => void;
 }

@@ -39,13 +39,13 @@ export function AdminSettingsPage() {
     awayTimeout: 180,
   });
 
-  const [uno, setUno] = useState({
+  const [uneco, setUneco] = useState({
     minPlayers: 2,
     maxPlayers: 10,
     turnTimeout: 30,
     minBet: 10,
     maxBet: 10000,
-    unoCatchWindow: 5,
+    unecoCatchWindow: 5,
     disconnectGrace: 60,
   });
 
@@ -65,8 +65,8 @@ export function AdminSettingsPage() {
       if (settings.general) {
         setGeneral(settings.general);
       }
-      if (settings.uno) {
-        setUno(settings.uno);
+      if (settings.uneco) {
+        setUneco(settings.uneco);
       }
       if (settings.politicalCompass) {
         setPoliticalCompass(settings.politicalCompass);
@@ -88,7 +88,7 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette, eventBetting, cardDuel, uno, general, politicalCompass },
+      { roulette, eventBetting, cardDuel, uneco, general, politicalCompass },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
@@ -497,10 +497,10 @@ export function AdminSettingsPage() {
 
       <div className="rounded-lg border border-border bg-card p-6 mb-4">
         <h2 className="text-xl font-bold text-card-foreground mb-4">
-          UNO
+          UNECO
         </h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Configure os limites e tempos do jogo de UNO.
+          Configure os limites e tempos do jogo de UNECO.
         </p>
 
         <h3 className="text-sm font-semibold text-card-foreground mb-2">Jogadores</h3>
@@ -513,9 +513,9 @@ export function AdminSettingsPage() {
               type="number"
               min={2}
               max={10}
-              value={uno.minPlayers}
+              value={uneco.minPlayers}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
                   minPlayers: parseInt(e.target.value, 10) || 0,
                 }))
@@ -532,9 +532,9 @@ export function AdminSettingsPage() {
               type="number"
               min={2}
               max={10}
-              value={uno.maxPlayers}
+              value={uneco.maxPlayers}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
                   maxPlayers: parseInt(e.target.value, 10) || 0,
                 }))
@@ -553,9 +553,9 @@ export function AdminSettingsPage() {
             <input
               type="number"
               min={1}
-              value={uno.minBet}
+              value={uneco.minBet}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
                   minBet: parseInt(e.target.value, 10) || 0,
                 }))
@@ -571,9 +571,9 @@ export function AdminSettingsPage() {
             <input
               type="number"
               min={1}
-              value={uno.maxBet}
+              value={uneco.maxBet}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
                   maxBet: parseInt(e.target.value, 10) || 0,
                 }))
@@ -593,9 +593,9 @@ export function AdminSettingsPage() {
               type="number"
               min={10}
               max={120}
-              value={uno.turnTimeout}
+              value={uneco.turnTimeout}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
                   turnTimeout: parseInt(e.target.value, 10) || 0,
                 }))
@@ -606,17 +606,17 @@ export function AdminSettingsPage() {
 
           <div>
             <label className="block text-sm font-medium text-card-foreground mb-1">
-              Janela para pegar UNO (segundos)
+              Janela para pegar UNECO (segundos)
             </label>
             <input
               type="number"
               min={1}
               max={30}
-              value={uno.unoCatchWindow}
+              value={uneco.unecoCatchWindow}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
-                  unoCatchWindow: parseInt(e.target.value, 10) || 0,
+                  unecoCatchWindow: parseInt(e.target.value, 10) || 0,
                 }))
               }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
@@ -631,9 +631,9 @@ export function AdminSettingsPage() {
               type="number"
               min={10}
               max={300}
-              value={uno.disconnectGrace}
+              value={uneco.disconnectGrace}
               onChange={(e) =>
-                setUno((prev) => ({
+                setUneco((prev) => ({
                   ...prev,
                   disconnectGrace: parseInt(e.target.value, 10) || 0,
                 }))

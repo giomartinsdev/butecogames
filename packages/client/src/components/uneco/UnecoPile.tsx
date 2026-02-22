@@ -1,18 +1,18 @@
-import type { UnoCard as UnoCardType, UnoCardColor, UnoDirection } from "@butecogames/shared";
-import { UNO_COLOR_HEX } from "@butecogames/shared";
-import { UnoCard } from "./UnoCard.js";
+import type { UnecoCard as UnecoCardType, UnecoCardColor, UnecoDirection } from "@butecogames/shared";
+import { UNECO_COLOR_HEX } from "@butecogames/shared";
+import { UnecoCard } from "./UnecoCard.js";
 
-interface UnoPileProps {
-  discardTop: UnoCardType | null;
-  currentColor: UnoCardColor;
+interface UnecoPileProps {
+  discardTop: UnecoCardType | null;
+  currentColor: UnecoCardColor;
   deckCount: number;
-  direction: UnoDirection;
+  direction: UnecoDirection;
   isMyTurn: boolean;
   onDraw: () => void;
   drawStack?: number;
 }
 
-export function UnoPile({
+export function UnecoPile({
   discardTop,
   currentColor,
   deckCount,
@@ -20,7 +20,7 @@ export function UnoPile({
   isMyTurn,
   onDraw,
   drawStack = 0,
-}: UnoPileProps) {
+}: UnecoPileProps) {
   return (
     <div className="flex items-center gap-6">
       {/* Draw pile */}
@@ -51,7 +51,7 @@ export function UnoPile({
       <div className="flex flex-col items-center gap-2">
         <div className="relative">
           {discardTop ? (
-            <UnoCard card={discardTop} size="lg" />
+            <UnecoCard card={discardTop} size="lg" />
           ) : (
             <div className="flex h-28 w-20 items-center justify-center rounded-lg border-2 border-dashed border-white/20 text-muted-foreground">
               —
@@ -63,7 +63,7 @@ export function UnoPile({
         <div className="flex items-center gap-2">
           <div
             className="h-5 w-5 rounded-full border-2 border-white/40 shadow"
-            style={{ backgroundColor: UNO_COLOR_HEX[currentColor] }}
+            style={{ backgroundColor: UNECO_COLOR_HEX[currentColor] }}
           />
           <span className="text-xs text-muted-foreground">
             {direction === "clockwise" ? "→" : "←"}

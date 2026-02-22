@@ -1,14 +1,14 @@
-import type { UnoPlayer } from "@butecogames/shared";
+import type { UnecoPlayer } from "@butecogames/shared";
 
-interface UnoOpponentProps {
-  player: UnoPlayer;
+interface UnecoOpponentProps {
+  player: UnecoPlayer;
   isCurrentTurn: boolean;
 }
 
-export function UnoOpponent({
+export function UnecoOpponent({
   player,
   isCurrentTurn,
-}: UnoOpponentProps) {
+}: UnecoOpponentProps) {
   return (
     <div
       className={`
@@ -61,9 +61,9 @@ export function UnoOpponent({
         </span>
       </div>
 
-      {player.saidUno && (
+      {player.saidUneco && (
         <span className="rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-bold text-yellow-400">
-          UNO!
+          UNECO!
         </span>
       )}
     </div>

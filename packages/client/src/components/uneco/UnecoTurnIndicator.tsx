@@ -1,11 +1,11 @@
-import type { UnoGameState } from "@butecogames/shared";
+import type { UnecoGameState } from "@butecogames/shared";
 
-interface UnoTurnIndicatorProps {
-  gameState: UnoGameState;
+interface UnecoTurnIndicatorProps {
+  gameState: UnecoGameState;
   isMyTurn: boolean;
 }
 
-export function UnoTurnIndicator({ gameState, isMyTurn }: UnoTurnIndicatorProps) {
+export function UnecoTurnIndicator({ gameState, isMyTurn }: UnecoTurnIndicatorProps) {
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   if (!currentPlayer) return null;
 

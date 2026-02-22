@@ -21,7 +21,7 @@ import { AdminNotificationsPage } from "@/pages/AdminNotificationsPage.js";
 import { AppsPage } from "@/pages/AppsPage.js";
 import { PoliticalCompassPage } from "@/pages/PoliticalCompassPage.js";
 import { AdminAuditPage } from "@/pages/AdminAuditPage.js";
-import { UnoPage } from "@/pages/UnoPage.js";
+import { UnecoPage } from "@/pages/UnecoPage.js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,7 +91,7 @@ function AppRoutes() {
         <Route path="/games/roulette" element={<RoulettePage />} />
         <Route path="/games/event-betting" element={<EventBettingPage />} />
         <Route path="/games/card-duel" element={<CardDuelPage />} />
-        <Route path="/games/uno" element={<UnoPage />} />
+        <Route path="/games/uneco" element={<UnecoPage />} />
         <Route path="/apps" element={<AppsPage />} />
         <Route path="/apps/political-compass" element={<PoliticalCompassPage />} />
         <Route path="/admin" element={<AdminPage />} />

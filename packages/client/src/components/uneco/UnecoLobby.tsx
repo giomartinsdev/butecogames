@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { UnoRoomInfo } from "@butecogames/shared";
+import type { UnecoRoomInfo } from "@butecogames/shared";
 import { useWallet } from "@/hooks/useWallet.js";
 import { useSettings } from "@/hooks/useSettings.js";
-import { fetchUnoRecent, fetchUnoStats } from "@/api/uno.js";
+import { fetchUnecoRecent, fetchUnecoStats } from "@/api/uneco.js";
 import { formatCoins } from "@/lib/utils.js";
 
-interface UnoLobbyProps {
-  rooms: UnoRoomInfo[];
+interface UnecoLobbyProps {
+  rooms: UnecoRoomInfo[];
   onCreateRoom: (betAmount: number, maxPlayers: number) => void;
   onJoinRoom: (roomId: string) => void;
 }
 
-export function UnoLobby({ rooms, onCreateRoom, onJoinRoom }: UnoLobbyProps) {
+export function UnecoLobby({ rooms, onCreateRoom, onJoinRoom }: UnecoLobbyProps) {
   const { data: wallet } = useWallet();
   const { data: settings } = useSettings();
   const [betAmount, setBetAmount] = useState(100);
@@ -20,22 +20,22 @@ export function UnoLobby({ rooms, onCreateRoom, onJoinRoom }: UnoLobbyProps) {
   const [showCreate, setShowCreate] = useState(false);
 
   const { data: recentData } = useQuery({
-    queryKey: ["uno-recent"],
-    queryFn: fetchUnoRecent,
+    queryKey: ["uneco-recent"],
+    queryFn: fetchUnecoRecent,
     staleTime: 30_000,
   });
 
   const { data: statsData } = useQuery({
-    queryKey: ["uno-stats"],
-    queryFn: fetchUnoStats,
+    queryKey: ["uneco-stats"],
+    queryFn: fetchUnecoStats,
     staleTime: 30_000,
   });
 
-  const unoSettings = settings?.uno;
-  const minBet = unoSettings?.minBet ?? 10;
-  const maxBet = unoSettings?.maxBet ?? 10_000;
-  const minP = unoSettings?.minPlayers ?? 2;
-  const maxP = unoSettings?.maxPlayers ?? 10;
+  const unecoSettings = settings?.uneco;
+  const minBet = unecoSettings?.minBet ?? 10;
+  const maxBet = unecoSettings?.maxBet ?? 10_000;
+  const minP = unecoSettings?.minPlayers ?? 2;
+  const maxP = unecoSettings?.maxPlayers ?? 10;
 
   const handleCreate = () => {
     onCreateRoom(betAmount, maxPlayers);

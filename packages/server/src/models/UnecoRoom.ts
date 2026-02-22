@@ -1,11 +1,11 @@
 import mongoose, { Schema, type Document } from "mongoose";
-import type { UnoRoomStatus } from "@butecogames/shared";
+import type { UnecoRoomStatus } from "@butecogames/shared";
 
-export interface IUnoRoom extends Document {
+export interface IUnecoRoom extends Document {
   creatorId: string;
   betAmount: number;
   maxPlayers: number;
-  status: UnoRoomStatus;
+  status: UnecoRoomStatus;
   players: Array<{
     userId: string;
     displayName: string;
@@ -20,7 +20,7 @@ export interface IUnoRoom extends Document {
   completedAt: Date | null;
 }
 
-const unoRoomSchema = new Schema<IUnoRoom>(
+const unecoRoomSchema = new Schema<IUnecoRoom>(
   {
     creatorId: { type: String, required: true, index: true },
     betAmount: { type: Number, required: true, min: 1 },
@@ -48,7 +48,7 @@ const unoRoomSchema = new Schema<IUnoRoom>(
   { timestamps: true },
 );
 
-unoRoomSchema.index({ "players.userId": 1, status: 1 });
-unoRoomSchema.index({ status: 1, createdAt: -1 });
+unecoRoomSchema.index({ "players.userId": 1, status: 1 });
+unecoRoomSchema.index({ status: 1, createdAt: -1 });
 
-export const UnoRoom = mongoose.model<IUnoRoom>("UnoRoom", unoRoomSchema);
+export const UnecoRoom = mongoose.model<IUnecoRoom>("UnecoRoom", unecoRoomSchema);

@@ -1,21 +1,21 @@
-import type { UnoGameState, UnoCardColor } from "@butecogames/shared";
-import { UnoGameBoard } from "./UnoGameBoard.js";
-import { UnoResults } from "./UnoResults.js";
+import type { UnecoGameState, UnecoCardColor } from "@butecogames/shared";
+import { UnecoGameBoard } from "./UnecoGameBoard.js";
+import { UnecoResults } from "./UnecoResults.js";
 import { formatCoins } from "@/lib/utils.js";
 
-interface UnoRoomProps {
-  gameState: UnoGameState;
+interface UnecoRoomProps {
+  gameState: UnecoGameState;
   userId: string;
   colorPickerOpen: boolean;
   onLeaveRoom: () => void;
   onSetReady: () => void;
   onStartGame: () => void;
-  onPlayCard: (cardId: string, chosenColor?: UnoCardColor) => void;
+  onPlayCard: (cardId: string, chosenColor?: UnecoCardColor) => void;
   onDrawCard: () => void;
-  onSayUno: () => void;
+  onSayUneco: () => void;
   onOpenColorPicker: (cardId: string) => void;
   onCloseColorPicker: () => void;
-  onSelectColor: (color: UnoCardColor) => void;
+  onSelectColor: (color: UnecoCardColor) => void;
 }
 
 function WaitingRoom({
@@ -25,7 +25,7 @@ function WaitingRoom({
   onSetReady,
   onStartGame,
 }: {
-  gameState: UnoGameState;
+  gameState: UnecoGameState;
   userId: string;
   onLeaveRoom: () => void;
   onSetReady: () => void;
@@ -43,7 +43,7 @@ function WaitingRoom({
       <div className="rounded-lg border border-border bg-card p-4">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-semibold text-card-foreground">
-            Sala de UNO
+            Sala de UNECO
           </h3>
           <span className="text-sm text-muted-foreground">
             {formatCoins(gameState.betAmount)} coins
@@ -127,7 +127,7 @@ function WaitingRoom({
   );
 }
 
-export function UnoRoom({
+export function UnecoRoom({
   gameState,
   userId,
   colorPickerOpen,
@@ -136,11 +136,11 @@ export function UnoRoom({
   onStartGame,
   onPlayCard,
   onDrawCard,
-  onSayUno,
+  onSayUneco,
   onOpenColorPicker,
   onCloseColorPicker,
   onSelectColor,
-}: UnoRoomProps) {
+}: UnecoRoomProps) {
   if (gameState.status === "waiting" || gameState.status === "starting") {
     return (
       <WaitingRoom
@@ -155,7 +155,7 @@ export function UnoRoom({
 
   if (gameState.status === "finished") {
     return (
-      <UnoResults
+      <UnecoResults
         gameState={gameState}
         userId={userId}
         onReturnToLobby={onLeaveRoom}
@@ -164,13 +164,13 @@ export function UnoRoom({
   }
 
   return (
-    <UnoGameBoard
+    <UnecoGameBoard
       gameState={gameState}
       userId={userId}
       colorPickerOpen={colorPickerOpen}
       onPlayCard={onPlayCard}
       onDrawCard={onDrawCard}
-      onSayUno={onSayUno}
+      onSayUneco={onSayUneco}
       onOpenColorPicker={onOpenColorPicker}
       onCloseColorPicker={onCloseColorPicker}
       onSelectColor={onSelectColor}

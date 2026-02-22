@@ -6,7 +6,7 @@ const ROUTE_LABELS: Array<{ path: string; label: string }> = [
   { path: "/games/roulette", label: "Roleta" },
   { path: "/games/event-betting", label: "Apostas em Eventos" },
   { path: "/games/card-duel", label: "Duelo de Cartas" },
-  { path: "/games/uno", label: "UNO" },
+  { path: "/games/uneco", label: "UNECO" },
   { path: "/games", label: "Jogos" },
   { path: "/apps/political-compass", label: "Bússola Política" },
   { path: "/apps", label: "Apps" },

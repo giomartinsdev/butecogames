@@ -1,26 +1,26 @@
 import crypto from "node:crypto";
 import type { Server } from "socket.io";
 import type {
-  UnoCard,
-  UnoCardColor,
-  UnoCardValue,
-  UnoDirection,
-  UnoRoomStatus,
-  UnoRoomInfo,
-  UnoGameState,
-  UnoPlayer,
+  UnecoCard,
+  UnecoCardColor,
+  UnecoCardValue,
+  UnecoDirection,
+  UnecoRoomStatus,
+  UnecoRoomInfo,
+  UnecoGameState,
+  UnecoPlayer,
   ClientToServerEvents,
   ServerToClientEvents,
 } from "@butecogames/shared";
 import {
-  UNO_COLORS,
-  UNO_NUMBER_VALUES,
-  UNO_ACTION_VALUES,
-  UNO_WILD_VALUES,
-  UNO_CARD_POINTS,
-  DEFAULT_UNO_START_CARDS,
+  UNECO_COLORS,
+  UNECO_NUMBER_VALUES,
+  UNECO_ACTION_VALUES,
+  UNECO_WILD_VALUES,
+  UNECO_CARD_POINTS,
+  DEFAULT_UNECO_START_CARDS,
 } from "@butecogames/shared";
-import { UnoRoom } from "../models/UnoRoom.js";
+import { UnecoRoom } from "../models/UnecoRoom.js";
 import { Wallet } from "../models/Wallet.js";
 import { debitWallet, creditWallet } from "./wallet.js";
 import { getSettings } from "./settings.js";
@@ -37,9 +37,9 @@ interface InternalPlayer {
   displayName: string;
   avatar: string;
   socketId: string;
-  hand: UnoCard[];
+  hand: UnecoCard[];
   isReady: boolean;
-  saidUno: boolean;
+  saidUneco: boolean;
   connected: boolean;
 }
 
@@ -49,23 +49,23 @@ interface DisconnectState {
   countdown: number;
 }
 
-interface ActiveUnoRoom {
+interface ActiveUnecoRoom {
   dbId: string;
   betAmount: number;
   maxPlayers: number;
-  status: UnoRoomStatus;
+  status: UnecoRoomStatus;
   players: InternalPlayer[];
   spectators: Map<string, string>; // userId → socketId
   currentPlayerIndex: number;
-  direction: UnoDirection;
-  deck: UnoCard[];
-  discardPile: UnoCard[];
-  currentColor: UnoCardColor;
+  direction: UnecoDirection;
+  deck: UnecoCard[];
+  discardPile: UnecoCard[];
+  currentColor: UnecoCardColor;
   turnTimer: ReturnType<typeof setTimeout> | null;
   turnInterval: ReturnType<typeof setInterval> | null;
   turnTimeRemaining: number;
-  unoCatchable: string | null;
-  unoCatchTimer: ReturnType<typeof setTimeout> | null;
+  unecoCatchable: string | null;
+  unecoCatchTimer: ReturnType<typeof setTimeout> | null;
   disconnectTimers: Map<string, DisconnectState>;
   startedAt: Date | null;
   drawStack: number;
@@ -76,7 +76,7 @@ interface ActiveUnoRoom {
 // ---------------------------------------------------------------------------
 
 let io: TypedIO;
-const rooms = new Map<string, ActiveUnoRoom>();
+const rooms = new Map<string, ActiveUnecoRoom>();
 const playerRoomMap = new Map<string, string>(); // userId → roomId
 const spectatorRoomMap = new Map<string, string>(); // userId → roomId
 
@@ -90,44 +90,44 @@ function nextCardId(): string {
   return `c${++cardIdCounter}`;
 }
 
-function generateDeck(): UnoCard[] {
-  const deck: UnoCard[] = [];
+function generateDeck(): UnecoCard[] {
+  const deck: UnecoCard[] = [];
 
-  for (const color of UNO_COLORS) {
+  for (const color of UNECO_COLORS) {
     // One 0 per color
     deck.push({ id: nextCardId(), color, value: "0" });
     // Two of each 1-9
-    for (const val of UNO_NUMBER_VALUES) {
+    for (const val of UNECO_NUMBER_VALUES) {
       if (val === "0") continue;
       deck.push({ id: nextCardId(), color, value: val });
       deck.push({ id: nextCardId(), color, value: val });
     }
     // Two of each action card
-    for (const val of UNO_ACTION_VALUES) {
-      deck.push({ id: nextCardId(), color, value: val as UnoCardValue });
-      deck.push({ id: nextCardId(), color, value: val as UnoCardValue });
+    for (const val of UNECO_ACTION_VALUES) {
+      deck.push({ id: nextCardId(), color, value: val as UnecoCardValue });
+      deck.push({ id: nextCardId(), color, value: val as UnecoCardValue });
     }
   }
 
   // Wild cards: 4 of each
-  for (const val of UNO_WILD_VALUES) {
+  for (const val of UNECO_WILD_VALUES) {
     for (let i = 0; i < 4; i++) {
-      deck.push({ id: nextCardId(), color: "wild", value: val as UnoCardValue });
+      deck.push({ id: nextCardId(), color: "wild", value: val as UnecoCardValue });
     }
   }
 
   return deck;
 }
 
-function shuffleDeck(deck: UnoCard[]): void {
+function shuffleDeck(deck: UnecoCard[]): void {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = crypto.randomInt(0, i + 1);
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
 }
 
-function drawFromDeck(room: ActiveUnoRoom, count: number): UnoCard[] {
-  const cards: UnoCard[] = [];
+function drawFromDeck(room: ActiveUnecoRoom, count: number): UnecoCard[] {
+  const cards: UnecoCard[] = [];
   for (let i = 0; i < count; i++) {
     if (room.deck.length === 0) {
       reshuffleDiscard(room);
@@ -138,7 +138,7 @@ function drawFromDeck(room: ActiveUnoRoom, count: number): UnoCard[] {
   return cards;
 }
 
-function reshuffleDiscard(room: ActiveUnoRoom): void {
+function reshuffleDiscard(room: ActiveUnecoRoom): void {
   if (room.discardPile.length <= 1) return;
   const top = room.discardPile.pop()!;
   const reshuffled = room.discardPile.splice(0);
@@ -148,9 +148,9 @@ function reshuffleDiscard(room: ActiveUnoRoom): void {
 }
 
 function isCardPlayable(
-  card: UnoCard,
-  discardTop: UnoCard,
-  currentColor: UnoCardColor,
+  card: UnecoCard,
+  discardTop: UnecoCard,
+  currentColor: UnecoCardColor,
 ): boolean {
   if (card.color === "wild") return true;
   if (card.color === currentColor) return true;
@@ -159,18 +159,18 @@ function isCardPlayable(
 }
 
 function roomSocketName(roomId: string): string {
-  return `uno:room:${roomId}`;
+  return `uneco:room:${roomId}`;
 }
 
 function spectatorSocketName(roomId: string): string {
-  return `uno:spectate:${roomId}`;
+  return `uneco:spectate:${roomId}`;
 }
 
 function emitWalletUpdate(userId: string, balance: number): void {
   io.to(`user:${userId}`).emit("wallet:updated", { balance });
 }
 
-function clearTurnTimer(room: ActiveUnoRoom): void {
+function clearTurnTimer(room: ActiveUnecoRoom): void {
   if (room.turnTimer) {
     clearTimeout(room.turnTimer);
     room.turnTimer = null;
@@ -181,17 +181,17 @@ function clearTurnTimer(room: ActiveUnoRoom): void {
   }
 }
 
-function clearUnoCatchTimer(room: ActiveUnoRoom): void {
-  if (room.unoCatchTimer) {
-    clearTimeout(room.unoCatchTimer);
-    room.unoCatchTimer = null;
+function clearUnecoCatchTimer(room: ActiveUnecoRoom): void {
+  if (room.unecoCatchTimer) {
+    clearTimeout(room.unecoCatchTimer);
+    room.unecoCatchTimer = null;
   }
-  room.unoCatchable = null;
+  room.unecoCatchable = null;
 }
 
-function clearAllTimers(room: ActiveUnoRoom): void {
+function clearAllTimers(room: ActiveUnecoRoom): void {
   clearTurnTimer(room);
-  clearUnoCatchTimer(room);
+  clearUnecoCatchTimer(room);
   for (const dc of room.disconnectTimers.values()) {
     clearTimeout(dc.timer);
     clearInterval(dc.interval);
@@ -212,19 +212,19 @@ function removeRoom(roomId: string): void {
   rooms.delete(roomId);
 }
 
-function toPlayer(p: InternalPlayer): UnoPlayer {
+function toPlayer(p: InternalPlayer): UnecoPlayer {
   return {
     userId: p.userId,
     displayName: p.displayName,
     avatar: p.avatar,
     cardCount: p.hand.length,
     isReady: p.isReady,
-    saidUno: p.saidUno,
+    saidUneco: p.saidUneco,
     connected: p.connected,
   };
 }
 
-function toGameState(room: ActiveUnoRoom, forUserId: string): UnoGameState {
+function toGameState(room: ActiveUnecoRoom, forUserId: string): UnecoGameState {
   const player = room.players.find((p) => p.userId === forUserId);
   return {
     roomId: room.dbId,
@@ -245,12 +245,12 @@ function toGameState(room: ActiveUnoRoom, forUserId: string): UnoGameState {
       ? (room.players.find((p) => p.hand.length === 0)?.userId ?? null)
       : null,
     spectatorCount: room.spectators.size,
-    unoCatchable: room.unoCatchable,
+    unecoCatchable: room.unecoCatchable,
     drawStack: room.drawStack,
   };
 }
 
-function toRoomInfo(room: ActiveUnoRoom): UnoRoomInfo {
+function toRoomInfo(room: ActiveUnecoRoom): UnecoRoomInfo {
   const owner = room.players[0];
   return {
     roomId: room.dbId,
@@ -266,17 +266,17 @@ function toRoomInfo(room: ActiveUnoRoom): UnoRoomInfo {
 }
 
 /** Emit personalized game state to each player + spectators */
-function emitGameStateToAll(room: ActiveUnoRoom): void {
+function emitGameStateToAll(room: ActiveUnecoRoom): void {
   for (const p of room.players) {
     if (p.connected) {
-      io.to(p.socketId).emit("uno:game_state", {
+      io.to(p.socketId).emit("uneco:game_state", {
         gameState: toGameState(room, p.userId),
       });
     }
   }
   // Spectators get state without hand
   const spectatorState = toGameState(room, "__spectator__");
-  io.to(spectatorSocketName(room.dbId)).emit("uno:game_state", {
+  io.to(spectatorSocketName(room.dbId)).emit("uneco:game_state", {
     gameState: spectatorState,
   });
 }
@@ -285,8 +285,8 @@ function emitGameStateToAll(room: ActiveUnoRoom): void {
 // Lobby
 // ---------------------------------------------------------------------------
 
-export function getLobbyRooms(): UnoRoomInfo[] {
-  const result: UnoRoomInfo[] = [];
+export function getLobbyRooms(): UnecoRoomInfo[] {
+  const result: UnecoRoomInfo[] = [];
   for (const room of rooms.values()) {
     if (room.status === "waiting") {
       result.push(toRoomInfo(room));
@@ -296,7 +296,7 @@ export function getLobbyRooms(): UnoRoomInfo[] {
 }
 
 function broadcastLobbyUpdate(): void {
-  io.to("uno:lobby").emit("uno:lobby_update", { rooms: getLobbyRooms() });
+  io.to("uneco:lobby").emit("uneco:lobby_update", { rooms: getLobbyRooms() });
 }
 
 // ---------------------------------------------------------------------------
@@ -316,17 +316,17 @@ export async function createRoom(
   }
 
   const settings = getSettings();
-  if (betAmount < settings.uno.minBet) {
-    throw new Error(`Aposta mínima: ${settings.uno.minBet} coins`);
+  if (betAmount < settings.uneco.minBet) {
+    throw new Error(`Aposta mínima: ${settings.uneco.minBet} coins`);
   }
-  if (betAmount > settings.uno.maxBet) {
-    throw new Error(`Aposta máxima: ${settings.uno.maxBet} coins`);
+  if (betAmount > settings.uneco.maxBet) {
+    throw new Error(`Aposta máxima: ${settings.uneco.maxBet} coins`);
   }
   if (!Number.isInteger(betAmount) || betAmount <= 0) {
     throw new Error("Valor de aposta inválido");
   }
-  if (maxPlayers < settings.uno.minPlayers || maxPlayers > settings.uno.maxPlayers) {
-    throw new Error(`Número de jogadores: ${settings.uno.minPlayers}-${settings.uno.maxPlayers}`);
+  if (maxPlayers < settings.uneco.minPlayers || maxPlayers > settings.uneco.maxPlayers) {
+    throw new Error(`Número de jogadores: ${settings.uneco.minPlayers}-${settings.uneco.maxPlayers}`);
   }
 
   const wallet = await Wallet.findOne({ userId });
@@ -334,7 +334,7 @@ export async function createRoom(
     throw new Error("Você não possui coins suficientes");
   }
 
-  const dbRoom = await UnoRoom.create({
+  const dbRoom = await UnecoRoom.create({
     creatorId: userId,
     betAmount,
     maxPlayers,
@@ -344,7 +344,7 @@ export async function createRoom(
 
   const roomId = dbRoom._id.toString();
 
-  const activeRoom: ActiveUnoRoom = {
+  const activeRoom: ActiveUnecoRoom = {
     dbId: roomId,
     betAmount,
     maxPlayers,
@@ -357,7 +357,7 @@ export async function createRoom(
         socketId,
         hand: [],
         isReady: true, // Owner is auto-ready
-        saidUno: false,
+        saidUneco: false,
         connected: true,
       },
     ],
@@ -370,8 +370,8 @@ export async function createRoom(
     turnTimer: null,
     turnInterval: null,
     turnTimeRemaining: 0,
-    unoCatchable: null,
-    unoCatchTimer: null,
+    unecoCatchable: null,
+    unecoCatchTimer: null,
     disconnectTimers: new Map(),
     startedAt: null,
     drawStack: 0,
@@ -415,18 +415,18 @@ export async function joinRoom(
     socketId,
     hand: [],
     isReady: false,
-    saidUno: false,
+    saidUneco: false,
     connected: true,
   };
 
   room.players.push(player);
   playerRoomMap.set(userId, roomId);
 
-  await UnoRoom.findByIdAndUpdate(roomId, {
+  await UnecoRoom.findByIdAndUpdate(roomId, {
     $push: { players: { userId, displayName, cardsLeft: 0 } },
   });
 
-  io.to(roomSocketName(roomId)).emit("uno:player_joined", {
+  io.to(roomSocketName(roomId)).emit("uneco:player_joined", {
     player: toPlayer(player),
   });
 
@@ -456,8 +456,8 @@ export async function leaveRoom(userId: string): Promise<void> {
       if (isOwner) {
         // Owner leaves → cancel room
         room.status = "cancelled";
-        await UnoRoom.findByIdAndUpdate(roomId, { status: "cancelled" });
-        io.to(roomSocketName(roomId)).emit("uno:room_closed", {
+        await UnecoRoom.findByIdAndUpdate(roomId, { status: "cancelled" });
+        io.to(roomSocketName(roomId)).emit("uneco:room_closed", {
           reason: "O dono da sala saiu",
         });
         removeRoom(roomId);
@@ -465,10 +465,10 @@ export async function leaveRoom(userId: string): Promise<void> {
         // Non-owner leaves
         room.players.splice(playerIndex, 1);
         playerRoomMap.delete(userId);
-        await UnoRoom.findByIdAndUpdate(roomId, {
+        await UnecoRoom.findByIdAndUpdate(roomId, {
           $pull: { players: { userId } },
         });
-        io.to(roomSocketName(roomId)).emit("uno:player_left", { userId });
+        io.to(roomSocketName(roomId)).emit("uneco:player_left", { userId });
       }
       broadcastLobbyUpdate();
       break;
@@ -504,7 +504,7 @@ export function setPlayerReady(userId: string): void {
 
   player.isReady = !player.isReady;
 
-  io.to(roomSocketName(roomId)).emit("uno:player_ready", { userId });
+  io.to(roomSocketName(roomId)).emit("uneco:player_ready", { userId });
   emitGameStateToAll(room);
 }
 
@@ -524,8 +524,8 @@ export async function startGame(userId: string): Promise<void> {
   }
 
   const settings = getSettings();
-  if (room.players.length < settings.uno.minPlayers) {
-    throw new Error(`Mínimo de ${settings.uno.minPlayers} jogadores`);
+  if (room.players.length < settings.uneco.minPlayers) {
+    throw new Error(`Mínimo de ${settings.uneco.minPlayers} jogadores`);
   }
 
   const allReady = room.players.every((p) => p.isReady);
@@ -540,12 +540,12 @@ export async function startGame(userId: string): Promise<void> {
   for (const player of room.players) {
     try {
       await debitWallet(player.userId, bet, "bet_placed", {
-        gameId: "uno",
+        gameId: "uneco",
         matchId: roomId,
       });
       debitedPlayers.push(player.userId);
       processAction(player.userId, "bet_placed", {
-        gameId: "uno",
+        gameId: "uneco",
         betAmount: bet,
         matchId: roomId,
       });
@@ -553,7 +553,7 @@ export async function startGame(userId: string): Promise<void> {
       // Refund all previously debited players
       for (const dId of debitedPlayers) {
         await creditWallet(dId, bet, "bet_refund", {
-          gameId: "uno",
+          gameId: "uneco",
           matchId: roomId,
         });
         const w = await Wallet.findOne({ userId: dId });
@@ -582,12 +582,12 @@ export async function startGame(userId: string): Promise<void> {
 
   // Deal cards
   for (const player of room.players) {
-    player.hand = drawFromDeck(room, DEFAULT_UNO_START_CARDS);
-    player.saidUno = false;
+    player.hand = drawFromDeck(room, DEFAULT_UNECO_START_CARDS);
+    player.saidUneco = false;
   }
 
   // Flip initial discard card — if it's a wild or +4, put back and draw again
-  let startCard: UnoCard;
+  let startCard: UnecoCard;
   while (true) {
     const drawn = drawFromDeck(room, 1);
     if (drawn.length === 0) break;
@@ -605,7 +605,7 @@ export async function startGame(userId: string): Promise<void> {
   // Set initial color
   const topDiscard = room.discardPile[room.discardPile.length - 1];
   if (topDiscard && topDiscard.color !== "wild") {
-    room.currentColor = topDiscard.color as UnoCardColor;
+    room.currentColor = topDiscard.color as UnecoCardColor;
   } else {
     room.currentColor = "red"; // fallback
   }
@@ -615,7 +615,7 @@ export async function startGame(userId: string): Promise<void> {
     applyStartingCardEffect(room, topDiscard);
   }
 
-  await UnoRoom.findByIdAndUpdate(roomId, {
+  await UnecoRoom.findByIdAndUpdate(roomId, {
     status: "playing",
     startedAt: room.startedAt,
   });
@@ -625,7 +625,7 @@ export async function startGame(userId: string): Promise<void> {
 
   // Emit personalized game state to each player
   for (const p of room.players) {
-    io.to(p.socketId).emit("uno:game_started", {
+    io.to(p.socketId).emit("uneco:game_started", {
       gameState: toGameState(room, p.userId),
     });
   }
@@ -633,7 +633,7 @@ export async function startGame(userId: string): Promise<void> {
   broadcastLobbyUpdate();
 }
 
-function applyStartingCardEffect(room: ActiveUnoRoom, card: UnoCard): void {
+function applyStartingCardEffect(room: ActiveUnecoRoom, card: UnecoCard): void {
   switch (card.value) {
     case "skip":
       // First player is skipped
@@ -663,7 +663,7 @@ function applyStartingCardEffect(room: ActiveUnoRoom, card: UnoCard): void {
 // Turn Management
 // ---------------------------------------------------------------------------
 
-function getNextPlayerIndex(room: ActiveUnoRoom, current: number): number {
+function getNextPlayerIndex(room: ActiveUnecoRoom, current: number): number {
   const count = room.players.length;
   if (room.direction === "clockwise") {
     return (current + 1) % count;
@@ -671,7 +671,7 @@ function getNextPlayerIndex(room: ActiveUnoRoom, current: number): number {
   return (current - 1 + count) % count;
 }
 
-function startTurnTimer(room: ActiveUnoRoom): void {
+function startTurnTimer(room: ActiveUnecoRoom): void {
   clearTurnTimer(room);
 
   // Auto-draw: if draw stack is active and current player has no +2/+4, draw immediately
@@ -681,14 +681,14 @@ function startTurnTimer(room: ActiveUnoRoom): void {
       const drawCount = room.drawStack;
       const drawn = drawFromDeck(room, drawCount);
       player.hand.push(...drawn);
-      player.saidUno = false;
+      player.saidUneco = false;
       room.drawStack = 0;
 
-      io.to(roomSocketName(room.dbId)).emit("uno:card_drawn", {
+      io.to(roomSocketName(room.dbId)).emit("uneco:card_drawn", {
         userId: player.userId,
         cardCount: player.hand.length,
       });
-      io.to(spectatorSocketName(room.dbId)).emit("uno:card_drawn", {
+      io.to(spectatorSocketName(room.dbId)).emit("uneco:card_drawn", {
         userId: player.userId,
         cardCount: player.hand.length,
       });
@@ -703,14 +703,14 @@ function startTurnTimer(room: ActiveUnoRoom): void {
   }
 
   const settings = getSettings();
-  room.turnTimeRemaining = settings.uno.turnTimeout;
+  room.turnTimeRemaining = settings.uneco.turnTimeout;
 
-  io.to(roomSocketName(room.dbId)).emit("uno:turn_changed", {
+  io.to(roomSocketName(room.dbId)).emit("uneco:turn_changed", {
     currentPlayerIndex: room.currentPlayerIndex,
     timeRemaining: room.turnTimeRemaining,
     drawStack: room.drawStack,
   });
-  io.to(spectatorSocketName(room.dbId)).emit("uno:turn_changed", {
+  io.to(spectatorSocketName(room.dbId)).emit("uneco:turn_changed", {
     currentPlayerIndex: room.currentPlayerIndex,
     timeRemaining: room.turnTimeRemaining,
     drawStack: room.drawStack,
@@ -727,7 +727,7 @@ function startTurnTimer(room: ActiveUnoRoom): void {
   room.turnTimer = setTimeout(() => {
     clearTurnTimer(room);
     handleTurnTimeout(room.dbId);
-  }, (settings.uno.turnTimeout + 1) * 1000);
+  }, (settings.uneco.turnTimeout + 1) * 1000);
 }
 
 function handleTurnTimeout(roomId: string): void {
@@ -741,36 +741,36 @@ function handleTurnTimeout(roomId: string): void {
   const drawCount = room.drawStack > 0 ? room.drawStack : 1;
   const drawn = drawFromDeck(room, drawCount);
   player.hand.push(...drawn);
-  player.saidUno = false;
+  player.saidUneco = false;
   room.drawStack = 0;
 
   if (drawCount === 1 && drawn.length === 1) {
     // Normal single draw — only the drawing player sees the card
     for (const p of room.players) {
       if (p.userId === player.userId) {
-        io.to(p.socketId).emit("uno:card_drawn", {
+        io.to(p.socketId).emit("uneco:card_drawn", {
           userId: player.userId,
           cardCount: player.hand.length,
           card: drawn[0],
         });
       } else {
-        io.to(p.socketId).emit("uno:card_drawn", {
+        io.to(p.socketId).emit("uneco:card_drawn", {
           userId: player.userId,
           cardCount: player.hand.length,
         });
       }
     }
-    io.to(spectatorSocketName(roomId)).emit("uno:card_drawn", {
+    io.to(spectatorSocketName(roomId)).emit("uneco:card_drawn", {
       userId: player.userId,
       cardCount: player.hand.length,
     });
   } else {
     // Stack draw — emit count then full state
-    io.to(roomSocketName(roomId)).emit("uno:card_drawn", {
+    io.to(roomSocketName(roomId)).emit("uneco:card_drawn", {
       userId: player.userId,
       cardCount: player.hand.length,
     });
-    io.to(spectatorSocketName(roomId)).emit("uno:card_drawn", {
+    io.to(spectatorSocketName(roomId)).emit("uneco:card_drawn", {
       userId: player.userId,
       cardCount: player.hand.length,
     });
@@ -789,7 +789,7 @@ function handleTurnTimeout(roomId: string): void {
 export async function playCard(
   userId: string,
   cardId: string,
-  chosenColor?: UnoCardColor,
+  chosenColor?: UnecoCardColor,
 ): Promise<void> {
   const roomId = playerRoomMap.get(userId);
   if (!roomId) throw new Error("Você não está em uma sala");
@@ -828,24 +828,24 @@ export async function playCard(
   if ((card.value === "wild" || card.value === "+4") && !chosenColor) {
     throw new Error("Escolha uma cor para a carta wild");
   }
-  if (chosenColor && !UNO_COLORS.includes(chosenColor)) {
+  if (chosenColor && !UNECO_COLORS.includes(chosenColor)) {
     throw new Error("Cor inválida");
   }
 
-  // UNO enforcement: must say UNO before playing when at 2 cards
-  if (player.hand.length === 2 && !player.saidUno) {
+  // UNECO enforcement: must say UNECO before playing when at 2 cards
+  if (player.hand.length === 2 && !player.saidUneco) {
     // Card NOT played. Penalty: draw 1 extra card. Turn advances.
     const penaltyCards = drawFromDeck(room, 1);
     player.hand.push(...penaltyCards);
-    player.saidUno = false;
+    player.saidUneco = false;
 
     clearTurnTimer(room);
 
-    io.to(roomSocketName(roomId)).emit("uno:uno_penalty", {
+    io.to(roomSocketName(roomId)).emit("uneco:uneco_penalty", {
       userId,
       penaltyCards: penaltyCards.length,
     });
-    io.to(spectatorSocketName(roomId)).emit("uno:uno_penalty", {
+    io.to(spectatorSocketName(roomId)).emit("uneco:uneco_penalty", {
       userId,
       penaltyCards: penaltyCards.length,
     });
@@ -865,19 +865,19 @@ export async function playCard(
   if (card.color === "wild" && chosenColor) {
     room.currentColor = chosenColor;
   } else if (card.color !== "wild") {
-    room.currentColor = card.color as UnoCardColor;
+    room.currentColor = card.color as UnecoCardColor;
   }
 
   clearTurnTimer(room);
-  clearUnoCatchTimer(room);
+  clearUnecoCatchTimer(room);
 
-  // Reset saidUno — keep it true only when going from 2→1 (they said UNO to play)
+  // Reset saidUneco — keep it true only when going from 2→1 (they said UNECO to play)
   if (player.hand.length !== 1) {
-    player.saidUno = false;
+    player.saidUneco = false;
   }
 
   // Emit card played
-  io.to(roomSocketName(roomId)).emit("uno:card_played", {
+  io.to(roomSocketName(roomId)).emit("uneco:card_played", {
     userId,
     card,
     chosenColor,
@@ -885,7 +885,7 @@ export async function playCard(
     direction: room.direction,
     cardCount: player.hand.length,
   });
-  io.to(spectatorSocketName(roomId)).emit("uno:card_played", {
+  io.to(spectatorSocketName(roomId)).emit("uneco:card_played", {
     userId,
     card,
     chosenColor,
@@ -911,9 +911,9 @@ export async function playCard(
 }
 
 function applyCardEffect(
-  room: ActiveUnoRoom,
-  card: UnoCard,
-  _chosenColor?: UnoCardColor,
+  room: ActiveUnecoRoom,
+  card: UnecoCard,
+  _chosenColor?: UnecoCardColor,
 ): void {
   switch (card.value) {
     case "skip": {
@@ -968,36 +968,36 @@ export function drawCard(userId: string): void {
   const drawCount = room.drawStack > 0 ? room.drawStack : 1;
   const drawn = drawFromDeck(room, drawCount);
   player.hand.push(...drawn);
-  player.saidUno = false;
+  player.saidUneco = false;
   room.drawStack = 0;
 
   if (drawCount === 1 && drawn.length === 1) {
     // Normal single draw — only the drawing player sees the card
     for (const p of room.players) {
       if (p.userId === userId) {
-        io.to(p.socketId).emit("uno:card_drawn", {
+        io.to(p.socketId).emit("uneco:card_drawn", {
           userId,
           cardCount: player.hand.length,
           card: drawn[0],
         });
       } else {
-        io.to(p.socketId).emit("uno:card_drawn", {
+        io.to(p.socketId).emit("uneco:card_drawn", {
           userId,
           cardCount: player.hand.length,
         });
       }
     }
-    io.to(spectatorSocketName(roomId)).emit("uno:card_drawn", {
+    io.to(spectatorSocketName(roomId)).emit("uneco:card_drawn", {
       userId,
       cardCount: player.hand.length,
     });
   } else {
     // Stack draw — emit count then full state
-    io.to(roomSocketName(roomId)).emit("uno:card_drawn", {
+    io.to(roomSocketName(roomId)).emit("uneco:card_drawn", {
       userId,
       cardCount: player.hand.length,
     });
-    io.to(spectatorSocketName(roomId)).emit("uno:card_drawn", {
+    io.to(spectatorSocketName(roomId)).emit("uneco:card_drawn", {
       userId,
       cardCount: player.hand.length,
     });
@@ -1011,10 +1011,10 @@ export function drawCard(userId: string): void {
 }
 
 // ---------------------------------------------------------------------------
-// UNO Call & Catch
+// UNECO Call & Catch
 // ---------------------------------------------------------------------------
 
-export function sayUno(userId: string): void {
+export function sayUneco(userId: string): void {
   const roomId = playerRoomMap.get(userId);
   if (!roomId) throw new Error("Você não está em uma sala");
 
@@ -1025,45 +1025,45 @@ export function sayUno(userId: string): void {
   if (!player) throw new Error("Jogador não encontrado");
 
   if (player.hand.length > 2) {
-    throw new Error("Você só pode dizer UNO com 1 ou 2 cartas");
+    throw new Error("Você só pode dizer UNECO com 1 ou 2 cartas");
   }
 
-  player.saidUno = true;
+  player.saidUneco = true;
 
-  io.to(roomSocketName(roomId)).emit("uno:uno_said", { userId });
-  io.to(spectatorSocketName(roomId)).emit("uno:uno_said", { userId });
+  io.to(roomSocketName(roomId)).emit("uneco:uneco_said", { userId });
+  io.to(spectatorSocketName(roomId)).emit("uneco:uneco_said", { userId });
 }
 
-export function catchUno(catcherId: string, targetUserId: string): void {
+export function catchUneco(catcherId: string, targetUserId: string): void {
   const roomId = playerRoomMap.get(catcherId);
   if (!roomId) throw new Error("Você não está em uma sala");
 
   const room = rooms.get(roomId);
   if (!room || room.status !== "playing") throw new Error("Jogo não está em andamento");
 
-  if (room.unoCatchable !== targetUserId) {
+  if (room.unecoCatchable !== targetUserId) {
     throw new Error("Este jogador não pode ser pego");
   }
 
   const target = room.players.find((p) => p.userId === targetUserId);
   if (!target) throw new Error("Jogador não encontrado");
 
-  if (target.saidUno) {
-    throw new Error("O jogador já disse UNO");
+  if (target.saidUneco) {
+    throw new Error("O jogador já disse UNECO");
   }
 
   // Penalty: draw 2 cards
   const penaltyCards = drawFromDeck(room, 2);
   target.hand.push(...penaltyCards);
 
-  clearUnoCatchTimer(room);
+  clearUnecoCatchTimer(room);
 
-  io.to(roomSocketName(roomId)).emit("uno:uno_caught", {
+  io.to(roomSocketName(roomId)).emit("uneco:uneco_caught", {
     catcherId,
     targetId: targetUserId,
     penaltyCards: penaltyCards.length,
   });
-  io.to(spectatorSocketName(roomId)).emit("uno:uno_caught", {
+  io.to(spectatorSocketName(roomId)).emit("uneco:uneco_caught", {
     catcherId,
     targetId: targetUserId,
     penaltyCards: penaltyCards.length,
@@ -1089,11 +1089,11 @@ async function resolveGame(roomId: string, winnerId: string): Promise<void> {
 
   // Credit winner with full pot
   await creditWallet(winnerId, pot, "bet_won", {
-    gameId: "uno",
+    gameId: "uneco",
     matchId: roomId,
   });
   processAction(winnerId, "bet_won", {
-    gameId: "uno",
+    gameId: "uneco",
     betAmount: room.betAmount,
     payout: pot,
     matchId: roomId,
@@ -1112,7 +1112,7 @@ async function resolveGame(roomId: string, winnerId: string): Promise<void> {
   }));
 
   // Update DB
-  await UnoRoom.findByIdAndUpdate(roomId, {
+  await UnecoRoom.findByIdAndUpdate(roomId, {
     status: "finished",
     winnerId,
     winnerName: winner.displayName,
@@ -1123,13 +1123,13 @@ async function resolveGame(roomId: string, winnerId: string): Promise<void> {
   });
 
   // Emit results
-  io.to(roomSocketName(roomId)).emit("uno:round_ended", {
+  io.to(roomSocketName(roomId)).emit("uneco:round_ended", {
     winnerId,
     winnerName: winner.displayName,
     payout: pot,
     players: playerResults,
   });
-  io.to(spectatorSocketName(roomId)).emit("uno:round_ended", {
+  io.to(spectatorSocketName(roomId)).emit("uneco:round_ended", {
     winnerId,
     winnerName: winner.displayName,
     payout: pot,
@@ -1138,7 +1138,7 @@ async function resolveGame(roomId: string, winnerId: string): Promise<void> {
 
   // Clean up room after a delay
   setTimeout(() => {
-    io.to(roomSocketName(roomId)).emit("uno:room_closed", {
+    io.to(roomSocketName(roomId)).emit("uneco:room_closed", {
       reason: "Jogo encerrado",
     });
     removeRoom(roomId);
@@ -1150,16 +1150,16 @@ async function resolveGame(roomId: string, winnerId: string): Promise<void> {
 // Disconnect Handling
 // ---------------------------------------------------------------------------
 
-function startDisconnectTimer(room: ActiveUnoRoom, userId: string): void {
+function startDisconnectTimer(room: ActiveUnecoRoom, userId: string): void {
   if (room.disconnectTimers.has(userId)) return;
 
   const player = room.players.find((p) => p.userId === userId);
   if (player) player.connected = false;
 
   const settings = getSettings();
-  let countdown = settings.uno.disconnectGrace;
+  let countdown = settings.uneco.disconnectGrace;
 
-  io.to(roomSocketName(room.dbId)).emit("uno:player_disconnected", {
+  io.to(roomSocketName(room.dbId)).emit("uneco:player_disconnected", {
     userId,
     countdown,
   });
@@ -1187,7 +1187,7 @@ function startDisconnectTimer(room: ActiveUnoRoom, userId: string): void {
     }
     room.disconnectTimers.delete(userId);
     handlePlayerForfeit(room.dbId, userId);
-  }, (settings.uno.disconnectGrace + 1) * 1000);
+  }, (settings.uneco.disconnectGrace + 1) * 1000);
 
   room.disconnectTimers.set(userId, { timer, interval, countdown });
 }
@@ -1213,7 +1213,7 @@ async function handlePlayerForfeit(
     room.currentPlayerIndex--;
   }
 
-  io.to(roomSocketName(roomId)).emit("uno:player_left", { userId: forfeitUserId });
+  io.to(roomSocketName(roomId)).emit("uneco:player_left", { userId: forfeitUserId });
 
   // If only 1 player left, they win
   if (room.players.length <= 1) {
@@ -1298,7 +1298,7 @@ export async function handleReconnect(
     clearInterval(dc.interval);
     room.disconnectTimers.delete(userId);
 
-    io.to(roomSocketName(roomId)).emit("uno:player_reconnected", { userId });
+    io.to(roomSocketName(roomId)).emit("uneco:player_reconnected", { userId });
   }
 }
 
@@ -1322,7 +1322,7 @@ export function spectateRoom(
   room.spectators.set(userId, socketId);
   spectatorRoomMap.set(userId, roomId);
 
-  io.to(roomSocketName(roomId)).emit("uno:spectator_count", {
+  io.to(roomSocketName(roomId)).emit("uneco:spectator_count", {
     count: room.spectators.size,
   });
 }
@@ -1334,7 +1334,7 @@ export function stopSpectating(userId: string): void {
   const room = rooms.get(roomId);
   if (room) {
     room.spectators.delete(userId);
-    io.to(roomSocketName(roomId)).emit("uno:spectator_count", {
+    io.to(roomSocketName(roomId)).emit("uneco:spectator_count", {
       count: room.spectators.size,
     });
   }
@@ -1347,7 +1347,7 @@ export function stopSpectating(userId: string): void {
 
 async function closeRoom(
   roomId: string,
-  status: UnoRoomStatus,
+  status: UnecoRoomStatus,
   reason: string,
 ): Promise<void> {
   const room = rooms.get(roomId);
@@ -1356,12 +1356,12 @@ async function closeRoom(
   clearAllTimers(room);
   room.status = status;
 
-  await UnoRoom.findByIdAndUpdate(roomId, {
+  await UnecoRoom.findByIdAndUpdate(roomId, {
     status,
     completedAt: new Date(),
   });
 
-  io.to(roomSocketName(roomId)).emit("uno:room_closed", { reason });
+  io.to(roomSocketName(roomId)).emit("uneco:room_closed", { reason });
   removeRoom(roomId);
   broadcastLobbyUpdate();
 }
@@ -1370,7 +1370,7 @@ async function closeRoom(
 // Exported accessors
 // ---------------------------------------------------------------------------
 
-export function getRoomState(roomId: string): UnoGameState {
+export function getRoomState(roomId: string): UnecoGameState {
   const room = rooms.get(roomId);
   if (!room) throw new Error("Sala não encontrada");
   return toGameState(room, "__lobby__");
@@ -1383,7 +1383,7 @@ export function getPlayerRoom(userId: string): string | undefined {
 export function getGameStateForPlayer(
   roomId: string,
   userId: string,
-): UnoGameState {
+): UnecoGameState {
   const room = rooms.get(roomId);
   if (!room) throw new Error("Sala não encontrada");
   return toGameState(room, userId);
@@ -1393,41 +1393,41 @@ export function getGameStateForPlayer(
 // Initialization & crash recovery
 // ---------------------------------------------------------------------------
 
-export async function initUnoEngine(socketIo: TypedIO): Promise<void> {
+export async function initUnecoEngine(socketIo: TypedIO): Promise<void> {
   io = socketIo;
 
   // Clean up stale rooms from previous crashes
-  const staleInProgress = await UnoRoom.find({ status: "playing" });
+  const staleInProgress = await UnecoRoom.find({ status: "playing" });
   for (const room of staleInProgress) {
-    console.log(`[UNO] Refunding stale in_progress room ${room._id}`);
+    console.log(`[UNECO] Refunding stale in_progress room ${room._id}`);
     for (const player of room.players) {
       try {
         await creditWallet(player.userId, room.betAmount, "bet_refund", {
-          gameId: "uno",
+          gameId: "uneco",
           matchId: room._id.toString(),
         });
       } catch (err) {
         console.error(
-          `[UNO] Failed to refund player ${player.userId} in room ${room._id}:`,
+          `[UNECO] Failed to refund player ${player.userId} in room ${room._id}:`,
           err,
         );
       }
     }
-    await UnoRoom.findByIdAndUpdate(room._id, {
+    await UnecoRoom.findByIdAndUpdate(room._id, {
       status: "cancelled",
       completedAt: new Date(),
     });
   }
 
-  const staleWaiting = await UnoRoom.updateMany(
+  const staleWaiting = await UnecoRoom.updateMany(
     { status: { $in: ["waiting", "starting"] } },
     { $set: { status: "cancelled", completedAt: new Date() } },
   );
   if (staleWaiting.modifiedCount > 0) {
     console.log(
-      `[UNO] Cancelled ${staleWaiting.modifiedCount} stale waiting rooms`,
+      `[UNECO] Cancelled ${staleWaiting.modifiedCount} stale waiting rooms`,
     );
   }
 
-  console.log("[UNO] Engine initialized");
+  console.log("[UNECO] Engine initialized");
 }

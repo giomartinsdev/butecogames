@@ -1,4 +1,4 @@
-export type GameId = "roulette" | "event-betting" | "card-duel" | "uno";
+export type GameId = "roulette" | "event-betting" | "card-duel" | "uneco";
 
 export interface GameInfo {
   id: GameId;

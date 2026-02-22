@@ -14,13 +14,13 @@ import {
   CARD_DUEL_DISCONNECT_GRACE,
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
-  DEFAULT_UNO_MIN_PLAYERS,
-  DEFAULT_UNO_MAX_PLAYERS,
-  DEFAULT_UNO_TURN_TIMEOUT,
-  DEFAULT_UNO_MIN_BET,
-  DEFAULT_UNO_MAX_BET,
-  DEFAULT_UNO_CATCH_WINDOW,
-  DEFAULT_UNO_DISCONNECT_GRACE,
+  DEFAULT_UNECO_MIN_PLAYERS,
+  DEFAULT_UNECO_MAX_PLAYERS,
+  DEFAULT_UNECO_TURN_TIMEOUT,
+  DEFAULT_UNECO_MIN_BET,
+  DEFAULT_UNECO_MAX_BET,
+  DEFAULT_UNECO_CATCH_WINDOW,
+  DEFAULT_UNECO_DISCONNECT_GRACE,
   DEFAULT_AWAY_TIMEOUT,
   DEFAULT_RETEST_COOLDOWN_DAYS,
 } from "@butecogames/shared";
@@ -69,9 +69,9 @@ export async function updateSettings(
     }
   }
 
-  if (partial.uno) {
-    for (const [key, value] of Object.entries(partial.uno)) {
-      update[`uno.${key}`] = value;
+  if (partial.uneco) {
+    for (const [key, value] of Object.entries(partial.uneco)) {
+      update[`uneco.${key}`] = value;
     }
   }
 
@@ -125,14 +125,14 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
       cardRevealDelay: doc.cardDuel?.cardRevealDelay ?? CARD_DUEL_CARD_REVEAL_DELAY,
       botBetAmount: doc.cardDuel?.botBetAmount ?? DEFAULT_CARD_DUEL_BOT_BET,
     },
-    uno: {
-      minPlayers: doc.uno?.minPlayers ?? DEFAULT_UNO_MIN_PLAYERS,
-      maxPlayers: doc.uno?.maxPlayers ?? DEFAULT_UNO_MAX_PLAYERS,
-      turnTimeout: doc.uno?.turnTimeout ?? DEFAULT_UNO_TURN_TIMEOUT,
-      minBet: doc.uno?.minBet ?? DEFAULT_UNO_MIN_BET,
-      maxBet: doc.uno?.maxBet ?? DEFAULT_UNO_MAX_BET,
-      unoCatchWindow: doc.uno?.unoCatchWindow ?? DEFAULT_UNO_CATCH_WINDOW,
-      disconnectGrace: doc.uno?.disconnectGrace ?? DEFAULT_UNO_DISCONNECT_GRACE,
+    uneco: {
+      minPlayers: doc.uneco?.minPlayers ?? DEFAULT_UNECO_MIN_PLAYERS,
+      maxPlayers: doc.uneco?.maxPlayers ?? DEFAULT_UNECO_MAX_PLAYERS,
+      turnTimeout: doc.uneco?.turnTimeout ?? DEFAULT_UNECO_TURN_TIMEOUT,
+      minBet: doc.uneco?.minBet ?? DEFAULT_UNECO_MIN_BET,
+      maxBet: doc.uneco?.maxBet ?? DEFAULT_UNECO_MAX_BET,
+      unecoCatchWindow: doc.uneco?.unecoCatchWindow ?? DEFAULT_UNECO_CATCH_WINDOW,
+      disconnectGrace: doc.uneco?.disconnectGrace ?? DEFAULT_UNECO_DISCONNECT_GRACE,
     },
     general: {
       cursorSize: doc.general?.cursorSize ?? DEFAULT_CURSOR_SIZE,

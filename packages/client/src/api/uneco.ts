@@ -1,6 +1,6 @@
 import { apiFetch } from "./client.js";
 
-export function fetchUnoHistory(page = 1) {
+export function fetchUnecoHistory(page = 1) {
   return apiFetch<{
     matches: Array<{
       _id: string;
@@ -15,16 +15,16 @@ export function fetchUnoHistory(page = 1) {
       createdAt: string;
     }>;
     pagination: { page: number; limit: number; total: number; pages: number };
-  }>(`/api/uno/history?page=${page}`);
+  }>(`/api/uneco/history?page=${page}`);
 }
 
-export function fetchUnoStats() {
+export function fetchUnecoStats() {
   return apiFetch<{
     stats: { wins: number; losses: number; total: number };
-  }>("/api/uno/stats");
+  }>("/api/uneco/stats");
 }
 
-export function fetchUnoRecent() {
+export function fetchUnecoRecent() {
   return apiFetch<{
     matches: Array<{
       _id: string;
@@ -42,5 +42,5 @@ export function fetchUnoRecent() {
       duration: number;
       completedAt: string;
     }>;
-  }>("/api/uno/recent");
+  }>("/api/uneco/recent");
 }

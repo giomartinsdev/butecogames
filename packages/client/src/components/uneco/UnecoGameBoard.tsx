@@ -1,33 +1,33 @@
-import type { UnoGameState, UnoCardColor } from "@butecogames/shared";
-import { UnoHand } from "./UnoHand.js";
-import { UnoPile } from "./UnoPile.js";
-import { UnoOpponent } from "./UnoOpponent.js";
-import { UnoTurnIndicator } from "./UnoTurnIndicator.js";
-import { UnoColorPicker } from "./UnoColorPicker.js";
+import type { UnecoGameState, UnecoCardColor } from "@butecogames/shared";
+import { UnecoHand } from "./UnecoHand.js";
+import { UnecoPile } from "./UnecoPile.js";
+import { UnecoOpponent } from "./UnecoOpponent.js";
+import { UnecoTurnIndicator } from "./UnecoTurnIndicator.js";
+import { UnecoColorPicker } from "./UnecoColorPicker.js";
 
-interface UnoGameBoardProps {
-  gameState: UnoGameState;
+interface UnecoGameBoardProps {
+  gameState: UnecoGameState;
   userId: string;
   colorPickerOpen: boolean;
-  onPlayCard: (cardId: string, chosenColor?: UnoCardColor) => void;
+  onPlayCard: (cardId: string, chosenColor?: UnecoCardColor) => void;
   onDrawCard: () => void;
-  onSayUno: () => void;
+  onSayUneco: () => void;
   onOpenColorPicker: (cardId: string) => void;
   onCloseColorPicker: () => void;
-  onSelectColor: (color: UnoCardColor) => void;
+  onSelectColor: (color: UnecoCardColor) => void;
 }
 
-export function UnoGameBoard({
+export function UnecoGameBoard({
   gameState,
   userId,
   colorPickerOpen,
   onPlayCard,
   onDrawCard,
-  onSayUno,
+  onSayUneco,
   onOpenColorPicker,
   onCloseColorPicker,
   onSelectColor,
-}: UnoGameBoardProps) {
+}: UnecoGameBoardProps) {
   const myPlayerIndex = gameState.players.findIndex(
     (p) => p.userId === userId,
   );
@@ -47,12 +47,12 @@ export function UnoGameBoard({
     return false;
   });
 
-  // Show UNO button when player has exactly 2 cards, it's their turn,
-  // they haven't said UNO yet, and they can actually play a card
-  const showUnoButton =
+  // Show UNECO button when player has exactly 2 cards, it's their turn,
+  // they haven't said UNECO yet, and they can actually play a card
+  const showUnecoButton =
     myPlayer &&
     myPlayer.cardCount === 2 &&
-    !myPlayer.saidUno &&
+    !myPlayer.saidUneco &&
     isMyTurn &&
     hasPlayableCard &&
     gameState.status === "playing";
@@ -62,7 +62,7 @@ export function UnoGameBoard({
       {/* Opponents */}
       <div className="flex flex-wrap items-start justify-center gap-3">
         {opponents.map((player) => (
-          <UnoOpponent
+          <UnecoOpponent
             key={player.userId}
             player={player}
             isCurrentTurn={
@@ -74,7 +74,7 @@ export function UnoGameBoard({
       </div>
 
       {/* Turn indicator */}
-      <UnoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
+      <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
 
       {/* Draw stack indicator */}
       {gameState.drawStack > 0 && (
@@ -90,7 +90,7 @@ export function UnoGameBoard({
 
       {/* Center: Pile */}
       <div className="flex items-center justify-center py-4">
-        <UnoPile
+        <UnecoPile
           discardTop={gameState.discardTop}
           currentColor={gameState.currentColor}
           deckCount={gameState.deckCount}
@@ -101,22 +101,22 @@ export function UnoGameBoard({
         />
       </div>
 
-      {/* UNO button */}
-      {showUnoButton && (
+      {/* UNECO button */}
+      {showUnecoButton && (
         <div className="flex justify-center">
           <button
             type="button"
-            onClick={onSayUno}
+            onClick={onSayUneco}
             className="animate-bounce rounded-full bg-yellow-500 px-6 py-2 text-lg font-extrabold text-black shadow-lg transition-transform hover:scale-110"
           >
-            UNO!
+            UNECO!
           </button>
         </div>
       )}
 
       {/* My hand */}
       <div className="border-t border-border pt-2">
-        <UnoHand
+        <UnecoHand
           hand={gameState.hand}
           gameState={gameState}
           isMyTurn={isMyTurn}
@@ -127,7 +127,7 @@ export function UnoGameBoard({
 
       {/* Color picker */}
       {colorPickerOpen && (
-        <UnoColorPicker
+        <UnecoColorPicker
           onSelect={onSelectColor}
           onCancel={onCloseColorPicker}
         />

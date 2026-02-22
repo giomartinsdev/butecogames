@@ -1,12 +1,12 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import { requireAuth } from "../middleware/auth.js";
-import { UnoRoom } from "../models/UnoRoom.js";
+import { UnecoRoom } from "../models/UnecoRoom.js";
 
 const router = Router();
 
 /**
- * GET /api/uno/history
+ * GET /api/uneco/history
  * User's match history (paginated)
  */
 router.get("/history", requireAuth, async (req, res) => {
@@ -22,12 +22,12 @@ router.get("/history", requireAuth, async (req, res) => {
     };
 
     const [matches, total] = await Promise.all([
-      UnoRoom.find(filter)
+      UnecoRoom.find(filter)
         .sort({ completedAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
-      UnoRoom.countDocuments(filter),
+      UnecoRoom.countDocuments(filter),
     ]);
 
     const history = matches.map((m) => ({
@@ -60,19 +60,19 @@ router.get("/history", requireAuth, async (req, res) => {
 });
 
 /**
- * GET /api/uno/stats
- * User's UNO stats
+ * GET /api/uneco/stats
+ * User's UNECO stats
  */
 router.get("/stats", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
 
     const [wins, totalGames] = await Promise.all([
-      UnoRoom.countDocuments({
+      UnecoRoom.countDocuments({
         winnerId: userId,
         status: "finished",
       }),
-      UnoRoom.countDocuments({
+      UnecoRoom.countDocuments({
         "players.userId": userId,
         status: "finished",
       }),
@@ -91,12 +91,12 @@ router.get("/stats", requireAuth, async (req, res) => {
 });
 
 /**
- * GET /api/uno/recent
+ * GET /api/uneco/recent
  * Latest 15 completed matches (for lobby display)
  */
 router.get("/recent", requireAuth, async (_req, res) => {
   try {
-    const matches = await UnoRoom.find({ status: "finished" })
+    const matches = await UnecoRoom.find({ status: "finished" })
       .sort({ completedAt: -1 })
       .limit(15)
       .lean();

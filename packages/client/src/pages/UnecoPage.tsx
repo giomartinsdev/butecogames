@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth.js";
-import { useUno } from "@/hooks/useUno.js";
-import { UnoLobby } from "@/components/uno/UnoLobby.js";
-import { UnoRoom } from "@/components/uno/UnoRoom.js";
-import type { UnoCardColor } from "@butecogames/shared";
+import { useUneco } from "@/hooks/useUneco.js";
+import { UnecoLobby } from "@/components/uneco/UnecoLobby.js";
+import { UnecoRoom } from "@/components/uneco/UnecoRoom.js";
+import type { UnecoCardColor } from "@butecogames/shared";
 
-export function UnoPage() {
+export function UnecoPage() {
   const { user } = useAuth();
   const {
     lobbyRooms,
@@ -22,8 +22,8 @@ export function UnoPage() {
     startGame,
     playCard,
     drawCard,
-    sayUno,
-  } = useUno(user?.id);
+    sayUneco,
+  } = useUneco(user?.id);
 
   const handleOpenColorPicker = useCallback(
     (cardId: string) => {
@@ -39,7 +39,7 @@ export function UnoPage() {
   }, [setPendingCardId, setColorPickerOpen]);
 
   const handleSelectColor = useCallback(
-    (color: UnoCardColor) => {
+    (color: UnecoCardColor) => {
       if (pendingCardId) {
         playCard(pendingCardId, color);
       }
@@ -52,20 +52,20 @@ export function UnoPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-card-foreground">UNO</h1>
+        <h1 className="text-2xl font-bold text-card-foreground">UNECO</h1>
         <p className="mt-1 text-muted-foreground">
-          Jogue UNO com até 10 jogadores! Seja o primeiro a ficar sem cartas.
+          Jogue UNECO com até 10 jogadores! Seja o primeiro a ficar sem cartas.
         </p>
       </div>
 
       {isInLobby || !gameState ? (
-        <UnoLobby
+        <UnecoLobby
           rooms={lobbyRooms}
           onCreateRoom={createRoom}
           onJoinRoom={joinRoom}
         />
       ) : (
-        <UnoRoom
+        <UnecoRoom
           gameState={gameState}
           userId={user?.id ?? ""}
           colorPickerOpen={colorPickerOpen}
@@ -74,7 +74,7 @@ export function UnoPage() {
           onStartGame={startGame}
           onPlayCard={playCard}
           onDrawCard={drawCard}
-          onSayUno={sayUno}
+          onSayUneco={sayUneco}
           onOpenColorPicker={handleOpenColorPicker}
           onCloseColorPicker={handleCloseColorPicker}
           onSelectColor={handleSelectColor}

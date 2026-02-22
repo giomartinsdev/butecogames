@@ -14,13 +14,13 @@ import {
   CARD_DUEL_DISCONNECT_GRACE,
   CARD_DUEL_CARD_REVEAL_DELAY,
   DEFAULT_CARD_DUEL_BOT_BET,
-  DEFAULT_UNO_MIN_PLAYERS,
-  DEFAULT_UNO_MAX_PLAYERS,
-  DEFAULT_UNO_TURN_TIMEOUT,
-  DEFAULT_UNO_MIN_BET,
-  DEFAULT_UNO_MAX_BET,
-  DEFAULT_UNO_CATCH_WINDOW,
-  DEFAULT_UNO_DISCONNECT_GRACE,
+  DEFAULT_UNECO_MIN_PLAYERS,
+  DEFAULT_UNECO_MAX_PLAYERS,
+  DEFAULT_UNECO_TURN_TIMEOUT,
+  DEFAULT_UNECO_MIN_BET,
+  DEFAULT_UNECO_MAX_BET,
+  DEFAULT_UNECO_CATCH_WINDOW,
+  DEFAULT_UNECO_DISCONNECT_GRACE,
   DEFAULT_AWAY_TIMEOUT,
   DEFAULT_RETEST_COOLDOWN_DAYS,
 } from "@butecogames/shared";
@@ -49,13 +49,13 @@ export interface ISettings {
     cardRevealDelay: number;
     botBetAmount: number;
   };
-  uno: {
+  uneco: {
     minPlayers: number;
     maxPlayers: number;
     turnTimeout: number;
     minBet: number;
     maxBet: number;
-    unoCatchWindow: number;
+    unecoCatchWindow: number;
     disconnectGrace: number;
   };
   general: {
@@ -94,14 +94,14 @@ const settingsSchema = new Schema(
       cardRevealDelay: { type: Number, default: CARD_DUEL_CARD_REVEAL_DELAY },
       botBetAmount: { type: Number, default: DEFAULT_CARD_DUEL_BOT_BET },
     },
-    uno: {
-      minPlayers: { type: Number, default: DEFAULT_UNO_MIN_PLAYERS },
-      maxPlayers: { type: Number, default: DEFAULT_UNO_MAX_PLAYERS },
-      turnTimeout: { type: Number, default: DEFAULT_UNO_TURN_TIMEOUT },
-      minBet: { type: Number, default: DEFAULT_UNO_MIN_BET },
-      maxBet: { type: Number, default: DEFAULT_UNO_MAX_BET },
-      unoCatchWindow: { type: Number, default: DEFAULT_UNO_CATCH_WINDOW },
-      disconnectGrace: { type: Number, default: DEFAULT_UNO_DISCONNECT_GRACE },
+    uneco: {
+      minPlayers: { type: Number, default: DEFAULT_UNECO_MIN_PLAYERS },
+      maxPlayers: { type: Number, default: DEFAULT_UNECO_MAX_PLAYERS },
+      turnTimeout: { type: Number, default: DEFAULT_UNECO_TURN_TIMEOUT },
+      minBet: { type: Number, default: DEFAULT_UNECO_MIN_BET },
+      maxBet: { type: Number, default: DEFAULT_UNECO_MAX_BET },
+      unecoCatchWindow: { type: Number, default: DEFAULT_UNECO_CATCH_WINDOW },
+      disconnectGrace: { type: Number, default: DEFAULT_UNECO_DISCONNECT_GRACE },
     },
     general: {
       cursorSize: { type: Number, default: DEFAULT_CURSOR_SIZE },
