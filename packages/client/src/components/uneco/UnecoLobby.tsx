@@ -34,7 +34,7 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
   });
 
   const unecoSettings = settings?.uneco;
-  const minBet = unecoSettings?.minBet ?? 10;
+  const minBet = unecoSettings?.minBet ?? 0;
   const maxBet = unecoSettings?.maxBet ?? 10_000;
   const minP = unecoSettings?.minPlayers ?? 2;
   const maxP = unecoSettings?.maxPlayers ?? 10;
@@ -79,6 +79,13 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-card-foreground"
                 />
                 <div className="mt-1 flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setBetAmount(0)}
+                    className={`rounded px-2 py-1 text-xs font-medium transition-colors ${betAmount === 0 ? "bg-green-600 text-white" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+                  >
+                    Grátis
+                  </button>
                   {[50, 100, 500, 1000].map((v) => (
                     <button
                       key={v}
@@ -110,10 +117,13 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
               <button
                 type="button"
                 onClick={handleCreate}
-                disabled={!wallet || wallet.balance < betAmount}
+                disabled={betAmount > 0 && (!wallet || wallet.balance < betAmount)}
                 className="w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
               >
-                Criar Sala ({formatCoins(betAmount)} coins)
+                {betAmount === 0
+                  ? "Criar Sala (Grátis)"
+                  : `Criar Sala (${formatCoins(betAmount)} coins)`
+                }
               </button>
             </div>
           )}
@@ -153,14 +163,17 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
                         {room.owner.displayName}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {formatCoins(room.betAmount)} coins · {room.playerCount}/{room.maxPlayers} jogadores
+                        {room.betAmount === 0
+                          ? "Grátis"
+                          : `${formatCoins(room.betAmount)} coins`
+                        } · {room.playerCount}/{room.maxPlayers} jogadores
                       </p>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => onJoinRoom(room.roomId)}
-                    disabled={!wallet || wallet.balance < room.betAmount}
+                    disabled={room.betAmount > 0 && (!wallet || wallet.balance < room.betAmount)}
                     className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
                   >
                     Entrar
@@ -203,7 +216,10 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
                         <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {formatCoins(room.betAmount)} coins · {room.playerCount} jogadores em partida
+                        {room.betAmount === 0
+                          ? "Grátis"
+                          : `${formatCoins(room.betAmount)} coins`
+                        } · {room.playerCount} jogadores em partida
                       </p>
                     </div>
                   </div>
@@ -259,12 +275,14 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
                       {match.winnerName}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      {match.playerCount} jogadores · {formatCoins(match.betAmount)} coins
+                      {match.playerCount} jogadores · {match.betAmount === 0 ? "Grátis" : `${formatCoins(match.betAmount)} coins`}
                     </p>
                   </div>
-                  <span className="text-xs font-bold text-primary">
-                    +{formatCoins(match.payout)}
-                  </span>
+                  {match.payout > 0 && (
+                    <span className="text-xs font-bold text-primary">
+                      +{formatCoins(match.payout)}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>

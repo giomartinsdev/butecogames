@@ -23,7 +23,7 @@ export interface IUnecoRoom extends Document {
 const unecoRoomSchema = new Schema<IUnecoRoom>(
   {
     creatorId: { type: String, required: true, index: true },
-    betAmount: { type: Number, required: true, min: 1 },
+    betAmount: { type: Number, required: true, min: 0 },
     maxPlayers: { type: Number, required: true, min: 2, max: 10 },
     status: {
       type: String,

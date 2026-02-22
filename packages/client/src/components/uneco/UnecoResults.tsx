@@ -24,9 +24,15 @@ export function UnecoResults({ gameState, userId, onReturnToLobby }: UnecoResult
         <h2 className="text-2xl font-extrabold text-card-foreground">
           {isWinner ? "Você venceu!" : `${winner?.displayName ?? "?"} venceu!`}
         </h2>
-        <p className="mt-2 text-lg font-bold text-primary">
-          +{formatCoins(pot)} coins
-        </p>
+        {pot > 0 ? (
+          <p className="mt-2 text-lg font-bold text-primary">
+            +{formatCoins(pot)} coins
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Partida grátis
+          </p>
+        )}
       </div>
 
       {/* Player results */}

@@ -47,7 +47,10 @@ function WaitingRoom({
             Sala de UNECO
           </h3>
           <span className="text-sm text-muted-foreground">
-            {formatCoins(gameState.betAmount)} coins
+            {gameState.betAmount === 0
+              ? "Grátis"
+              : `${formatCoins(gameState.betAmount)} coins`
+            }
           </span>
         </div>
 

@@ -332,16 +332,18 @@ export async function createRoom(
   if (betAmount > settings.uneco.maxBet) {
     throw new Error(`Aposta máxima: ${settings.uneco.maxBet} coins`);
   }
-  if (!Number.isInteger(betAmount) || betAmount <= 0) {
+  if (!Number.isInteger(betAmount) || betAmount < 0) {
     throw new Error("Valor de aposta inválido");
   }
   if (maxPlayers < settings.uneco.minPlayers || maxPlayers > settings.uneco.maxPlayers) {
     throw new Error(`Número de jogadores: ${settings.uneco.minPlayers}-${settings.uneco.maxPlayers}`);
   }
 
-  const wallet = await Wallet.findOne({ userId });
-  if (!wallet || wallet.balance < betAmount) {
-    throw new Error("Você não possui coins suficientes");
+  if (betAmount > 0) {
+    const wallet = await Wallet.findOne({ userId });
+    if (!wallet || wallet.balance < betAmount) {
+      throw new Error("Você não possui coins suficientes");
+    }
   }
 
   const dbRoom = await UnecoRoom.create({
@@ -413,9 +415,11 @@ export async function joinRoom(
     throw new Error("Você já está nesta sala");
   }
 
-  const wallet = await Wallet.findOne({ userId });
-  if (!wallet || wallet.balance < room.betAmount) {
-    throw new Error("Você não possui coins suficientes");
+  if (room.betAmount > 0) {
+    const wallet = await Wallet.findOne({ userId });
+    if (!wallet || wallet.balance < room.betAmount) {
+      throw new Error("Você não possui coins suficientes");
+    }
   }
 
   const player: InternalPlayer = {
@@ -543,41 +547,44 @@ export async function startGame(userId: string): Promise<void> {
     throw new Error("Todos os jogadores precisam estar prontos");
   }
 
-  // Debit all players
+  // Debit all players (skip for free rooms)
   const bet = room.betAmount;
-  const debitedPlayers: string[] = [];
 
-  for (const player of room.players) {
-    try {
-      await debitWallet(player.userId, bet, "bet_placed", {
-        gameId: "uneco",
-        matchId: roomId,
-      });
-      debitedPlayers.push(player.userId);
-      processAction(player.userId, "bet_placed", {
-        gameId: "uneco",
-        betAmount: bet,
-        matchId: roomId,
-      });
-    } catch {
-      // Refund all previously debited players
-      for (const dId of debitedPlayers) {
-        await creditWallet(dId, bet, "bet_refund", {
+  if (bet > 0) {
+    const debitedPlayers: string[] = [];
+
+    for (const player of room.players) {
+      try {
+        await debitWallet(player.userId, bet, "bet_placed", {
           gameId: "uneco",
           matchId: roomId,
         });
-        const w = await Wallet.findOne({ userId: dId });
-        if (w) emitWalletUpdate(dId, w.balance);
+        debitedPlayers.push(player.userId);
+        processAction(player.userId, "bet_placed", {
+          gameId: "uneco",
+          betAmount: bet,
+          matchId: roomId,
+        });
+      } catch {
+        // Refund all previously debited players
+        for (const dId of debitedPlayers) {
+          await creditWallet(dId, bet, "bet_refund", {
+            gameId: "uneco",
+            matchId: roomId,
+          });
+          const w = await Wallet.findOne({ userId: dId });
+          if (w) emitWalletUpdate(dId, w.balance);
+        }
+        await closeRoom(roomId, "cancelled", `${player.displayName} não possui coins suficientes`);
+        return;
       }
-      await closeRoom(roomId, "cancelled", `${player.displayName} não possui coins suficientes`);
-      return;
     }
-  }
 
-  // Emit wallet updates
-  for (const player of room.players) {
-    const w = await Wallet.findOne({ userId: player.userId });
-    if (w) emitWalletUpdate(player.userId, w.balance);
+    // Emit wallet updates
+    for (const player of room.players) {
+      const w = await Wallet.findOne({ userId: player.userId });
+      if (w) emitWalletUpdate(player.userId, w.balance);
+    }
   }
 
   // Setup game
@@ -1097,19 +1104,21 @@ async function resolveGame(roomId: string, winnerId: string): Promise<void> {
   const winner = room.players.find((p) => p.userId === winnerId)!;
   const pot = room.betAmount * room.players.length;
 
-  // Credit winner with full pot
-  await creditWallet(winnerId, pot, "bet_won", {
-    gameId: "uneco",
-    matchId: roomId,
-  });
-  processAction(winnerId, "bet_won", {
-    gameId: "uneco",
-    betAmount: room.betAmount,
-    payout: pot,
-    matchId: roomId,
-  });
-  const w = await Wallet.findOne({ userId: winnerId });
-  if (w) emitWalletUpdate(winnerId, w.balance);
+  // Credit winner with full pot (skip for free rooms)
+  if (pot > 0) {
+    await creditWallet(winnerId, pot, "bet_won", {
+      gameId: "uneco",
+      matchId: roomId,
+    });
+    processAction(winnerId, "bet_won", {
+      gameId: "uneco",
+      betAmount: room.betAmount,
+      payout: pot,
+      matchId: roomId,
+    });
+    const w = await Wallet.findOne({ userId: winnerId });
+    if (w) emitWalletUpdate(winnerId, w.balance);
+  }
 
   const duration = room.startedAt
     ? Math.floor((Date.now() - room.startedAt.getTime()) / 1000)
@@ -1449,17 +1458,19 @@ export async function initUnecoEngine(socketIo: TypedIO): Promise<void> {
   const staleInProgress = await UnecoRoom.find({ status: "playing" });
   for (const room of staleInProgress) {
     console.log(`[UNECO] Refunding stale in_progress room ${room._id}`);
-    for (const player of room.players) {
-      try {
-        await creditWallet(player.userId, room.betAmount, "bet_refund", {
-          gameId: "uneco",
-          matchId: room._id.toString(),
-        });
-      } catch (err) {
-        console.error(
-          `[UNECO] Failed to refund player ${player.userId} in room ${room._id}:`,
-          err,
-        );
+    if (room.betAmount > 0) {
+      for (const player of room.players) {
+        try {
+          await creditWallet(player.userId, room.betAmount, "bet_refund", {
+            gameId: "uneco",
+            matchId: room._id.toString(),
+          });
+        } catch (err) {
+          console.error(
+            `[UNECO] Failed to refund player ${player.userId} in room ${room._id}:`,
+            err,
+          );
+        }
       }
     }
     await UnecoRoom.findByIdAndUpdate(room._id, {
