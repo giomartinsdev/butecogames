@@ -764,13 +764,15 @@ function handleTurnTimeout(roomId: string): void {
 
   // 3rd consecutive idle turn → auto-forfeit/kick
   if (player.idleTurns >= MAX_IDLE_TURNS) {
-    if (room.betAmount > 0) {
-      io.to(player.socketId).emit("uneco:idle_warning", {
-        idleTurns: player.idleTurns,
-        maxIdleTurns: MAX_IDLE_TURNS,
-        kicked: true,
-      });
-    }
+    io.to(player.socketId).emit("uneco:idle_warning", {
+      idleTurns: player.idleTurns,
+      maxIdleTurns: MAX_IDLE_TURNS,
+      kicked: true,
+    });
+    // Send room_closed to the kicked player so their client returns to lobby
+    io.to(player.socketId).emit("uneco:room_closed", {
+      reason: "Você foi removido por inatividade",
+    });
     handlePlayerForfeit(roomId, player.userId);
     return;
   }
