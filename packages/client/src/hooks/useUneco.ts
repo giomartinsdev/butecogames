@@ -133,6 +133,12 @@ export function useUneco(userId?: string) {
     socket.on("uneco:turn_changed", ({ currentPlayerIndex, timeRemaining, drawStack }) => {
       const current = useUnecoStore.getState().gameState;
       if (current) {
+        // Close color picker if turn moved away from us
+        const myIndex = current.players.findIndex((p) => p.userId === userIdRef.current);
+        if (currentPlayerIndex !== myIndex) {
+          setColorPickerOpen(false);
+          setPendingCardId(null);
+        }
         setGameState({
           ...current,
           currentPlayerIndex,

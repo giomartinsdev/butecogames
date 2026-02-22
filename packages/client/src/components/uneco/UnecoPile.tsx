@@ -13,7 +13,6 @@ interface DiscardEntry {
 interface UnecoPileProps {
   discardTop: UnecoCardType | null;
   currentColor: UnecoCardColor;
-  deckCount: number;
   direction: UnecoDirection;
   isMyTurn: boolean;
   onDraw: () => void;
@@ -25,7 +24,6 @@ const MAX_PILE_SIZE = 10;
 export function UnecoPile({
   discardTop,
   currentColor,
-  deckCount,
   direction,
   isMyTurn,
   onDraw,
@@ -77,9 +75,11 @@ export function UnecoPile({
         >
           {/* Backing cards for depth */}
           {drawPileRotations.map((r, i) => (
-            <div
+            <img
               key={i}
-              className="absolute inset-0 rounded-lg border-2 border-white/10 bg-gray-800"
+              src="/imgs/games/uneco_card_back.png"
+              alt=""
+              className="absolute inset-0 h-full w-full rounded-lg object-cover"
               style={{
                 transform: `rotate(${r.rotation}deg) translate(${r.offsetX}px, ${r.offsetY}px)`,
                 zIndex: i,
@@ -89,23 +89,26 @@ export function UnecoPile({
           {/* Top card */}
           <div
             className={`
-              absolute inset-0 flex items-center justify-center rounded-lg
-              border-2 bg-gray-700 font-bold text-white shadow-lg transition-all
+              absolute inset-0 overflow-hidden rounded-lg shadow-lg transition-all
               ${isMyTurn
-                ? "border-primary cursor-pointer hover:scale-105 hover:shadow-primary/30"
-                : "border-white/20 cursor-default"
+                ? "cursor-pointer hover:scale-105 hover:shadow-primary/30 ring-2 ring-primary"
+                : "cursor-default"
               }
             `}
             style={{ zIndex: 2 }}
           >
-            <div className="text-center">
-              <div className="text-lg">🂠</div>
-              {drawStack > 0 && isMyTurn ? (
-                <div className="text-[10px] font-bold text-destructive">+{drawStack}</div>
-              ) : (
-                <div className="text-[10px] text-gray-300">{deckCount}</div>
-              )}
-            </div>
+            <img
+              src="/imgs/games/uneco_card_back.png"
+              alt="Comprar carta"
+              className="h-full w-full rounded-lg object-cover"
+            />
+            {drawStack > 0 && isMyTurn && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="rounded bg-black/70 px-1.5 py-0.5 text-xs font-bold text-destructive">
+                  +{drawStack}
+                </span>
+              </div>
+            )}
           </div>
         </button>
 

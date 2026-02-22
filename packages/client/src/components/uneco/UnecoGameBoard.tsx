@@ -113,12 +113,19 @@ export function UnecoGameBoard({
           );
         })}
 
+        {/* Turn indicator at bottom center (my seat) */}
+        {gameState.players[gameState.currentPlayerIndex] && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{ bottom: "4px" }}
+          >
+            <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
+          </div>
+        )}
+
         {/* Center: Piles + indicators */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="flex flex-col items-center gap-2">
-            {/* Turn indicator */}
-            <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
-
             {/* Draw stack indicator */}
             {gameState.drawStack > 0 && (
               <div className="rounded-lg bg-destructive/20 px-3 py-1 text-center">
@@ -133,7 +140,6 @@ export function UnecoGameBoard({
             <UnecoPile
               discardTop={gameState.discardTop}
               currentColor={gameState.currentColor}
-              deckCount={gameState.deckCount}
               direction={gameState.direction}
               isMyTurn={isMyTurn}
               onDraw={onDrawCard}
