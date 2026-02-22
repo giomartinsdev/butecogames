@@ -41,6 +41,7 @@ interface InternalPlayer {
   isReady: boolean;
   saidUneco: boolean;
   connected: boolean;
+  idleTurns: number;
 }
 
 interface DisconnectState {
@@ -371,6 +372,7 @@ export async function createRoom(
         isReady: true, // Owner is auto-ready
         saidUneco: false,
         connected: true,
+        idleTurns: 0,
       },
     ],
     spectators: new Map(),
@@ -431,6 +433,7 @@ export async function joinRoom(
     isReady: false,
     saidUneco: false,
     connected: true,
+    idleTurns: 0,
   };
 
   room.players.push(player);
@@ -747,12 +750,39 @@ function startTurnTimer(room: ActiveUnecoRoom): void {
   }, (settings.uneco.turnTimeout + 1) * 1000);
 }
 
+const MAX_IDLE_TURNS = 3;
+
 function handleTurnTimeout(roomId: string): void {
   const room = rooms.get(roomId);
   if (!room || room.status !== "playing") return;
 
   const player = room.players[room.currentPlayerIndex];
   if (!player) return;
+
+  // Increment idle turns
+  player.idleTurns++;
+
+  // 3rd consecutive idle turn → auto-forfeit/kick
+  if (player.idleTurns >= MAX_IDLE_TURNS) {
+    if (room.betAmount > 0) {
+      io.to(player.socketId).emit("uneco:idle_warning", {
+        idleTurns: player.idleTurns,
+        maxIdleTurns: MAX_IDLE_TURNS,
+        kicked: true,
+      });
+    }
+    handlePlayerForfeit(roomId, player.userId);
+    return;
+  }
+
+  // 2nd idle turn → warn player that next idle = kick
+  if (player.idleTurns === MAX_IDLE_TURNS - 1) {
+    io.to(player.socketId).emit("uneco:idle_warning", {
+      idleTurns: player.idleTurns,
+      maxIdleTurns: MAX_IDLE_TURNS,
+      kicked: false,
+    });
+  }
 
   // Draw stack-aware: draw accumulated stack or 1
   const drawCount = room.drawStack > 0 ? room.drawStack : 1;
@@ -824,6 +854,9 @@ export async function playCard(
   const player = room.players[playerIndex];
   const cardIndex = player.hand.findIndex((c) => c.id === cardId);
   if (cardIndex === -1) throw new Error("Carta não encontrada na sua mão");
+
+  // Active play resets idle counter
+  player.idleTurns = 0;
 
   const card = player.hand[cardIndex];
   const discardTop = room.discardPile[room.discardPile.length - 1];
@@ -980,6 +1013,9 @@ export function drawCard(userId: string): void {
   }
 
   const player = room.players[playerIndex];
+
+  // Active draw resets idle counter
+  player.idleTurns = 0;
 
   // Draw stack-aware: draw accumulated stack or 1
   const drawCount = room.drawStack > 0 ? room.drawStack : 1;

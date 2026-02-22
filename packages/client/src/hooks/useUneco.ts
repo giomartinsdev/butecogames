@@ -133,9 +133,14 @@ export function useUneco(userId?: string) {
     socket.on("uneco:turn_changed", ({ currentPlayerIndex, timeRemaining, drawStack }) => {
       const current = useUnecoStore.getState().gameState;
       if (current) {
-        // Close color picker if turn moved away from us
         const myIndex = current.players.findIndex((p) => p.userId === userIdRef.current);
-        if (currentPlayerIndex !== myIndex) {
+        // Play random "sua vez" sound when it becomes our turn
+        if (currentPlayerIndex === myIndex) {
+          const variants = ["uneco_sua_vez_1", "uneco_sua_vez_2", "uneco_sua_vez_3"] as const;
+          const pick = variants[Math.floor(Math.random() * variants.length)];
+          useSoundStore.getState().playSound(`uneco/${pick}`);
+        } else {
+          // Close color picker if turn moved away from us
           setColorPickerOpen(false);
           setPendingCardId(null);
         }
@@ -258,6 +263,29 @@ export function useUneco(userId?: string) {
       toast.info(reason);
     });
 
+    // Idle warning
+    socket.on("uneco:idle_warning", ({ kicked }) => {
+      const current = useUnecoStore.getState().gameState;
+      const isFree = current?.betAmount === 0;
+      if (kicked) {
+        if (isFree) {
+          toast.error("Você foi removido da partida por inatividade.");
+        } else {
+          toast.error("Você foi removido da partida por inatividade e perdeu suas coins.");
+        }
+      } else {
+        if (isFree) {
+          toast.warning(
+            `Atenção! Mais 1 turno inativo e você será removido da partida.`,
+          );
+        } else {
+          toast.warning(
+            `Atenção! Mais 1 turno inativo e você será removido da partida e perderá suas coins!`,
+          );
+        }
+      }
+    });
+
     // Error
     socket.on("uneco:error", ({ message }) => {
       toast.error(message);
@@ -289,6 +317,7 @@ export function useUneco(userId?: string) {
       socket.off("uneco:spectator_count");
       socket.off("uneco:player_forfeited");
       socket.off("uneco:room_closed");
+      socket.off("uneco:idle_warning");
       socket.off("uneco:error");
       reset();
     };

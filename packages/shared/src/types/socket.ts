@@ -233,5 +233,10 @@ export interface ServerToClientEvents {
     payout?: number;
   }) => void;
   "uneco:spectator_count": (data: { count: number }) => void;
+  "uneco:idle_warning": (data: {
+    idleTurns: number;
+    maxIdleTurns: number;
+    kicked: boolean;
+  }) => void;
   "uneco:error": (data: { message: string }) => void;
 }
