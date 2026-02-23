@@ -33,7 +33,18 @@ export const GAMES: GameInfo[] = [
     available: true,
     requiresRoom: false,
     thumbnail: "/imgs/games/event_betting.png",
-  }
+  },
+  {
+    id: "uneco",
+    name: "UNECO",
+    description:
+      "Jogue UNECO com seus amigos! Combine cores e números para ficar sem cartas primeiro.",
+    minPlayers: 2,
+    maxPlayers: 10,
+    available: true,
+    requiresRoom: true,
+    thumbnail: "/imgs/games/uneco.png",
+  },
 ];
 
 export const INITIAL_BALANCE = 1000;

@@ -27,7 +27,9 @@
       "Bash(npx:*)",
       "WebFetch(domain:www.ufc.com.br)",
       "Bash(pnpm add:*)",
-      "Bash(node _debug_ufc.mjs:*)"
+      "Bash(node _debug_ufc.mjs:*)",
+      "Bash(pnpm run build:client:*)",
+      "Bash(pnpm:*)"
     ]
   }
 }

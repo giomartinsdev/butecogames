@@ -1,0 +1,151 @@
+import { useEffect, useRef, useState, useMemo } from "react";
+import type { UnecoCard as UnecoCardType, UnecoCardColor, UnecoDirection } from "@butecogames/shared";
+import { UNECO_COLOR_HEX } from "@butecogames/shared";
+import { UnecoCard } from "./UnecoCard.js";
+
+interface DiscardEntry {
+  card: UnecoCardType;
+  rotation: number;
+  offsetX: number;
+  offsetY: number;
+}
+
+interface UnecoPileProps {
+  discardTop: UnecoCardType | null;
+  currentColor: UnecoCardColor;
+  direction: UnecoDirection;
+  isMyTurn: boolean;
+  onDraw: () => void;
+  drawStack?: number;
+}
+
+const MAX_PILE_SIZE = 10;
+
+export function UnecoPile({
+  discardTop,
+  currentColor,
+  direction,
+  isMyTurn,
+  onDraw,
+  drawStack = 0,
+}: UnecoPileProps) {
+  const [pileHistory, setPileHistory] = useState<DiscardEntry[]>([]);
+  const prevDiscardIdRef = useRef<string | null>(null);
+
+  // Track changes to discardTop and build pile history
+  useEffect(() => {
+    if (!discardTop) return;
+    if (discardTop.id === prevDiscardIdRef.current) return;
+
+    prevDiscardIdRef.current = discardTop.id;
+
+    const entry: DiscardEntry = {
+      card: discardTop,
+      rotation: Math.random() * 60 - 30, // -30° to +30°
+      offsetX: Math.random() * 12 - 6, // -6px to +6px
+      offsetY: Math.random() * 12 - 6,
+    };
+
+    setPileHistory((prev) => {
+      const next = [...prev, entry];
+      if (next.length > MAX_PILE_SIZE) {
+        return next.slice(next.length - MAX_PILE_SIZE);
+      }
+      return next;
+    });
+  }, [discardTop]);
+
+  // Random rotations for draw pile backing cards
+  const drawPileRotations = useMemo(() => [
+    { rotation: -3, offsetX: -1, offsetY: 1 },
+    { rotation: 5, offsetX: 2, offsetY: -1 },
+  ], []);
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* Piles area: discard centered, draw deck offset top-left */}
+      <div className="relative" style={{ width: 160, height: 130 }}>
+        {/* Draw pile — left side */}
+        <button
+          type="button"
+          onClick={onDraw}
+          disabled={!isMyTurn}
+          className="absolute"
+          style={{ width: 64, height: 90, left: -80, top: 10 }}
+        >
+          {/* Backing cards for depth */}
+          {drawPileRotations.map((r, i) => (
+            <img
+              key={i}
+              src="/imgs/games/uneco_card_back.png"
+              alt=""
+              className="absolute inset-0 h-full w-full rounded-lg object-cover"
+              style={{
+                transform: `rotate(${r.rotation}deg) translate(${r.offsetX}px, ${r.offsetY}px)`,
+                zIndex: i,
+              }}
+            />
+          ))}
+          {/* Top card */}
+          <div
+            className={`
+              absolute inset-0 overflow-hidden rounded-lg shadow-lg transition-all
+              ${isMyTurn
+                ? "cursor-pointer hover:scale-105 hover:shadow-primary/30 ring-2 ring-primary"
+                : "cursor-default"
+              }
+            `}
+            style={{ zIndex: 2 }}
+          >
+            <img
+              src="/imgs/games/uneco_card_back.png"
+              alt="Comprar carta"
+              className="h-full w-full rounded-lg object-cover"
+            />
+            {drawStack > 0 && isMyTurn && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="rounded bg-black/70 px-1.5 py-0.5 text-xs font-bold text-destructive">
+                  +{drawStack}
+                </span>
+              </div>
+            )}
+          </div>
+        </button>
+
+        {/* Discard pile — centered */}
+        <div className="absolute" style={{ width: 80, height: 112, left: 40, top: 9 }}>
+          {pileHistory.length === 0 && !discardTop && (
+            <div className="flex h-full w-full items-center justify-center rounded-lg border-2 border-dashed border-white/20 text-muted-foreground">
+              —
+            </div>
+          )}
+
+          {/* Render pile history with random rotations */}
+          {pileHistory.map((entry, idx) => (
+            <div
+              key={`${entry.card.id}-${idx}`}
+              className="absolute inset-0"
+              style={{
+                zIndex: idx,
+                transform: `rotate(${entry.rotation}deg) translate(${entry.offsetX}px, ${entry.offsetY}px)`,
+              }}
+            >
+              <UnecoCard card={entry.card} size="lg" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Current color indicator + direction */}
+      <div className="mt-4 flex items-center gap-2">
+        <div
+          className="h-5 w-5 rounded-full border-2 border-white/40 shadow"
+          style={{ backgroundColor: UNECO_COLOR_HEX[currentColor] }}
+        />
+        <span className="text-xs text-muted-foreground">
+          {direction === "clockwise" ? "→" : "←"}
+        </span>
+      </div>
+    </div>
+  );
+}

@@ -9,6 +9,14 @@ import type {
   CardDuelRoomState,
   CardDuelRoundData,
 } from "./card-duel.js";
+import type {
+  UnecoCard,
+  UnecoCardColor,
+  UnecoDirection,
+  UnecoGameState,
+  UnecoPlayer,
+  UnecoRoomInfo,
+} from "./uneco.js";
 
 // Client → Server events
 export interface ClientToServerEvents {
@@ -37,6 +45,21 @@ export interface ClientToServerEvents {
   "card-duel:reconnect": (data: { roomId: string }) => void;
   "card-duel:play_bot": (data: { gameType: CardDuelGameType }) => void;
   "card-duel:cancel_search": () => void;
+  "uneco:join_lobby": () => void;
+  "uneco:leave_lobby": () => void;
+  "uneco:create_room": (data: { betAmount: number; maxPlayers: number }) => void;
+  "uneco:join_room": (data: { roomId: string }) => void;
+  "uneco:leave_room": () => void;
+  "uneco:player_ready": () => void;
+  "uneco:start_game": () => void;
+  "uneco:play_card": (data: { cardId: string; chosenColor?: UnecoCardColor }) => void;
+  "uneco:draw_card": () => void;
+  "uneco:say_uneco": () => void;
+  "uneco:catch_uneco": (data: { targetUserId: string }) => void;
+  "uneco:forfeit": () => void;
+  "uneco:spectate": (data: { roomId: string }) => void;
+  "uneco:stop_spectating": () => void;
+  "uneco:admin_cancel_room": (data: { roomId: string }) => void;
   "presence:update_status": (data: { status: PresenceStatus }) => void;
   "presence:update_page": (data: { page: string }) => void;
 }
@@ -155,4 +178,66 @@ export interface ServerToClientEvents {
     payout: number;
   }) => void;
   "card-duel:error": (data: { message: string }) => void;
+  "uneco:lobby_state": (data: { rooms: UnecoRoomInfo[]; ongoingRooms: UnecoRoomInfo[] }) => void;
+  "uneco:lobby_update": (data: { rooms: UnecoRoomInfo[]; ongoingRooms: UnecoRoomInfo[] }) => void;
+  "uneco:room_joined": (data: { gameState: UnecoGameState }) => void;
+  "uneco:game_state": (data: { gameState: UnecoGameState }) => void;
+  "uneco:player_joined": (data: { player: UnecoPlayer }) => void;
+  "uneco:player_left": (data: { userId: string }) => void;
+  "uneco:player_ready": (data: { userId: string }) => void;
+  "uneco:game_started": (data: { gameState: UnecoGameState }) => void;
+  "uneco:card_played": (data: {
+    userId: string;
+    card: UnecoCard;
+    chosenColor?: UnecoCardColor;
+    newCurrentPlayer: number;
+    direction: UnecoDirection;
+    cardCount: number;
+  }) => void;
+  "uneco:card_drawn": (data: {
+    userId: string;
+    cardCount: number;
+    card?: UnecoCard;
+  }) => void;
+  "uneco:turn_changed": (data: {
+    currentPlayerIndex: number;
+    timeRemaining: number;
+    drawStack: number;
+  }) => void;
+  "uneco:uneco_said": (data: { userId: string }) => void;
+  "uneco:uneco_caught": (data: {
+    catcherId: string;
+    targetId: string;
+    penaltyCards: number;
+  }) => void;
+  "uneco:uneco_catchable": (data: { userId: string }) => void;
+  "uneco:round_ended": (data: {
+    winnerId: string;
+    winnerName: string;
+    payout: number;
+    players: Array<{ userId: string; displayName: string; cardsLeft: number }>;
+  }) => void;
+  "uneco:room_closed": (data: { reason: string }) => void;
+  "uneco:player_disconnected": (data: {
+    userId: string;
+    countdown: number;
+  }) => void;
+  "uneco:player_reconnected": (data: { userId: string }) => void;
+  "uneco:uneco_penalty": (data: {
+    userId: string;
+    penaltyCards: number;
+  }) => void;
+  "uneco:player_forfeited": (data: {
+    userId: string;
+    winnerId?: string;
+    winnerName?: string;
+    payout?: number;
+  }) => void;
+  "uneco:spectator_count": (data: { count: number }) => void;
+  "uneco:idle_warning": (data: {
+    idleTurns: number;
+    maxIdleTurns: number;
+    kicked: boolean;
+  }) => void;
+  "uneco:error": (data: { message: string }) => void;
 }
