@@ -12,14 +12,17 @@ interface UnecoLobbyProps {
   onCreateRoom: (betAmount: number, maxPlayers: number) => void;
   onJoinRoom: (roomId: string) => void;
   onSpectate: (roomId: string) => void;
+  isAdmin?: boolean;
+  onAdminCancelRoom?: (roomId: string) => void;
 }
 
-export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSpectate }: UnecoLobbyProps) {
+export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSpectate, isAdmin, onAdminCancelRoom }: UnecoLobbyProps) {
   const { data: wallet } = useWallet();
   const { data: settings } = useSettings();
   const [betAmount, setBetAmount] = useState(100);
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [showCreate, setShowCreate] = useState(false);
+  const [cancelRoomId, setCancelRoomId] = useState<string | null>(null);
 
   const { data: recentData } = useQuery({
     queryKey: ["uneco-recent"],
@@ -170,14 +173,25 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onJoinRoom(room.roomId)}
-                    disabled={room.betAmount > 0 && (!wallet || wallet.balance < room.betAmount)}
-                    className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
-                  >
-                    Entrar
-                  </button>
+                  <div className="flex gap-2">
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => setCancelRoomId(room.roomId)}
+                        className="rounded-lg bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/20"
+                      >
+                        Cancelar
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onJoinRoom(room.roomId)}
+                      disabled={room.betAmount > 0 && (!wallet || wallet.balance < room.betAmount)}
+                      className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
+                    >
+                      Entrar
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -223,13 +237,24 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onSpectate(room.roomId)}
-                    className="rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
-                  >
-                    Assistir
-                  </button>
+                  <div className="flex gap-2">
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => setCancelRoomId(room.roomId)}
+                        className="rounded-lg bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/20"
+                      >
+                        Cancelar
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onSpectate(room.roomId)}
+                      className="rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
+                    >
+                      Assistir
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -289,6 +314,38 @@ export function UnecoLobby({ rooms, ongoingRooms, onCreateRoom, onJoinRoom, onSp
           </div>
         )}
       </div>
+
+      {/* Admin cancel confirmation modal */}
+      {cancelRoomId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setCancelRoomId(null)} />
+          <div className="relative w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-xl">
+            <h2 className="mb-2 text-lg font-bold text-card-foreground">Cancelar sala</h2>
+            <p className="mb-5 text-sm text-muted-foreground">
+              Tem certeza que deseja cancelar esta sala? Os jogadores serão removidos e as apostas serão reembolsadas.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setCancelRoomId(null)}
+                className="flex-1 rounded-lg bg-slate-700 px-4 py-2.5 font-medium text-muted-foreground transition hover:bg-slate-600"
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onAdminCancelRoom?.(cancelRoomId);
+                  setCancelRoomId(null);
+                }}
+                className="flex-1 rounded-lg bg-destructive px-4 py-2.5 font-medium text-destructive-foreground transition hover:bg-destructive/90"
+              >
+                Cancelar Sala
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

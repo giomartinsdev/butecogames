@@ -22,6 +22,7 @@ import {
   getGameStateForPlayer,
   spectateRoom,
   stopSpectating,
+  adminCancelRoom,
 } from "../services/uneco.js";
 
 type TypedIO = Server<ClientToServerEvents, ServerToClientEvents>;
@@ -193,6 +194,20 @@ export function registerUnecoHandlers(io: TypedIO, socket: Socket) {
   socket.on("uneco:stop_spectating", () => {
     stopSpectating(userId);
     socket.join("uneco:lobby");
+  });
+
+  socket.on("uneco:admin_cancel_room", async ({ roomId }) => {
+    if (socket.data.role !== "admin") {
+      socket.emit("uneco:error", { message: "Sem permissão" });
+      return;
+    }
+    try {
+      await adminCancelRoom(roomId);
+    } catch (err) {
+      socket.emit("uneco:error", {
+        message: err instanceof Error ? err.message : "Erro ao cancelar sala",
+      });
+    }
   });
 
   socket.on("disconnect", () => {

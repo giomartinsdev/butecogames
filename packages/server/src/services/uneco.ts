@@ -928,7 +928,36 @@ export async function playCard(
     player.saidUneco = false;
   }
 
-  // Emit card played
+  // Check win
+  if (player.hand.length === 0) {
+    // Emit before resolving so clients see the final card
+    io.to(roomSocketName(roomId)).emit("uneco:card_played", {
+      userId,
+      card,
+      chosenColor,
+      newCurrentPlayer: room.currentPlayerIndex,
+      direction: room.direction,
+      cardCount: player.hand.length,
+    });
+    io.to(spectatorSocketName(roomId)).emit("uneco:card_played", {
+      userId,
+      card,
+      chosenColor,
+      newCurrentPlayer: room.currentPlayerIndex,
+      direction: room.direction,
+      cardCount: player.hand.length,
+    });
+    await resolveGame(roomId, userId);
+    return;
+  }
+
+  // Apply special card effects (direction, skip, draw stacking)
+  applyCardEffect(room, card, chosenColor);
+
+  // Advance to next player
+  room.currentPlayerIndex = getNextPlayerIndex(room, room.currentPlayerIndex);
+
+  // Emit card played with updated direction and next player
   io.to(roomSocketName(roomId)).emit("uneco:card_played", {
     userId,
     card,
@@ -945,18 +974,6 @@ export async function playCard(
     direction: room.direction,
     cardCount: player.hand.length,
   });
-
-  // Check win
-  if (player.hand.length === 0) {
-    await resolveGame(roomId, userId);
-    return;
-  }
-
-  // Apply special card effects
-  applyCardEffect(room, card, chosenColor);
-
-  // Advance to next player
-  room.currentPlayerIndex = getNextPlayerIndex(room, room.currentPlayerIndex);
 
   // Start next turn
   startTurnTimer(room);
@@ -1460,6 +1477,34 @@ async function closeRoom(
   io.to(roomSocketName(roomId)).emit("uneco:room_closed", { reason });
   removeRoom(roomId);
   broadcastLobbyUpdate();
+}
+
+// ---------------------------------------------------------------------------
+// Admin cancel
+// ---------------------------------------------------------------------------
+
+export async function adminCancelRoom(roomId: string): Promise<void> {
+  const room = rooms.get(roomId);
+  if (!room) throw new Error("Sala não encontrada");
+
+  // Refund bets if the game was in progress
+  if (room.betAmount > 0 && (room.status === "playing" || room.status === "starting")) {
+    for (const player of room.players) {
+      try {
+        await creditWallet(player.userId, room.betAmount, "bet_refund", {
+          gameId: "uneco",
+          matchId: room.dbId,
+        });
+      } catch (err) {
+        console.error(
+          `[UNECO] Failed to refund player ${player.userId} in room ${room.dbId}:`,
+          err,
+        );
+      }
+    }
+  }
+
+  await closeRoom(roomId, "cancelled", "Sala cancelada por um administrador");
 }
 
 // ---------------------------------------------------------------------------

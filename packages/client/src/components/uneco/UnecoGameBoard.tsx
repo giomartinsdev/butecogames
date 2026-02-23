@@ -60,8 +60,18 @@ export function UnecoGameBoard({
   const isMyTurn = myPlayerIndex === gameState.currentPlayerIndex;
   const myPlayer = gameState.players[myPlayerIndex];
 
-  // Get opponents (everyone except me)
-  const opponents = gameState.players.filter((p) => p.userId !== userId);
+  // Get opponents in turn order starting from the player right after me.
+  // This ensures the next player clockwise is always in the same position.
+  // Spectators see all players (they have no seat).
+  const opponents = (() => {
+    const all = gameState.players;
+    if (myPlayerIndex === -1) return all;
+    const ordered: typeof all = [];
+    for (let i = 1; i < all.length; i++) {
+      ordered.push(all[(myPlayerIndex + i) % all.length]);
+    }
+    return ordered;
+  })();
 
   // Check if the player has at least one playable card
   const hasPlayableCard = isMyTurn && gameState.hand.some((card) => {
@@ -87,75 +97,76 @@ export function UnecoGameBoard({
     <div className="flex flex-col gap-2">
       {/* Table area: oval layout with opponents around center piles */}
       <div className="relative mx-auto w-full max-w-3xl" style={{ minHeight: "380px" }}>
-        {/* Oval table background */}
+        {/* Animated border + glow (::after = border, ::before = glow) */}
         <div
-          className="absolute inset-x-[5%] inset-y-[5%] rounded-[50%] border-2 border-white/10 bg-emerald-950/40"
-          style={{ boxShadow: "inset 0 0 60px rgba(0,0,0,0.3)" }}
-        />
+          className="uneco-table-border"
+          data-reverse={gameState.direction === "counterclockwise" ? "" : undefined}
+        >
 
-        {/* Opponents positioned around the oval */}
-        {opponents.map((player, idx) => {
-          const pos = getOvalPosition(idx, opponents.length);
-          return (
-            <div
-              key={player.userId}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: pos.left, top: pos.top }}
-            >
-              <UnecoOpponent
-                player={player}
-                isCurrentTurn={
-                  gameState.players[gameState.currentPlayerIndex]?.userId ===
-                  player.userId
-                }
-              />
-            </div>
-          );
-        })}
-
-        {/* Turn indicator at bottom center (my seat) */}
-        {gameState.players[gameState.currentPlayerIndex] && (
-          <div
-            className="absolute left-1/2 -translate-x-1/2"
-            style={{ bottom: "4px" }}
-          >
-            <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
-          </div>
-        )}
-
-        {/* Center: Piles + indicators */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex flex-col items-center gap-2">
-            {/* Draw stack indicator */}
-            {gameState.drawStack > 0 && (
-              <div className="rounded-lg bg-destructive/20 px-3 py-1 text-center">
-                <span className="text-xs font-bold text-destructive">
-                  +{gameState.drawStack} acumulado!
-                  {isMyTurn && " Jogue +2/+4 ou compre"}
-                </span>
-              </div>
-            )}
-
-            {/* Draw & Discard piles */}
-            <UnecoPile
-              discardTop={gameState.discardTop}
-              currentColor={gameState.currentColor}
-              direction={gameState.direction}
-              isMyTurn={isMyTurn}
-              onDraw={onDrawCard}
-              drawStack={gameState.drawStack}
-            />
-
-            {/* UNECO button */}
-            {showUnecoButton && (
-              <button
-                type="button"
-                onClick={onSayUneco}
-                className="animate-bounce rounded-full bg-yellow-500 px-5 py-1.5 text-sm font-extrabold text-black shadow-lg transition-transform hover:scale-110"
+          {/* Opponents positioned around the oval */}
+          {opponents.map((player, idx) => {
+            const pos = getOvalPosition(idx, opponents.length);
+            return (
+              <div
+                key={player.userId}
+                className="absolute -translate-x-1/2 -translate-y-1/2"
+                style={{ left: pos.left, top: pos.top }}
               >
-                UNECO!
-              </button>
-            )}
+                <UnecoOpponent
+                  player={player}
+                  isCurrentTurn={
+                    gameState.players[gameState.currentPlayerIndex]?.userId ===
+                    player.userId
+                  }
+                />
+              </div>
+            );
+          })}
+
+          {/* Turn indicator at bottom center (my seat) */}
+          {gameState.players[gameState.currentPlayerIndex] && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2"
+              style={{ bottom: "4px" }}
+            >
+              <UnecoTurnIndicator gameState={gameState} isMyTurn={isMyTurn} />
+            </div>
+          )}
+
+          {/* Center: Piles + indicators */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="flex flex-col items-center gap-2">
+              {/* Draw stack indicator */}
+              {gameState.drawStack > 0 && (
+                <div className="rounded-lg bg-destructive/20 px-3 py-1 text-center">
+                  <span className="text-xs font-bold text-destructive">
+                    +{gameState.drawStack} acumulado!
+                    {isMyTurn && " Jogue +2/+4 ou compre"}
+                  </span>
+                </div>
+              )}
+
+              {/* Draw & Discard piles */}
+              <UnecoPile
+                discardTop={gameState.discardTop}
+                currentColor={gameState.currentColor}
+                direction={gameState.direction}
+                isMyTurn={isMyTurn}
+                onDraw={onDrawCard}
+                drawStack={gameState.drawStack}
+              />
+
+              {/* UNECO button */}
+              {showUnecoButton && (
+                <button
+                  type="button"
+                  onClick={onSayUneco}
+                  className="animate-bounce rounded-full bg-yellow-500 px-5 py-1.5 text-sm font-extrabold text-black shadow-lg transition-transform hover:scale-110"
+                >
+                  UNECO!
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -92,6 +92,7 @@ export function useUneco(userId?: string) {
       ({ userId: playerId, card, chosenColor, newCurrentPlayer, direction, cardCount }) => {
         const current = useUnecoStore.getState().gameState;
         if (current) {
+          const uid = userIdRef.current;
           setGameState({
             ...current,
             discardTop: card,
@@ -101,6 +102,10 @@ export function useUneco(userId?: string) {
             players: current.players.map((p) =>
               p.userId === playerId ? { ...p, cardCount } : p,
             ),
+            // Remove the played card from our hand when we played it
+            hand: playerId === uid
+              ? current.hand.filter((c) => c.id !== card.id)
+              : current.hand,
           });
         }
       },
@@ -377,14 +382,6 @@ export function useUneco(userId?: string) {
   const playCard = useCallback(
     (cardId: string, chosenColor?: UnecoCardColor) => {
       socket?.emit("uneco:play_card", { cardId, chosenColor });
-      // Optimistically remove from hand
-      const current = useUnecoStore.getState().gameState;
-      if (current) {
-        setGameState({
-          ...current,
-          hand: current.hand.filter((c) => c.id !== cardId),
-        });
-      }
     },
     [socket],
   );
@@ -421,6 +418,13 @@ export function useUneco(userId?: string) {
     socket?.emit("uneco:forfeit");
   }, [socket]);
 
+  const adminCancelRoom = useCallback(
+    (roomId: string) => {
+      socket?.emit("uneco:admin_cancel_room", { roomId });
+    },
+    [socket],
+  );
+
   return {
     lobbyRooms,
     ongoingRooms,
@@ -442,5 +446,6 @@ export function useUneco(userId?: string) {
     spectate,
     stopSpectating,
     forfeitGame,
+    adminCancelRoom,
   };
 }

@@ -102,12 +102,64 @@ body::before {
 }
 
 @keyframes xp-float {
-  0%, 33% {
+
+  0%,
+  33% {
     opacity: 1;
     transform: translate(-50%, 0);
   }
+
   100% {
     opacity: 0;
     transform: translate(-50%, -28px);
   }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes uneco-border-spin {
+  from {
+    --angle: 0deg;
+  }
+
+  to {
+    --angle: 360deg;
+  }
+}
+
+.uneco-table-border {
+  position: absolute;
+  inset-inline: 5%;
+  inset-block: 5%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, #033524, #000000);
+}
+
+.uneco-table-border::after,
+.uneco-table-border::before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: -1;
+  background-image: conic-gradient(from var(--angle), transparent 0deg, transparent 280deg, rgba(16, 185, 129, 0.15) 310deg, #10b981 340deg, #00ffa2 360deg);
+  animation: uneco-border-spin 4s linear infinite;
+}
+
+.uneco-table-border::before {
+  filter: blur(1rem);
+  opacity: 0.5;
+}
+
+.uneco-table-border[data-reverse]::after,
+.uneco-table-border[data-reverse]::before {
+  animation-direction: reverse;
 }

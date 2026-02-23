@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth.js";
+import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { useUneco } from "@/hooks/useUneco.js";
 import { UnecoLobby } from "@/components/uneco/UnecoLobby.js";
 import { UnecoRoom } from "@/components/uneco/UnecoRoom.js";
@@ -7,6 +8,7 @@ import type { UnecoCardColor } from "@butecogames/shared";
 
 export function UnecoPage() {
   const { user } = useAuth();
+  const { isAdmin } = useUserProfile();
   const {
     lobbyRooms,
     ongoingRooms,
@@ -27,6 +29,7 @@ export function UnecoPage() {
     forfeitGame,
     spectate,
     stopSpectating,
+    adminCancelRoom,
   } = useUneco(user?.id);
 
   const isSpectator = gameState
@@ -81,6 +84,8 @@ export function UnecoPage() {
           onCreateRoom={createRoom}
           onJoinRoom={joinRoom}
           onSpectate={spectate}
+          isAdmin={isAdmin}
+          onAdminCancelRoom={adminCancelRoom}
         />
       ) : (
         <UnecoRoom

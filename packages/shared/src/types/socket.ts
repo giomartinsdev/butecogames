@@ -59,6 +59,7 @@ export interface ClientToServerEvents {
   "uneco:forfeit": () => void;
   "uneco:spectate": (data: { roomId: string }) => void;
   "uneco:stop_spectating": () => void;
+  "uneco:admin_cancel_room": (data: { roomId: string }) => void;
   "presence:update_status": (data: { status: PresenceStatus }) => void;
   "presence:update_page": (data: { page: string }) => void;
 }
