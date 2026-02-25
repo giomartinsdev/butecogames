@@ -30,4 +30,5 @@ export const env = {
   R2_SECRET_ACCESS_KEY: requireEnv("R2_SECRET_ACCESS_KEY"),
   R2_BUCKET_NAME: requireEnv("R2_BUCKET_NAME"),
   R2_PUBLIC_URL: requireEnv("R2_PUBLIC_URL"), // e.g. https://images.butecodosdevs.com
+  NVIDIA_NIM_API_KEY: requireEnv("NVIDIA_NIM_API_KEY"),
 } as const;

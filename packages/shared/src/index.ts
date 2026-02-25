@@ -74,6 +74,14 @@ export type {
   UnecoGameState,
   UnecoMatchHistory,
 } from "./types/uneco.js";
+export type {
+  MestreMessageType,
+  MestreMessageRole,
+  MestreConversation,
+  MestreMessage,
+  MestreModelInfo,
+} from "./types/mestre.js";
+
 
 // Constants
 export {
@@ -157,6 +165,11 @@ export {
   DEFAULT_AWAY_TIMEOUT,
   getRouteLabel,
 } from "./constants/presence.js";
+export {
+  MESTRE_MODELS,
+  MESTRE_SYSTEM_PROMPT,
+} from "./constants/mestre.js";
+
 
 // Political Compass
 export type {

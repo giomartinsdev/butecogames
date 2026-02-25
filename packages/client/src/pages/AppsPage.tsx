@@ -10,7 +10,17 @@ const APPS: AppInfo[] = [
     path: "/apps/political-compass",
     available: true,
   },
+  {
+    id: "mestre",
+    name: "Mestre",
+    description:
+      "O Mestre é seu mentor experiente e ranzinza. Peça conselhos, tire dúvidas ou peça para ele pintar algo para você (se ele estiver de bom humor).",
+    thumbnail: "/imgs/apps/mestre.png",
+    path: "/apps/mestre",
+    available: true,
+  },
 ];
+
 
 export function AppsPage() {
   return (

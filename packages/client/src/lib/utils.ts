@@ -51,8 +51,10 @@ const transactionTypeLabels: Record<TransactionType, string> = {
   transfer_sent: "Transferência enviada",
   transfer_received: "Transferência recebida",
   presence_reward: "Recompensa de presença",
-  challenge_reward: "Desafio completo"
+  challenge_reward: "Desafio completo",
+  mestre_ai: "Mestre AI"
 };
+
 
 export function translateTransactionType(type: TransactionType): string {
   return transactionTypeLabels[type] ?? type;
@@ -62,7 +64,9 @@ const gameLabels: Record<string, string> = {
   roulette: "Roleta",
   "card-duel": "Duelo de Cartas",
   "event-betting": "Eventos",
+  mestre: "Mestre",
 };
+
 
 export function translateGameId(gameId: string | undefined): string | null {
   if (!gameId) return null;

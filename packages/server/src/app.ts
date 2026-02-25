@@ -18,6 +18,8 @@ import notificationsRouter from "./routes/notifications.js";
 import userNotificationsRouter from "./routes/user-notifications.js";
 import politicalCompassRouter from "./routes/political-compass.js";
 import auditRouter from "./routes/audit.js";
+import mestreRouter from "./routes/mestre.js";
+
 import { env } from "./config/env.js";
 
 export function createApp() {
@@ -53,6 +55,8 @@ export function createApp() {
   app.use("/api/notifications", userNotificationsRouter);
   app.use("/api/political-compass", politicalCompassRouter);
   app.use("/api/admin/audit", auditRouter);
+  app.use("/api/mestre", mestreRouter);
+
 
   // Health check
   app.get("/api/health", (_req, res) => {

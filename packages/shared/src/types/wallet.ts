@@ -18,7 +18,9 @@ export type TransactionType =
   | "transfer_sent"
   | "transfer_received"
   | "presence_reward"
-  | "challenge_reward";
+  | "challenge_reward"
+  | "mestre_ai";
+
 
 export interface Transaction {
   _id: string;

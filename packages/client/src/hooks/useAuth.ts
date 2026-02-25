@@ -8,7 +8,10 @@ export function useAuth() {
     session: session.data?.session ?? null,
     isLoading: session.isPending,
     isAuthenticated: !!session.data?.user,
-    signInWithDiscord: () => signIn.social({ provider: "discord" }),
+    signInWithDiscord: () => signIn.social({ 
+      provider: "discord", 
+      callbackURL: window.location.origin
+    }), // todo: later remove
     signOut: () => signOut(),
   };
 }
