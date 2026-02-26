@@ -2,9 +2,9 @@ import { Router } from "express";
 import {
     listConversations,
     getConversation,
-    processMestreInteraction,
-    getMestreModels,
-} from "../services/mestre.js";
+    processMasterInteraction,
+    getMasterModels,
+} from "../services/master.js";
 
 import { requireAuth } from "../middleware/auth.js";
 
@@ -12,7 +12,7 @@ const router = Router();
 
 router.get("/models", requireAuth, async (req, res, next) => {
     try {
-        const models = getMestreModels();
+        const models = await getMasterModels();
         res.json(models);
     } catch (err) {
         next(err);
@@ -46,7 +46,7 @@ router.post("/chat", requireAuth, async (req, res, next) => {
         if (!content || !modelId)
             return res.status(400).json({ error: "Missing fields" });
 
-        const result = await processMestreInteraction(
+        const result = await processMasterInteraction(
             req.user!.id,
             conversationId,
             content,

@@ -1,6 +1,6 @@
-import type { MestreModelInfo } from "../types/mestre.js";
+import type { MasterModelInfo } from "../types/master.js";
 
-export const MESTRE_MODELS: MestreModelInfo[] = [
+export const MASTER_MODELS: MasterModelInfo[] = [
     // Text Models
     {
         id: "meta/llama-3.3-70b-instruct",
@@ -8,6 +8,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "Meta",
         type: "TEXT",
         cost: 250,
+        enabled: true,
         tags: ["POWERFUL", "PREMIUM"],
     },
     {
@@ -16,6 +17,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "Meta",
         type: "TEXT",
         cost: 125,
+        enabled: true,
         tags: ["BASIC"],
     },
     {
@@ -24,6 +26,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "MiniMax",
         type: "TEXT",
         cost: 150,
+        enabled: true,
         tags: ["SMART"],
     },
     {
@@ -32,6 +35,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "Zhipu",
         type: "TEXT",
         cost: 400,
+        enabled: true,
         tags: ["FLAGSHIP"],
     },
     {
@@ -40,6 +44,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "Moonshot",
         type: "TEXT",
         cost: 200,
+        enabled: true,
         tags: ["SMART", "ADVANCED"],
     },
     {
@@ -48,6 +53,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "DeepSeek",
         type: "TEXT",
         cost: 180,
+        enabled: true,
         tags: ["POWERFUL", "MOE"],
     },
     {
@@ -56,6 +62,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "NVIDIA",
         type: "TEXT",
         cost: 100,
+        enabled: true,
         tags: ["FAST", "LITE"],
     },
     // Image Models
@@ -65,6 +72,7 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "Black Forest",
         type: "IMAGE",
         cost: 500,
+        enabled: true,
         tags: ["MASTERPIECE"],
     },
     {
@@ -73,9 +81,10 @@ export const MESTRE_MODELS: MestreModelInfo[] = [
         provider: "Stability AI",
         type: "IMAGE",
         cost: 350,
+        enabled: true,
         tags: ["ART"],
     },
 ];
 
-export const MESTRE_SYSTEM_PROMPT =
+export const MASTER_SYSTEM_PROMPT =
     "Você é o 'Mestre', um velho mentor experiente, ranzinza e direto. Você não tem paciência para questões óbvias, mas ajuda quem demonstra esforço. Suas respostas devem ser úteis, porém carregadas de um tom grosseiro de 'amigo velho que te dá um tapa na cabeça para você acordar'. Use expressões brasileiras de mentor ranzinza mas nao seja muito ofensivo.";

@@ -3,6 +3,9 @@ import { Link, Navigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useUserProfile } from "@/hooks/useUserProfile.js";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings.js";
+import { MASTER_MODELS, type MasterModelInfo } from "@butecogames/shared";
+import { Plus, Trash2, Power, BrainCircuit } from "lucide-react";
+import { cn } from "@/lib/utils.js";
 
 export function AdminSettingsPage() {
   const { isAdmin, isLoading: profileLoading } = useUserProfile();
@@ -53,6 +56,19 @@ export function AdminSettingsPage() {
     retestCooldownDays: 180,
   });
 
+  const [master, setMaster] = useState<{ models: MasterModelInfo[] }>({
+    models: MASTER_MODELS,
+  });
+
+  const [newModel, setNewModel] = useState<Partial<MasterModelInfo>>({
+    id: "",
+    name: "",
+    provider: "",
+    type: "TEXT",
+    cost: 0,
+    enabled: true,
+  });
+
   useEffect(() => {
     if (settings) {
       setRoulette(settings.roulette);
@@ -71,6 +87,9 @@ export function AdminSettingsPage() {
       if (settings.politicalCompass) {
         setPoliticalCompass(settings.politicalCompass);
       }
+      if (settings.master) {
+        setMaster(settings.master);
+      }
     }
   }, [settings]);
 
@@ -88,12 +107,52 @@ export function AdminSettingsPage() {
 
   function handleSave() {
     updateMutation.mutate(
-      { roulette, eventBetting, cardDuel, uneco, general, politicalCompass },
+      { roulette, eventBetting, cardDuel, uneco, general, politicalCompass, master },
       {
         onSuccess: () => toast.success("Configurações salvas!"),
         onError: (err: Error) => toast.error(err.message),
       },
     );
+  }
+
+  function handleAddModel() {
+    if (!newModel.id || !newModel.name || !newModel.provider) {
+      toast.error("Preencha todos os campos obrigatórios");
+      return;
+    }
+
+    if (master.models.some((m) => m.id === newModel.id)) {
+      toast.error("ID de modelo já existe");
+      return;
+    }
+
+    setMaster((prev) => ({
+      models: [...prev.models, { ...(newModel as MasterModelInfo), enabled: true }],
+    }));
+
+    setNewModel({
+      id: "",
+      name: "",
+      provider: "",
+      type: "TEXT",
+      cost: 0,
+    });
+
+    toast.success("Modelo adicionado! Lembre-se de salvar.");
+  }
+
+  function handleRemoveModel(id: string) {
+    if (window.confirm("Deseja remover este modelo?")) {
+      setMaster((prev) => ({
+        models: prev.models.filter((m) => m.id !== id),
+      }));
+    }
+  }
+
+  function handleToggleModel(index: number) {
+    const newModels = [...master.models];
+    newModels[index] = { ...newModels[index], enabled: !newModels[index].enabled };
+    setMaster({ models: newModels });
   }
 
   return (
@@ -671,6 +730,151 @@ export function AdminSettingsPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
             />
           </div>
+        </div>
+      </div>
+      <div className="rounded-lg border border-border bg-card p-6 mb-4">
+        <h2 className="text-xl font-bold text-card-foreground mb-4">
+          Mestre
+        </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Gerencie os custos e modelos da IA.
+        </p>
+
+        <div className="space-y-6">
+          {master.models.map((model: MasterModelInfo, index: number) => (
+            <div key={model.id} className={cn("grid gap-4 sm:grid-cols-5 items-end border-b border-border pb-4 last:border-0 last:pb-0 transition-opacity", !model.enabled && "opacity-50")}>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
+                  Modelo ({model.provider})
+                </label>
+                <div className="text-sm text-muted-foreground font-mono bg-background px-3 py-2 rounded-md border border-border flex items-center justify-between">
+                  <span>{model.name}</span>
+                  <span className="text-[10px] opacity-40">{model.id}</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-card-foreground mb-1">
+                  Custo (coins)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={model.cost}
+                  onChange={(e) => {
+                    const newModels = [...master.models];
+                    newModels[index] = { ...newModels[index], cost: parseInt(e.target.value, 10) || 0 };
+                    setMaster({ models: newModels });
+                  }}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+                />
+              </div>
+              <div className="flex items-center gap-2 h-10 px-3 rounded-md bg-muted text-xs text-muted-foreground justify-center">
+                {model.type}
+              </div>
+              <div className="flex items-center gap-2 justify-end">
+                <button
+                  onClick={() => handleToggleModel(index)}
+                  className={cn(
+                    "p-2 rounded-md transition-colors",
+                    model.enabled ? "bg-green-500/10 text-green-500 hover:bg-green-500/20" : "bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                  )}
+                  title={model.enabled ? "Desativar" : "Ativar"}
+                >
+                  <Power size={18} />
+                </button>
+                <button
+                  onClick={() => handleRemoveModel(model.id)}
+                  className="p-2 rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                  title="Remover"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add New Model Form */}
+        <div className="mt-10 rounded-xl border border-dashed border-border p-6 bg-muted/20">
+          <div className="flex items-center gap-2 mb-6">
+            <BrainCircuit className="text-primary" size={20} />
+            <h3 className="font-bold text-card-foreground">Adicionar Novo Modelo</h3>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <label className="block text-sm font-medium text-card-foreground mb-1">ID do Modelo (ex: nvidia/llama-3.1)</label>
+              <input
+                type="text"
+                value={newModel.id}
+                onChange={(e) => setNewModel({ ...newModel, id: e.target.value })}
+                placeholder="ID único"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-card-foreground mb-1">Nome de Exibição</label>
+              <input
+                type="text"
+                value={newModel.name}
+                onChange={(e) => setNewModel({ ...newModel, name: e.target.value })}
+                placeholder="Llama 3.1 70B"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-card-foreground mb-1">Provedor</label>
+              <input
+                type="text"
+                value={newModel.provider}
+                onChange={(e) => setNewModel({ ...newModel, provider: e.target.value })}
+                placeholder="Meta / NVIDIA / Stability AI"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-card-foreground mb-1">Tipo de Resposta</label>
+              <select
+                value={newModel.type}
+                onChange={(e) => setNewModel({ ...newModel, type: e.target.value as any })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+              >
+                <option value="TEXT">Texto</option>
+                <option value="IMAGE">Imagem</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-card-foreground mb-1">Custo Inicial (coins)</label>
+              <input
+                type="number"
+                value={newModel.cost}
+                onChange={(e) => setNewModel({ ...newModel, cost: parseInt(e.target.value, 10) || 0 })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-card-foreground"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={handleAddModel}
+                className="w-full flex items-center justify-center gap-2 bg-primary px-4 py-2 rounded-md font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <Plus size={18} />
+                Adicionar Modelo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-start">
+          <button
+            onClick={() => {
+              if (window.confirm("Deseja voltar para as configurações padrão do Mestre AI?")) {
+                setMaster({ models: MASTER_MODELS });
+              }
+            }}
+            className="text-xs text-primary hover:underline"
+          >
+            Restaurar padrões
+          </button>
         </div>
       </div>
 

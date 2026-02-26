@@ -1,24 +1,24 @@
 import { useState, useMemo } from "react";
-import type { MestreModelInfo } from "@butecogames/shared";
+import type { MasterModelInfo } from "@butecogames/shared";
 import { MessageSquare, Image as ImageIcon, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { cn } from "@/lib/utils.js";
 
 interface Props {
-    models: MestreModelInfo[];
+    models: MasterModelInfo[];
     selectedModelId: string;
-    onSelect: (model: MestreModelInfo) => void;
+    onSelect: (model: MasterModelInfo) => void;
 }
 
-export function MestreModelSelector({ models, selectedModelId, onSelect }: Props) {
+export function MasterModelSelector({ models, selectedModelId, onSelect }: Props) {
     const [isOpen, setIsOpen] = useState(false);
     const selectedModel = models.find(m => m.id === selectedModelId) || models[0];
 
-    const getProvider = (model: MestreModelInfo) => model?.provider || "NVIDIA NIM";
+    const getProvider = (model: MasterModelInfo) => model?.provider || "NVIDIA NIM";
 
     const groupedModels = useMemo(() => {
-        const groups: Record<string, Record<string, MestreModelInfo[]>> = {};
+        const groups: Record<string, Record<string, MasterModelInfo[]>> = {};
 
-        models.forEach(model => {
+        models.filter(m => m.enabled !== false).forEach(model => {
             const provider = getProvider(model);
             const type = model.type === "TEXT" ? "Texto" : "Imagem";
 
@@ -109,7 +109,7 @@ function ProviderHeader({ label }: { label: string }) {
     );
 }
 
-function ModelItem({ model, isSelected, onClick }: { model: MestreModelInfo; isSelected: boolean; onClick: () => void }) {
+function ModelItem({ model, isSelected, onClick }: { model: MasterModelInfo; isSelected: boolean; onClick: () => void }) {
     return (
         <button
             onClick={onClick}

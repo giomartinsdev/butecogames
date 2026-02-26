@@ -1,18 +1,18 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Send, Bot, Brain } from "lucide-react";
 import { motion } from "framer-motion";
-import type { MestreMessage, MestreModelInfo } from "@butecogames/shared";
+import type { MasterMessage, MasterModelInfo } from "@butecogames/shared";
 import { cn } from "@/lib/utils.js";
-import { MestreMessageItem } from "./MestreMessageItem.js";
+import { MasterMessageItem } from "./MasterMessageItem.js";
 
 interface Props {
-    messages: MestreMessage[];
+    messages: MasterMessage[];
     onSendMessage: (content: string) => void;
     isLoading: boolean;
-    selectedModel: MestreModelInfo;
+    selectedModel: MasterModelInfo;
 }
 
-export function MestreChatArea({ messages, onSendMessage, isLoading, selectedModel }: Props) {
+export function MasterChatArea({ messages, onSendMessage, isLoading, selectedModel }: Props) {
     const [input, setInput] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +23,7 @@ export function MestreChatArea({ messages, onSendMessage, isLoading, selectedMod
     }, [messages, isLoading]);
 
     const groupedMessages = useMemo(() => {
-        const groups: Record<string, MestreMessage[]> = {};
+        const groups: Record<string, MasterMessage[]> = {};
 
         [...messages].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
             .forEach(msg => {
@@ -89,7 +89,7 @@ export function MestreChatArea({ messages, onSendMessage, isLoading, selectedMod
                         <div key={group.date} className="space-y-8">
                             <DateSeparator label={formatHeaderDate(group.date)} />
                             {group.messages.map((msg) => (
-                                <MestreMessageItem key={msg._id || msg.createdAt} message={msg} />
+                                <MasterMessageItem key={msg._id || msg.createdAt} message={msg} />
                             ))}
                         </div>
                     ))

@@ -52,7 +52,7 @@ const transactionTypeLabels: Record<TransactionType, string> = {
   transfer_received: "Transferência recebida",
   presence_reward: "Recompensa de presença",
   challenge_reward: "Desafio completo",
-  mestre_ai: "Mestre AI"
+  master_ai: "Mestre AI"
 };
 
 
@@ -64,7 +64,7 @@ const gameLabels: Record<string, string> = {
   roulette: "Roleta",
   "card-duel": "Duelo de Cartas",
   "event-betting": "Eventos",
-  mestre: "Mestre",
+  master: "Mestre",
 };
 
 

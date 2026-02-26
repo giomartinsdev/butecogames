@@ -1,3 +1,5 @@
+import type { MasterModelInfo } from "./master.js";
+
 export interface RouletteSettings {
   bettingDuration: number;
   spinningDuration: number;
@@ -42,6 +44,10 @@ export interface UnecoSettings {
   disconnectGrace: number;
 }
 
+export interface MasterSettings {
+  models: MasterModelInfo[];
+}
+
 export interface AppSettings {
   roulette: RouletteSettings;
   eventBetting: EventBettingSettings;
@@ -49,4 +55,5 @@ export interface AppSettings {
   uneco: UnecoSettings;
   general: GeneralSettings;
   politicalCompass: PoliticalCompassSettings;
+  master: MasterSettings;
 }

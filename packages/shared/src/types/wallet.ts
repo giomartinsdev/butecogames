@@ -19,7 +19,7 @@ export type TransactionType =
   | "transfer_received"
   | "presence_reward"
   | "challenge_reward"
-  | "mestre_ai";
+  | "master_ai";
 
 
 export interface Transaction {

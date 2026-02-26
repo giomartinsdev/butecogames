@@ -23,6 +23,7 @@ import {
   DEFAULT_UNECO_DISCONNECT_GRACE,
   DEFAULT_AWAY_TIMEOUT,
   DEFAULT_RETEST_COOLDOWN_DAYS,
+  MASTER_MODELS,
 } from "@butecogames/shared";
 import { Settings } from "../models/Settings.js";
 
@@ -87,6 +88,12 @@ export async function updateSettings(
     }
   }
 
+  if (partial.master) {
+    for (const [key, value] of Object.entries(partial.master)) {
+      update[`master.${key}`] = value;
+    }
+  }
+
   const doc = await Settings.findByIdAndUpdate(
     "app_settings",
     { $set: update },
@@ -140,6 +147,9 @@ function toAppSettings(doc: InstanceType<typeof Settings>): AppSettings {
     },
     politicalCompass: {
       retestCooldownDays: doc.politicalCompass?.retestCooldownDays ?? DEFAULT_RETEST_COOLDOWN_DAYS,
+    },
+    master: {
+      models: doc.master?.models ?? MASTER_MODELS,
     },
   };
 }

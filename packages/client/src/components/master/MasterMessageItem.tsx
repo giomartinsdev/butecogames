@@ -1,16 +1,16 @@
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Bot, User, Maximize2 } from "lucide-react";
-import type { MestreMessage } from "@butecogames/shared";
+import { Bot, User, Download } from "lucide-react";
+import type { MasterMessage } from "@butecogames/shared";
 import { cn } from "@/lib/utils.js";
 
 interface Props {
-    message: MestreMessage;
+    message: MasterMessage;
     isLast?: boolean;
 }
 
-export function MestreMessageItem({ message }: Props) {
+export function MasterMessageItem({ message }: Props) {
     const isUser = message.role === "USER";
 
     return (
@@ -59,11 +59,12 @@ export function MestreMessageItem({ message }: Props) {
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <a
                                         href={message.imageUrl}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="p-2 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm transition-colors"
+                                        download={`mestre-ia-${new Date().getTime()}.jpg`}
+                                        className="p-2 rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm transition-colors flex items-center gap-2 px-4"
+                                        title="Baixar imagem"
                                     >
-                                        <Maximize2 size={20} />
+                                        <Download size={20} />
+                                        <span className="text-xs font-bold uppercase">Download</span>
                                     </a>
                                 </div>
                             </div>

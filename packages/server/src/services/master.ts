@@ -1,25 +1,27 @@
 import fetch from "node-fetch";
 import { env } from "../config/env.js";
-import { MestreConversation } from "../models/MestreConversation.js";
-import { MestreMessage } from "../models/MestreMessage.js";
+import { MasterConversation } from "../models/MasterConversation.js";
+import { MasterMessage } from "../models/MasterMessage.js";
 import { debitWallet } from "./wallet.js";
-import { MESTRE_SYSTEM_PROMPT, MESTRE_MODELS } from "@butecogames/shared";
+import { MASTER_SYSTEM_PROMPT, MASTER_MODELS } from "@butecogames/shared";
 import { getIO } from "../socket/io-store.js";
+import { Settings } from "../models/Settings.js";
 
 const NVIDIA_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
-export function getMestreModels() {
-    return MESTRE_MODELS;
+export async function getMasterModels() {
+    const settings = await Settings.findOne({ _id: "app_settings" });
+    return settings?.master?.models || MASTER_MODELS;
 }
 
 export async function listConversations(userId: string) {
-    return MestreConversation.find({ userId }).sort({ lastMessageAt: -1 });
+    return MasterConversation.find({ userId }).sort({ lastMessageAt: -1 });
 }
 
 export async function getConversation(userId: string, conversationId: string) {
-    const conversation = await MestreConversation.findOne({ _id: conversationId, userId });
+    const conversation = await MasterConversation.findOne({ _id: conversationId, userId });
     if (!conversation) return null;
-    const messages = await MestreMessage.find({ conversationId }).sort({ createdAt: 1 });
+    const messages = await MasterMessage.find({ conversationId }).sort({ createdAt: 1 });
     return { conversation, messages };
 }
 
@@ -54,7 +56,7 @@ async function refineImagePrompt(prompt: string): Promise<string> {
         model: modelId,
         messages: [{
             role: "user",
-            content: `PERSONA: ${MESTRE_SYSTEM_PROMPT}\n\nTAREFAS: Refine o prompt de imagem do usuário abaixo para algo mais artístico e detalhado. Responda APENAS com o prompt refinado em inglês.\n\nPROMPT DO USUÁRIO: ${prompt}`
+            content: `PERSONA: ${MASTER_SYSTEM_PROMPT}\n\nTAREFAS: Refine o prompt de imagem do usuário abaixo para algo mais artístico e detalhado. Responda APENAS com o prompt refinado em inglês.\n\nPROMPT DO USUÁRIO: ${prompt}`
         }]
     };
 
@@ -62,7 +64,7 @@ async function refineImagePrompt(prompt: string): Promise<string> {
         const data: any = await callNvidia(NVIDIA_CHAT_URL, payload);
         return data.choices?.[0]?.message?.content?.trim() || prompt;
     } catch (err) {
-        console.warn("[MestreService] Prompt refinement failed, using original:", err);
+        console.warn("[MasterService] Prompt refinement failed, using original:", err);
         return prompt;
     }
 }
@@ -103,7 +105,7 @@ async function generateImage(modelId: string, prompt: string): Promise<string> {
 async function generateText(modelId: string, history: any[]): Promise<string> {
     const messages = history.map((m, idx) => ({
         role: m.role.toLowerCase(),
-        content: idx === 0 ? `PERSONA DO MESTRE: ${MESTRE_SYSTEM_PROMPT}\n\nMENSAGEM: ${m.content}` : m.content
+        content: idx === 0 ? `PERSONA DO MESTRE: ${MASTER_SYSTEM_PROMPT}\n\nMENSAGEM: ${m.content}` : m.content
     }));
 
     // Consolidate consecutive messages from the same role
@@ -120,25 +122,26 @@ async function generateText(modelId: string, history: any[]): Promise<string> {
     return data.choices?.[0]?.message?.content || "Não tenho nada a dizer.";
 }
 
-export async function processMestreInteraction(
+export async function processMasterInteraction(
     userId: string,
     conversationId: string | null,
     content: string,
     modelId: string,
 ) {
-    const models = getMestreModels();
+    const models = await getMasterModels();
     const model = models.find((m: any) => m.id === modelId);
     if (!model) throw new Error("Modelo não encontrado");
+    if (model.enabled === false) throw new Error("Este modelo está desativado no momento");
 
     // 1. Get or Create Conversation
     const conversation = conversationId
-        ? await MestreConversation.findOne({ _id: conversationId, userId })
-        : await MestreConversation.create({ userId, title: content.substring(0, 30) + (content.length > 30 ? "..." : "") });
+        ? await MasterConversation.findOne({ _id: conversationId, userId })
+        : await MasterConversation.create({ userId, title: content.substring(0, 30) + (content.length > 30 ? "..." : "") });
 
     if (!conversation) throw new Error("Conversa não encontrada");
 
     // 2. Save User Message
-    const userMessage = await MestreMessage.create({
+    const userMessage = await MasterMessage.create({
         conversationId: conversation._id,
         role: "USER",
         content,
@@ -155,13 +158,13 @@ export async function processMestreInteraction(
         imageUrl = await generateImage(model.id, content);
         assistantContent = "Está aqui sua imagem. Tente não estragar ela.";
     } else {
-        const history = await MestreMessage.find({ conversationId: conversation._id }).sort({ createdAt: 1 }).limit(20);
+        const history = await MasterMessage.find({ conversationId: conversation._id }).sort({ createdAt: 1 }).limit(20);
         assistantContent = await generateText(model.id, history);
     }
 
     // 4. Handle Wallet and Message persistence
-    const wallet = await debitWallet(userId, model.cost, "mestre_ai", { gameId: "mestre" });
-    const assistantMessage = await MestreMessage.create({
+    const wallet = await debitWallet(userId, model.cost, "master_ai", { gameId: "master" });
+    const assistantMessage = await MasterMessage.create({
         conversationId: conversation._id,
         role: "ASSISTANT",
         content: assistantContent,

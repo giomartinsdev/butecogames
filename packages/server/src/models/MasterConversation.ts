@@ -1,6 +1,6 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
-export interface IMestreConversation extends Document {
+export interface IMasterConversation extends Document {
     userId: string;
     title: string;
     lastMessageAt: Date;
@@ -8,7 +8,7 @@ export interface IMestreConversation extends Document {
     updatedAt: Date;
 }
 
-const mestreConversationSchema = new Schema<IMestreConversation>(
+const masterConversationSchema = new Schema<IMasterConversation>(
     {
         userId: { type: String, required: true, index: true },
         title: { type: String, default: "Nova Conversa" },
@@ -17,7 +17,7 @@ const mestreConversationSchema = new Schema<IMestreConversation>(
     { timestamps: true }
 );
 
-export const MestreConversation = mongoose.model<IMestreConversation>(
-    "MestreConversation",
-    mestreConversationSchema
+export const MasterConversation = mongoose.model<IMasterConversation>(
+    "MasterConversation",
+    masterConversationSchema
 );

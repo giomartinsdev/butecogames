@@ -11,12 +11,12 @@ const APPS: AppInfo[] = [
     available: true,
   },
   {
-    id: "mestre",
+    id: "master",
     name: "Mestre",
     description:
       "O Mestre é seu mentor experiente e ranzinza. Peça conselhos, tire dúvidas ou peça para ele pintar algo para você (se ele estiver de bom humor).",
-    thumbnail: "/imgs/apps/mestre.png",
-    path: "/apps/mestre",
+    thumbnail: "/imgs/apps/master.png",
+    path: "/apps/master",
     available: true,
   },
 ];

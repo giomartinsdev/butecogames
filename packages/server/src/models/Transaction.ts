@@ -32,7 +32,7 @@ const transactionSchema = new Schema<ITransaction>(
         "transfer_sent",
         "transfer_received",
         "presence_reward",
-        "mestre_ai",
+        "master_ai",
       ],
     },
 

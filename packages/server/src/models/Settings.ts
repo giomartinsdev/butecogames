@@ -23,6 +23,7 @@ import {
   DEFAULT_UNECO_DISCONNECT_GRACE,
   DEFAULT_AWAY_TIMEOUT,
   DEFAULT_RETEST_COOLDOWN_DAYS,
+  MASTER_MODELS,
 } from "@butecogames/shared";
 
 export interface ISettings {
@@ -64,6 +65,9 @@ export interface ISettings {
   };
   politicalCompass: {
     retestCooldownDays: number;
+  };
+  master: {
+    models: any[];
   };
   updatedAt: Date;
   createdAt: Date;
@@ -109,6 +113,9 @@ const settingsSchema = new Schema(
     },
     politicalCompass: {
       retestCooldownDays: { type: Number, default: DEFAULT_RETEST_COOLDOWN_DAYS },
+    },
+    master: {
+      models: { type: Array, default: MASTER_MODELS },
     },
   },
   { timestamps: true },

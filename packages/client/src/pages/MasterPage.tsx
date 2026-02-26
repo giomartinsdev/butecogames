@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
-import { MestreSidebar } from "@/components/mestre/MestreSidebar.js";
-import { MestreChatArea } from "@/components/mestre/MestreChatArea.js";
-import { useMestreConversation, useMestreChat, useMestreModels } from "@/hooks/useMestre.js";
-import type { MestreModelInfo } from "@butecogames/shared";
+import { MasterSidebar } from "@/components/master/MasterSidebar.js";
+import { MasterChatArea } from "@/components/master/MasterChatArea.js";
+import { useMasterConversation, useMasterChat, useMasterModels } from "@/hooks/useMaster.js";
+import type { MasterModelInfo } from "@butecogames/shared";
 import { toast } from "sonner";
 import { Bot } from "lucide-react";
 
-export function MestrePage() {
+export function MasterPage() {
     const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>();
-    const [selectedModel, setSelectedModel] = useState<MestreModelInfo | null>(null);
+    const [selectedModel, setSelectedModel] = useState<MasterModelInfo | null>(null);
 
-    const { data: models, isLoading: isLoadingModels } = useMestreModels();
+    const { data: models, isLoading: isLoadingModels } = useMasterModels();
     const { data: conversationData, isLoading: isLoadingConversation } =
-        useMestreConversation(selectedConversationId);
-    const chatMutation = useMestreChat();
+        useMasterConversation(selectedConversationId);
+    const chatMutation = useMasterChat();
 
     useEffect(() => {
         if (models && models.length > 0 && !selectedModel) {
@@ -62,7 +62,7 @@ export function MestrePage() {
             </div>
 
             <div className="flex-1 flex overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-                <MestreSidebar
+                <MasterSidebar
                     selectedId={selectedConversationId}
                     onSelectConversation={setSelectedConversationId}
                     onNewChat={() => setSelectedConversationId(undefined)}
@@ -72,7 +72,7 @@ export function MestrePage() {
                 />
                 <main className="flex-1 relative overflow-hidden">
                     {selectedModel && (
-                        <MestreChatArea
+                        <MasterChatArea
                             messages={messages}
                             onSendMessage={handleSendMessage}
                             isLoading={chatMutation.isPending || isLoadingConversation}

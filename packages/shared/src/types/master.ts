@@ -1,7 +1,7 @@
-export type MestreMessageType = "TEXT" | "IMAGE";
-export type MestreMessageRole = "USER" | "ASSISTANT";
+export type MasterMessageType = "TEXT" | "IMAGE";
+export type MasterMessageRole = "USER" | "ASSISTANT";
 
-export interface MestreConversation {
+export interface MasterConversation {
     _id: string;
     userId: string;
     title: string;
@@ -10,12 +10,12 @@ export interface MestreConversation {
     updatedAt: string;
 }
 
-export interface MestreMessage {
+export interface MasterMessage {
     _id: string;
     conversationId: string;
-    role: MestreMessageRole;
+    role: MasterMessageRole;
     content: string;
-    type: MestreMessageType;
+    type: MasterMessageType;
     aiModel: string;
     cost: number;
     imageUrl?: string;
@@ -23,11 +23,12 @@ export interface MestreMessage {
     updatedAt: string;
 }
 
-export interface MestreModelInfo {
+export interface MasterModelInfo {
     id: string;
     name: string;
     provider: string;
-    type: MestreMessageType;
+    type: MasterMessageType;
     cost: number;
+    enabled: boolean;
     tags?: string[];
 }

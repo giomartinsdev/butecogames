@@ -1,6 +1,6 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
-export interface IMestreMessage extends Document {
+export interface IMasterMessage extends Document {
     conversationId: mongoose.Types.ObjectId;
     role: "USER" | "ASSISTANT";
     content: string;
@@ -13,11 +13,11 @@ export interface IMestreMessage extends Document {
     updatedAt: Date;
 }
 
-const mestreMessageSchema = new Schema<IMestreMessage>(
+const masterMessageSchema = new Schema<IMasterMessage>(
     {
         conversationId: {
             type: Schema.Types.ObjectId,
-            ref: "MestreConversation",
+            ref: "MasterConversation",
             required: true,
             index: true,
         },
@@ -32,7 +32,7 @@ const mestreMessageSchema = new Schema<IMestreMessage>(
     { timestamps: true },
 );
 
-export const MestreMessage = mongoose.model<IMestreMessage>(
-    "MestreMessage",
-    mestreMessageSchema,
+export const MasterMessage = mongoose.model<IMasterMessage>(
+    "MasterMessage",
+    masterMessageSchema,
 );

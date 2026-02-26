@@ -75,12 +75,12 @@ export type {
   UnecoMatchHistory,
 } from "./types/uneco.js";
 export type {
-  MestreMessageType,
-  MestreMessageRole,
-  MestreConversation,
-  MestreMessage,
-  MestreModelInfo,
-} from "./types/mestre.js";
+  MasterMessageType,
+  MasterMessageRole,
+  MasterConversation,
+  MasterMessage,
+  MasterModelInfo,
+} from "./types/master.js";
 
 
 // Constants
@@ -166,9 +166,9 @@ export {
   getRouteLabel,
 } from "./constants/presence.js";
 export {
-  MESTRE_MODELS,
-  MESTRE_SYSTEM_PROMPT,
-} from "./constants/mestre.js";
+  MASTER_MODELS,
+  MASTER_SYSTEM_PROMPT,
+} from "./constants/master.js";
 
 
 // Political Compass

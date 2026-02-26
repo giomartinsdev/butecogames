@@ -1,25 +1,25 @@
 import { useState, useMemo } from "react";
 import { Plus, History, ChevronRight } from "lucide-react";
-import { useMestreConversations } from "@/hooks/useMestre.js";
-import type { MestreConversation, MestreModelInfo } from "@butecogames/shared";
+import { useMasterConversations } from "@/hooks/useMaster.js";
+import type { MasterConversation, MasterModelInfo } from "@butecogames/shared";
 import { cn } from "@/lib/utils.js";
-import { MestreModelSelector } from "./MestreModelSelector.js";
+import { MasterModelSelector } from "./MasterModelSelector.js";
 
 interface Props {
     selectedId?: string;
     onSelectConversation: (id: string) => void;
     onNewChat: () => void;
-    models: MestreModelInfo[];
+    models: MasterModelInfo[];
     selectedModelId: string;
-    onSelectModel: (model: MestreModelInfo) => void;
+    onSelectModel: (model: MasterModelInfo) => void;
 }
 
 interface GroupedConversations {
     label: string;
-    items: MestreConversation[];
+    items: MasterConversation[];
 }
 
-export function MestreSidebar({
+export function MasterSidebar({
     selectedId,
     onSelectConversation,
     onNewChat,
@@ -27,7 +27,7 @@ export function MestreSidebar({
     selectedModelId,
     onSelectModel,
 }: Props) {
-    const { data: conversations, isLoading } = useMestreConversations();
+    const { data: conversations, isLoading } = useMasterConversations();
     const [showAll, setShowAll] = useState(false);
 
     const groupedConversations = useMemo<GroupedConversations[]>(() => {
@@ -41,7 +41,7 @@ export function MestreSidebar({
             if (selectedConv) displayConvs = [...displayConvs, selectedConv];
         }
 
-        const groups: Record<string, MestreConversation[]> = {
+        const groups: Record<string, MasterConversation[]> = {
             "Hoje": [],
             "Ontem": [],
             "Últimos 7 dias": [],
@@ -101,7 +101,7 @@ export function MestreSidebar({
                                             <h5 className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                                                 {group.label}
                                             </h5>
-                                            {group.items.map((conv: MestreConversation) => (
+                                            {group.items.map((conv: MasterConversation) => (
                                                 <button
                                                     key={conv._id}
                                                     onClick={() => onSelectConversation(conv._id)}
@@ -144,7 +144,7 @@ export function MestreSidebar({
                 </div>
 
                 <div className="border-t border-border pt-6 pb-4">
-                    <MestreModelSelector
+                    <MasterModelSelector
                         models={models}
                         selectedModelId={selectedModelId}
                         onSelect={onSelectModel}
